@@ -8,5 +8,6 @@ public class GManBot {
     public static void main(String[] arguments) {
         Configuration config = new Configuration.Builder().setName("GManTestBot").buildConfiguration();
         System.out.println("Its Alive!");
+
     }
 }
