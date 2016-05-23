@@ -1,13 +1,15 @@
-import org.pircbotx.Configuration;
+import javafx.stage.Stage;
+import javafx.application.Application;
 
-/**
- * Created by Dons on 23-05-2016.
- *
- */
-public class GManBot {
-    public static void main(String[] arguments) {
-        Configuration config = new Configuration.Builder().setName("GManTestBot").buildConfiguration();
+public class GManBot extends Application {
+    public static void main(String[] args) {
+        // Configuration config = new Configuration.Builder().setName("GManTestBot").buildConfiguration();
         System.out.println("Its Alive!");
+        launch(args);
+    }
 
+    @Override
+    public void start(Stage primaryStage) {
+        MainWindow.buildUI(primaryStage);
     }
 }
