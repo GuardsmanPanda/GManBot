@@ -1,10 +1,18 @@
 import javafx.stage.Stage;
 import javafx.application.Application;
+import twitchchat.TwitchChatHandler;
 
 public class GManBot extends Application {
-    public static void main(String[] args) {
-        // Configuration config = new Configuration.Builder().setName("GManTestBot").buildConfiguration();
+    public static void main(String[] args)  {
+
+        try { Thread.sleep(100); } catch (InterruptedException e) { e.printStackTrace(); }
+
         System.out.println("Its Alive!");
+
+        //Ask the twitch handler to open the chat connection, this may take several seconds
+        TwitchChatHandler.connect();
+
+        // Blocking call, do not include code past this point
         launch(args);
     }
 
