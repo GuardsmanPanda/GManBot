@@ -18,6 +18,6 @@ public class GManBot extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        MainWindow.buildUI(primaryStage);
+        MainWindow.setupUI(primaryStage);
     }
 }

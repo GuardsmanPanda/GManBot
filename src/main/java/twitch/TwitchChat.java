@@ -57,7 +57,7 @@ public class TwitchChat {
      * @param action The action to send
      */
     public static synchronized void sendAction(String action) {
-        bot.send().action("#guardsmanbob", action);
+        bot.send().action(channel, action);
     }
 
     /**
@@ -65,7 +65,7 @@ public class TwitchChat {
      * This method can silently fail for any reason
      */
     public static synchronized void sendMessage(String message) {
-        bot.send().message("#guardsmanbob", message);
+        bot.send().message(channel, message);
     }
 
 
