@@ -1,4 +1,4 @@
-package twitchchat;
+package twitch;
 
 import com.google.common.io.Files;
 import org.pircbotx.Configuration;

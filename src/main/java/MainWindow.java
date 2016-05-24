@@ -6,7 +6,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import twitchchat.TwitchChat;
+import twitch.TwitchChat;
 
 class MainWindow {
     private static TextField messageInput = new TextField();

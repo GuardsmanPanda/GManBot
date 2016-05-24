@@ -1,6 +1,6 @@
 import javafx.stage.Stage;
 import javafx.application.Application;
-import twitchchat.TwitchChat;
+import twitch.TwitchChat;
 
 public class GManBot extends Application {
     public static void main(String[] args)  {
