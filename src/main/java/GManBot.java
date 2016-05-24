@@ -1,6 +1,6 @@
 import javafx.stage.Stage;
 import javafx.application.Application;
-import twitchchat.TwitchChatHandler;
+import twitchchat.TwitchChat;
 
 public class GManBot extends Application {
     public static void main(String[] args)  {
@@ -10,7 +10,7 @@ public class GManBot extends Application {
         System.out.println("Its Alive!");
 
         //Ask the twitch handler to open the chat connection, this may take several seconds
-        TwitchChatHandler.connect();
+        TwitchChat.connect();
 
         // Blocking call, do not include code past this point
         launch(args);

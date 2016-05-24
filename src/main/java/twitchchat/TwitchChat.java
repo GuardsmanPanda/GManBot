@@ -19,7 +19,7 @@ import java.nio.charset.Charset;
  * Created by Dons on 23-05-2016.
  *
  */
-public class TwitchChatHandler {
+public class TwitchChat {
     private static boolean connected = false;
     private static final PircBotX bot;
 
@@ -27,6 +27,8 @@ public class TwitchChatHandler {
     static {
         Configuration config = new Configuration.Builder()
                 .setName("BotManG").setMessageDelay(1900)
+                .setOnJoinWhoEnabled(false)
+                .setAutoNickChange(false)
                 .setAutoReconnect(true)
                 .addCapHandler(new EnableCapHandler("twitch.tv/membership"))
                 .addCapHandler(new EnableCapHandler("twitch.tv/commands"))
@@ -51,7 +53,23 @@ public class TwitchChatHandler {
         }).start();
     }
 
-    public static PircBotX getBot() { return bot; }
+
+    /**
+     * Sends an action to the #guardsmanbob channel
+     * This method can silently fail for any reason
+     * @param action The action to send
+     */
+    public static void sendAction(String action) {
+        bot.send().action("#guardsmanbob", action);
+    }
+
+    /**
+     * Sends a message to the #guardsmanbob channel on twitch
+     * This method can silently fail for any reason
+     */
+    public static void sendMessage(String message) {
+        bot.send().message("#guardsmanbob", message);
+    }
 
 
     /**
