@@ -38,7 +38,7 @@ public class TwitchChat {
 
     /**
      * Attempts to connect to the chat server, this may take several seconds so this method should be called before
-     * using the bot to send or relieve messages.
+     * using the bot to send or receive messages.
      */
     public static void connect() {
         new Thread(() -> {
@@ -52,8 +52,8 @@ public class TwitchChat {
 
 
     /**
-     * Sends an action to the chat channel
-     * This method can silently fail for any reason
+     * Sends an action to the chat channel.
+     * This method can silently fail for any reason.
      * @param action The action to send
      */
     public static synchronized void sendAction(String action) {
@@ -61,8 +61,8 @@ public class TwitchChat {
     }
 
     /**
-     * Sends a message to the chat channel on twitch
-     * This method can silently fail for any reason
+     * Sends a message to the chat channel on twitch.
+     * This method can silently fail for any reason.
      */
     public static synchronized void sendMessage(String message) {
         bot.send().message(channel, message);
