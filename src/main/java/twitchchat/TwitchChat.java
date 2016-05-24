@@ -15,13 +15,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-/**
- * Created by Dons on 23-05-2016.
- *
- */
 public class TwitchChat {
     private static boolean connected = false;
     private static final PircBotX bot;
+    private static final String channel = "#guardsmanbob";
 
     // Configure bot
     static {
@@ -34,7 +31,7 @@ public class TwitchChat {
                 .addCapHandler(new EnableCapHandler("twitch.tv/commands"))
                 .addCapHandler(new EnableCapHandler("twitch.tv/tags"))
                 .addListener(new ChatUtility())
-                .addAutoJoinChannel("#guardsmanbob")
+                .addAutoJoinChannel(channel)
                 .buildForServer("irc.chat.twitch.tv", 6667, getPassword());
         bot = new PircBotX(config);
     }
@@ -55,7 +52,7 @@ public class TwitchChat {
 
 
     /**
-     * Sends an action to the #guardsmanbob channel
+     * Sends an action to the chat channel
      * This method can silently fail for any reason
      * @param action The action to send
      */
@@ -64,7 +61,7 @@ public class TwitchChat {
     }
 
     /**
-     * Sends a message to the #guardsmanbob channel on twitch
+     * Sends a message to the chat channel on twitch
      * This method can silently fail for any reason
      */
     public static void sendMessage(String message) {
@@ -101,7 +98,7 @@ public class TwitchChat {
 
         @Override
         public void onJoin(JoinEvent event) throws Exception {
-            if (event.getChannel().getName().equalsIgnoreCase("#guardsmanbob") && event.getUser().getNick().equalsIgnoreCase(bot.getNick())) {
+            if (event.getChannel().getName().equalsIgnoreCase(channel) && event.getUser().getNick().equalsIgnoreCase(bot.getNick())) {
                 System.out.println("Joined Channel " + event.getChannel().getName());
             }
         }
