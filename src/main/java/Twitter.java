@@ -6,10 +6,23 @@ public class Twitter {
 
 
     /**
+     * Start watching @guardsmanbob on twitter and alert in chat when new tweets emerge
+     */
+    public static void startTwitterWatch() {
+
+    }
+
+    public static void stopTwitterWatch() {
+
+    }
+
+    /**
      *
      * @param tweet
      */
     public static void sendTweet(String tweet) {
 
     }
+
+
 }
