@@ -98,7 +98,7 @@ public class TwitchChat {
 
         @Override
         public void onJoin(JoinEvent event) throws Exception {
-            if (event.getChannel().getName().equalsIgnoreCase(channel) && event.getUser().getNick().equalsIgnoreCase(bot.getNick())) {
+            if (event.getUser().getNick().equalsIgnoreCase(bot.getNick())) {
                 System.out.println("Joined Channel " + event.getChannel().getName());
             }
         }
@@ -106,6 +106,8 @@ public class TwitchChat {
         @Override
         public void onMessage(MessageEvent event) throws Exception {
             String displayName = event.getTags().get("display-name");
+            if (displayName.isEmpty()) displayName = event.getUser().getNick();
+
             String color = event.getTags().get("color");
 
             System.out.println(event.getChannel().getName() + " " + color + " <" + displayName + "> " + event.getMessage());
