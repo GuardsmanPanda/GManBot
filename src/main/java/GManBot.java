@@ -1,3 +1,4 @@
+import UI.MainWindow;
 import javafx.stage.Stage;
 import javafx.application.Application;
 import twitch.TwitchChat;
@@ -18,6 +19,6 @@ public class GManBot extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        MainWindow.setupUI(primaryStage);
+        UI.MainWindow.launch(primaryStage);
     }
 }
