@@ -106,7 +106,10 @@ public class TwitchChat {
         @Override
         public void onMessage(MessageEvent event) throws Exception {
             String displayName = event.getTags().get("display-name");
-            if (displayName.isEmpty()) displayName = event.getUser().getNick();
+            if (displayName.isEmpty()) {
+                System.out.println("empty display name for message - " + event.getTags().toString() + " - nick: " + event.getUser().getNick());
+                displayName = event.getUser().getNick();
+            }
 
             String color = event.getTags().get("color");
 
