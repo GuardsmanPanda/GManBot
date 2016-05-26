@@ -1,18 +1,16 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  *
  */
 public class GManUtility {
 
-    /**
-     * Saves text for bob to read, usually related to configuration changes needed, such as adding to the translation maps
-     * @param text The text to appeand at the end of output/TextToBob.txt
-     */
-    public static void textToBob(String text) {
-        File file = new File("output/TextToBob.txt");
+
+    public static void writeTextToFile(String text, String filePath) {
+        File file = new File(filePath);
         if (!file.exists()) {
             try {
                 boolean fileCreated = file.createNewFile();
@@ -21,11 +19,18 @@ public class GManUtility {
                 e.printStackTrace(); return;
             }
         }
-        try(FileWriter writer = new FileWriter("output/TextToBob.txt", true)) {
+        try(FileWriter writer = new FileWriter(filePath, true)) {
             writer.write(text + "\n");
         } catch (IOException e) {
-            System.out.println("Could not save text to bob: " + text);
+            System.out.println("Could not save text to: " + filePath + " - TEXT: " + text);
             e.printStackTrace();
         }
     }
+    /**
+     * Saves text for bob to read, usually related to configuration changes needed, such as adding to the translation maps
+     * @param text The text to appeand at the end of output/TextToBob.txt
+     */
+    public static void textToBob(String text) {
+        writeTextToFile(text, "output/textToBob.txt");
+     }
 }

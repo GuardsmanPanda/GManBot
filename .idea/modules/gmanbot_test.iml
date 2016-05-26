@@ -11,6 +11,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="gmanbot_main" />
     <orderEntry type="library" name="Gradle: org.pircbotx:pircbotx:2.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.1stleg:jnativehook:2.0.2" level="project" />
     <orderEntry type="library" name="Gradle: org.twitter4j:twitter4j-core:4.0.4" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.11" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.commons:commons-lang3:3.4" level="project" />

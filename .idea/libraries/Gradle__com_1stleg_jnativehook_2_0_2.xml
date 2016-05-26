@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.1stleg:jnativehook:2.0.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.1stleg/jnativehook/2.0.2/48c2bf0f820dac0f6f8a7d4a3d200de6e1cfa5e2/jnativehook-2.0.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.1stleg/jnativehook/2.0.2/4e28576407062ef3c162fe14ceea3af722ef1ef1/jnativehook-2.0.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
