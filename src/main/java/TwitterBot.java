@@ -18,8 +18,10 @@ public class TwitterBot {
     //TODO: Make const pkg to contain all constants used by program.
     private static final int MAX_TWIT_COUNT = 140; // Twitter message length
     private static final int OAUTH_ENTRIES = 8; // 4 headers for 4 tokens, 8 lines
-
+    private static Thread twitterThread;
     private static Twitter twitter;
+    private static boolean runTwitterBot = false;
+
 
     static {
         // TODO: Clean up reading of tokens
@@ -47,7 +49,9 @@ public class TwitterBot {
      * Access_Token_Secret
      * xxxxxxxxx
      *
-     * Better way of handling this?
+     * Better way of handling this? Perhaps we will make one large file containing all passwords? Be able to parse list from that.
+     *
+     * To generate your own Oauth tokens, visit http://twitter.com/oauth_clients/new
      *
      * @return Map that contains all the OAuth Tokens needed by twitter API
      */
@@ -71,6 +75,9 @@ public class TwitterBot {
                             oAuthTokenMap.put("Access_Token_Secret",listOfTokens.get(index+1));
                         }
                     }
+                    if(oAuthTokenMap.size()!= 4) {
+                        System.out.println("File did not contain 4 needed Twitter OAuth Tokens");
+                    }
                 } else {
                     System.out.println("File is not formatted correctly");
                 }
@@ -90,6 +97,22 @@ public class TwitterBot {
      */
     public static void startTwitterWatch() {
         // TODO: Thread this up
+        twitterThread = new Thread()  {
+            public void run() {
+                runTwitterBot = true;
+                while(runTwitterBot) {
+                    try {
+                        readTweets();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        twitterThread.start();
+    }
+
+    private static void readTweets(){
         // TODO: Do something more than just reading latest tweets sent to Gmanbot
         try{
             List<Status> statuses = twitter.getHomeTimeline();
@@ -98,14 +121,15 @@ public class TwitterBot {
                 System.out.println(status.getUser().getName() + ":" +
                         status.getText());
             }
-        } catch (Exception e){
+            twitterThread.sleep(10000);
+        } catch (Exception e) {
             System.out.println("Error in retrieving timeline");
         }
 
     }
 
     public static void stopTwitterWatch() {
-
+        runTwitterBot = false;
     }
 
     /**
