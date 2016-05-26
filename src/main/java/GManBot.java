@@ -3,9 +3,10 @@ import javafx.stage.Stage;
 import javafx.application.Application;
 import twitch.TwitchChat;
 
+import java.util.logging.LogManager;
+
 public class GManBot extends Application {
     public static void main(String[] args)  {
-
         try { Thread.sleep(100); } catch (InterruptedException e) { e.printStackTrace(); }
 
         System.out.println("Its Alive!");

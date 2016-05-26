@@ -15,10 +15,8 @@ public class BoblightTimeStamps implements NativeKeyListener {
     private static LocalDateTime sessionStartTime = LocalDateTime.now();
 
 
-
     public static void main(String[] args) throws InterruptedException {
         BoblightTimeStamps boblights = new BoblightTimeStamps();
-
 
         try {
             GlobalScreen.registerNativeHook();
@@ -30,10 +28,13 @@ public class BoblightTimeStamps implements NativeKeyListener {
         LogManager.getLogManager().getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.parse("OFF"));
 
         GlobalScreen.addNativeKeyListener(boblights);
-        createBoblightTimestamp("test");
-        createBoblightTimestamp("more test");
     }
 
+
+    /**
+     * TODO: Implement this method to write "date - type - stream time: " to the highlight file
+     * @param type
+     */
     public static synchronized void createBoblightTimestamp(String type) {
         if (!activeStreamSession) return;
         GManUtility.writeTextToFile(type, "output/Stream Highlights.txt");
