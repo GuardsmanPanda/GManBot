@@ -89,6 +89,11 @@ public class TwitchChat {
         bot.send().message(channel, message);
     }
 
+    public static void addListener(ListenerAdapter listener) {
+        bot.getConfiguration().getListenerManager().addListener(listener);
+    }
+
+
 
     /**
      * Loads the twitchChat Oauth token from Data/twitchchatpassword.txt
