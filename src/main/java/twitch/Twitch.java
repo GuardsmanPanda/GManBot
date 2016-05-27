@@ -1,6 +1,7 @@
 package twitch;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
@@ -21,32 +22,36 @@ public class Twitch {
     private static final HttpClient client = HttpClientBuilder.create().build();
 
     public static void main(String[] args) {
-        getCurrentGame();
+        getFollowerCount("guardsmanbobbobobo");
     }
 
-    public static String getCurrentGame() {
-        HttpGet get = new HttpGet("https://api.twitch.tv/kraken/channels/guardsmanbob");
 
-        try(InputStream input = client.execute(get).getEntity().getContent()) {
-            get.releaseConnection();
-            System.out.println(new ObjectMapper().readTree(input).get("game").asText());
-        } catch (IOException e) {
-            e.printStackTrace();
+    public synchronized static String getCurrentGame(String twitchName) {
+        JsonNode rootNode = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/channels/" + twitchName));
+        return rootNode.get("game").asText();
+    }
+
+    public synchronized static String getCurrentTitle(String twitchName) {
+        JsonNode rootNode = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/channels/" + twitchName));
+        return rootNode.get("status").asText();
+    }
+
+    /**
+     * Returns the follower count of the given channel, returns 0 if the channel does not exist.
+     * @param twitchName Name of the channel on Twitch
+     * @return
+     */
+    public synchronized static int getFollowerCount(String twitchName) {
+        JsonNode rootNode = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/channels/" + twitchName));
+
+        if (rootNode.has("error")) {
+            System.out.println("No channel found for " + twitchName);
+            return 0;
         }
-        return "";
+
+        return rootNode.get("followers").asInt();
     }
 
-    public static String getCurrentTitle() {
-        HttpGet get = new HttpGet("https://api.twitch.tv/kraken/channels/guardsmanbob");
-
-        try(InputStream input = client.execute(get).getEntity().getContent()) {
-            get.releaseConnection();
-            System.out.println(new ObjectMapper().readTree(input).get("status").asText());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
 
 
     public static void setStreamTitle() {
@@ -59,5 +64,16 @@ public class Twitch {
 
     public static void removeHost() {
 
+    }
+
+    private synchronized static JsonNode executeHttpGet(HttpGet get) {
+        try(InputStream input = client.execute(get).getEntity().getContent()) {
+            JsonNode rootNode = new ObjectMapper().readTree(input);
+            get.releaseConnection();
+            return rootNode;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
