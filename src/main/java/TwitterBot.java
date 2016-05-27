@@ -1,3 +1,4 @@
+import twitch.TwitchChat;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
@@ -18,10 +19,14 @@ public class TwitterBot {
     //TODO: Make const pkg to contain all constants used by program.
     private static final int MAX_TWIT_COUNT = 140; // Twitter message length
     private static final int OAUTH_ENTRIES = 8; // 4 headers for 4 tokens, 8 lines
-    private static Thread twitterThread;
     private static Twitter twitter;
-    private static boolean runTwitterBot = false;
-
+    private static boolean runMentionCheck = false;
+    private static boolean runBobCheck = false;
+    private static Status lastTweetToMe = null;
+    private static Status lastTweetByMe = null;
+    private static final int SECONDS = 1000;
+    private static final int MINUTES = SECONDS*60;
+    private static final int HOURS = MINUTES*60;
 
     static {
         // TODO: Clean up reading of tokens
@@ -91,59 +96,20 @@ public class TwitterBot {
         return oAuthTokenMap;
     }
 
-
     /**
-     * Start watching @guardsmanbob on twitter and alert in chat when new tweets emerge
-     */
-    public static void startTwitterWatch() {
-        // TODO: Thread this up
-        twitterThread = new Thread()  {
-            public void run() {
-                runTwitterBot = true;
-                while(runTwitterBot) {
-                    try {
-                        readTweets();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        twitterThread.start();
-    }
-
-    private static void readTweets(){
-        // TODO: Do something more than just reading latest tweets sent to Gmanbot
-        try{
-            List<Status> statuses = twitter.getHomeTimeline();
-            System.out.println("Showing home timeline.");
-            for (Status status : statuses) {
-                System.out.println(status.getUser().getName() + ":" +
-                        status.getText());
-            }
-            twitterThread.sleep(10000);
-        } catch (Exception e) {
-            System.out.println("Error in retrieving timeline");
-        }
-
-    }
-
-    public static void stopTwitterWatch() {
-        runTwitterBot = false;
-    }
-
-    /**
-     * @param tweet
+     * Allows other methods to generate a tweet
+     *
+     * @param tweet: 140 character limit of message to post to Twitter
      */
     public static void sendTweet(String tweet) {
         try {
             // TODO: Do some more sanitizing of inputs besides length
             if (tweet.length() < MAX_TWIT_COUNT) {
-                twitter.updateStatus(tweet);
+                lastTweetByMe = twitter.updateStatus(tweet);
                 System.out.println("Sent new tweet: " + tweet.toString());
-             } else {
+            } else {
                 System.out.println("We've got an error, " + tweet.toString() +
-                    " is " +(tweet.length()-MAX_TWIT_COUNT) +" characters too long");
+                        " is " +(tweet.length()-MAX_TWIT_COUNT) +" characters too long");
             }
 
         } catch(Exception e){
@@ -154,6 +120,7 @@ public class TwitterBot {
 
     /**
      * I'm envisioning this to be called to send private messages to users, winners of something?
+     * //TODO:
      */
     public static void sendDirectMessage(String tweet){
 
@@ -161,10 +128,153 @@ public class TwitterBot {
 
     /**
      * Perhaps a way for users to interact with Gmanbot?
+     * //TODO:
      * @param user
      */
     public static ResponseList<DirectMessage> getDirectMessageFromUser(String user){
 
         return null;
+    }
+
+
+
+    /**
+     * Start watching @guardsmanbob on twitter and alert in chat when new tweets emerge
+     */
+    public static void startTwitterWatch() {
+
+        Thread mentionThread = new Thread()  {
+            public void run() {
+                runMentionCheck = true;
+                while(runMentionCheck) {
+                    try {
+                        readTweetsToUser();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        mentionThread.start();
+    }
+
+    /**
+     * Stop reading mentions of @guardsmanbob.
+     */
+    public static void stopTwitterWatch() {
+        runMentionCheck = false;
+    }
+
+    /**
+     * Start thread that starts checking for tweets sent by Bob
+     */
+    public static void startBobWatch() {
+        Thread bobThread = new Thread()  {
+            public void run() {
+                runBobCheck = true;
+                while (runBobCheck) {
+                    try {
+                        readTweetsByUser();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        bobThread.start();
+    }
+
+    /**
+     * Stops checking for new tweets by Bob.
+     */
+    public static void stopBobWatch(){
+        runBobCheck = false;
+    }
+
+
+
+    //--------------------------- Helper Functions ------------------------------------------
+
+    /**
+     * Reads a list of tweets that include username, and perform action if a new one has been received.
+     *
+     * // TODO: Do something more than just reading latest tweets sent to Gmanbot
+     */
+    private static void readTweetsToUser() {
+
+        try{
+            List<Status> statuses = twitter.getUserTimeline();
+
+            checkLatestTweet(statuses.get(0), "mention");
+
+            /** Debug code to show list of last mentions.
+            System.out.println("Showing mentions.");
+            for (Status status : statuses) {
+                System.out.println(status.getUser().getName() + ":" +
+                        status.getText());
+            }
+            */
+            Thread.currentThread().sleep(60*SECONDS);
+        } catch (Exception e) {
+            System.out.println("Error in retrieving mention timeline");
+            try {
+                Thread.currentThread().sleep(60*SECONDS);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+        }
+
+    }
+
+    /**
+     * Helper function to read tweets made by Bob
+     */
+    private static void readTweetsByUser() {
+        try {
+            List<Status> status = twitter.getUserTimeline();
+
+            checkLatestTweet(status.get(0),"user");
+
+            Thread.currentThread().sleep(60*SECONDS);
+
+            TwitchChat.sendMessage("New Tweet by " + status.get(0).getUser().getName() + ": "+ status.get(0).getText());
+
+        } catch (Exception e){
+            System.out.println("Error in reading user timeline");
+            try {
+                Thread.currentThread().sleep(60*SECONDS);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Helper method to determine whether a new tweet has been made.
+     * @param newTweet the newest tweet in the list
+     * @return true if there is a new tweet, false otherwise.
+     */
+    private static boolean checkLatestTweet(Status newTweet, String type){
+        // If we get a new tweet (i.e. not the same user or same text as last read), perform action
+        if(type.equals("mention")){
+            if(lastTweetToMe == null){
+                lastTweetToMe = newTweet;
+                return true;
+            }
+            else if(!(lastTweetToMe.getText().equals(newTweet.getText())) && (lastTweetToMe.getUser().getName().equals(newTweet.getUser().getName()))) {
+                lastTweetToMe = newTweet;
+                return true;
+            }
+        } else if (type.equals("user")){
+            if(lastTweetByMe == null){
+                lastTweetByMe = newTweet;
+                return true;
+            }
+            else if(!(lastTweetByMe.getText().equals(newTweet.getText())) && (lastTweetByMe.getUser().getName().equals(newTweet.getUser().getName()))) {
+                lastTweetByMe = newTweet;
+                return true;
+            }
+        }
+        return false;
     }
 }
