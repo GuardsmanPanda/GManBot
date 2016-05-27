@@ -14,11 +14,17 @@ import org.pircbotx.hooks.events.PrivateMessageEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.LinkedList;
 
 public class TwitchChat {
     private static boolean connected = false;
     private static final PircBotX bot;
     private static final String channel = "#guardsmanbob";
+    private static final LinkedList<ChatListener> listeners = new LinkedList<>();
+
+    public interface ChatListener {
+        public void onMessage(String message);
+    }
 
     // Configure bot
     static {
@@ -35,6 +41,21 @@ public class TwitchChat {
                 .buildForServer("irc.chat.twitch.tv", 6667, getPassword());
         bot = new PircBotX(config);
     }
+
+    public static void addListener(ChatListener listener) {
+        listeners.add(listener);
+    }
+
+    public static void removeListener(ChatListener listener) {
+        listeners.remove(listener);
+    }
+
+    private static void notifyListeners(String message) {
+        for(ChatListener l : listeners) {
+            l.onMessage(message);
+        }
+    }
+
 
     /**
      * Attempts to connect to the chat server, this may take several seconds so this method should be called before
@@ -113,7 +134,15 @@ public class TwitchChat {
 
             String color = event.getTags().get("color");
 
-            System.out.println(event.getChannel().getName() + " " + color + " <" + displayName + "> " + event.getMessage());
+            String message = String.format("%s %s <%s> %s",
+                    event.getChannel().getName(),
+                    color,
+                    displayName,
+                    event.getMessage()
+                );
+
+            System.out.println(message);
+            notifyListeners(message);
         }
 
         @Override

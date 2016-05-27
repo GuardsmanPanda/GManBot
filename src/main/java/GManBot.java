@@ -1,4 +1,3 @@
-import UI.MainWindow;
 import javafx.stage.Stage;
 import javafx.application.Application;
 import twitch.TwitchChat;

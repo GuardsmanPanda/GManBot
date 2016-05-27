@@ -20,7 +20,7 @@ public class MainWindow {
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         ObservableList<Tab> tabs = tabPane.getTabs();
 
-        tabs.add(makeBotTab());
+        tabs.add(makeChatTab());
         tabs.add(makeTwitterTab());
 
         Scene scene = new Scene(tabPane, 300, 250);
@@ -29,20 +29,18 @@ public class MainWindow {
         stage.show();
     }
 
-    static private Tab makeBotTab() {
+    static private Tab makeChatTab() {
         Tab tab = new Tab();
-        tab.setText("Bot");
-
+        tab.setText("Chat");
 
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
+        grid.setVgap(10);
 
-        Button sendMessageButton = new Button();
+        Button sendMessageButton = new Button("Send");
         sendMessageButton.setOnAction(ActionEvent -> sendMessage());
-        sendMessageButton.setText("Send");
 
         messageInput.setPromptText("Chat message");
-
         messageInput.setOnKeyPressed(event -> {
             if(event.getCode() == KeyCode.ENTER) {
                 sendMessage();
@@ -53,7 +51,11 @@ public class MainWindow {
         hbox.getChildren().addAll(messageInput, sendMessageButton);
         hbox.setSpacing(10);
 
+        Button chatOverlayButton = new Button("Toggle Chat Overlay");
+        chatOverlayButton.setOnAction(ActionEvent -> ChatOverlay.toggle());
+
         grid.add(hbox, 0, 0);
+        grid.add(chatOverlayButton, 0, 1);
 
         tab.setContent(grid);
 
