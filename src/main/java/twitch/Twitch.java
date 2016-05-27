@@ -1,19 +1,14 @@
 package twitch;
 
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
-import org.apache.commons.lang3.CharSet;
+
 import org.apache.hc.client5.http.impl.sync.HttpClientBuilder;
 import org.apache.hc.client5.http.methods.HttpGet;
 import org.apache.hc.client5.http.sync.HttpClient;
-import sun.misc.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  * For interacting with the Twitch API
@@ -67,6 +62,7 @@ public class Twitch {
     }
 
     private synchronized static JsonNode executeHttpGet(HttpGet get) {
+        get.addHeader("Client-ID", "affm09r2tf22mjgm3pw46wvjhgf9bkz");
         try(InputStream input = client.execute(get).getEntity().getContent()) {
             JsonNode rootNode = new ObjectMapper().readTree(input);
             get.releaseConnection();
