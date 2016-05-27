@@ -15,6 +15,20 @@ import java.util.Map;
  * Class responsible for posting in chat when a new tweet is made
  * Additional functionality for sending tweets directly from chat or UI should be considered
  */
+
+/**
+ * Usage of this class: Upon startup, initialization is started by reading a separate file that contains OAuth tokens.
+ *
+ * Other classes can interact with Twitter with the following functions:
+ *
+ * sendTweet(String): Updates the status as provided by initiator
+ *
+ * startTwitterWatch/endTwitterWatch(): Starts/Stops the thread that monitors any tweet that includes mention of user
+ * (i.e. contains the phrase @guardsmanbob)
+ *
+ * startBobWatch/endBobWatch(): Starts/stops the thread that monitors any tweet that is sent by @guardsmanbob
+ */
+
 public class TwitterBot {
     //TODO: Make const pkg to contain all constants used by program.
     private static final int MAX_TWIT_COUNT = 140; // Twitter message length
@@ -39,61 +53,6 @@ public class TwitterBot {
                 .setOAuthAccessTokenSecret(tokens.get("Access_Token_Secret"));
         TwitterFactory tf = new TwitterFactory(cb.build());
         twitter = tf.getInstance();
-    }
-
-    /**
-     * Reads a formatted text file that contains oauth tokens for Twitter API. Hides it from view of other people.
-     *
-     * TODO: Currently have to read a file in the following format
-     * Consumer_Key
-     * xxxxxxxxx
-     * Consumer_Secret
-     * xxxxxxxxx
-     * Access_Token
-     * xxxxxxxxxx
-     * Access_Token_Secret
-     * xxxxxxxxx
-     *
-     * Better way of handling this? Perhaps we will make one large file containing all passwords? Be able to parse list from that.
-     *
-     * To generate your own Oauth tokens, visit http://twitter.com/oauth_clients/new
-     *
-     * @return Map that contains all the OAuth Tokens needed by twitter API
-     */
-    private static Map<String,String> getTwitOAuth(){
-        File oAuthTokens = new File("Data/Twitter_OAuth.txt");
-        Map<String, String> oAuthTokenMap = new HashMap<>();
-        List<String> listOfTokens;
-
-        if (oAuthTokens.exists()) {
-            try {
-                listOfTokens = Files.readLines(oAuthTokens,Charset.defaultCharset());
-                if(listOfTokens.size() == OAUTH_ENTRIES) {
-                    for (int index = 0; index < listOfTokens.size(); index = index + 2) {
-                        if(listOfTokens.get(index).equals("Consumer_Key")){
-                            oAuthTokenMap.put("Consumer_Key",listOfTokens.get(index+1));
-                        } else if(listOfTokens.get(index).equals("Consumer_Secret")) {
-                            oAuthTokenMap.put("Consumer_Secret",listOfTokens.get(index+1));
-                        } else if(listOfTokens.get(index).equals("Access_Token")) {
-                            oAuthTokenMap.put("Access_Token",listOfTokens.get(index+1));
-                        } else if(listOfTokens.get(index).equals("Access_Token_Secret")){
-                            oAuthTokenMap.put("Access_Token_Secret",listOfTokens.get(index+1));
-                        }
-                    }
-                    if(oAuthTokenMap.size()!= 4) {
-                        System.out.println("File did not contain 4 needed Twitter OAuth Tokens");
-                    }
-                } else {
-                    System.out.println("File is not formatted correctly");
-                }
-            } catch (IOException e) {
-                System.out.println("Error when attempting to read the Twitter_OAuth text file!");
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("OAuth Tokens must be located in Data/Twitter_OAuth.txt");
-        }
-        return oAuthTokenMap;
     }
 
     /**
@@ -136,12 +95,11 @@ public class TwitterBot {
         return null;
     }
 
-
-
     /**
      * Start watching @guardsmanbob on twitter and alert in chat when new tweets emerge
      */
     public static void startTwitterWatch() {
+        // TODO: Add checks to make sure only one thread can be created.
 
         Thread mentionThread = new Thread()  {
             public void run() {
@@ -169,6 +127,7 @@ public class TwitterBot {
      * Start thread that starts checking for tweets sent by Bob
      */
     public static void startBobWatch() {
+        // TODO: Add checks to make sure only one thread can be created.
         Thread bobThread = new Thread()  {
             public void run() {
                 runBobCheck = true;
@@ -277,4 +236,60 @@ public class TwitterBot {
         }
         return false;
     }
+
+    /**
+     * Reads a formatted text file that contains oauth tokens for Twitter API. Hides it from view of other people.
+     *
+     * TODO: Currently have to read a file in the following format
+     * Consumer_Key
+     * xxxxxxxxx
+     * Consumer_Secret
+     * xxxxxxxxx
+     * Access_Token
+     * xxxxxxxxxx
+     * Access_Token_Secret
+     * xxxxxxxxx
+     *
+     * Better way of handling this? Perhaps we will make one large file containing all passwords? Be able to parse list from that.
+     *
+     * To generate your own Oauth tokens, visit http://twitter.com/oauth_clients/new
+     *
+     * @return Map that contains all the OAuth Tokens needed by twitter API
+     */
+    private static Map<String,String> getTwitOAuth(){
+        File oAuthTokens = new File("Data/Twitter_OAuth.txt");
+        Map<String, String> oAuthTokenMap = new HashMap<>();
+        List<String> listOfTokens;
+
+        if (oAuthTokens.exists()) {
+            try {
+                listOfTokens = Files.readLines(oAuthTokens,Charset.defaultCharset());
+                if(listOfTokens.size() == OAUTH_ENTRIES) {
+                    for (int index = 0; index < listOfTokens.size(); index = index + 2) {
+                        if(listOfTokens.get(index).equals("Consumer_Key")){
+                            oAuthTokenMap.put("Consumer_Key",listOfTokens.get(index+1));
+                        } else if(listOfTokens.get(index).equals("Consumer_Secret")) {
+                            oAuthTokenMap.put("Consumer_Secret",listOfTokens.get(index+1));
+                        } else if(listOfTokens.get(index).equals("Access_Token")) {
+                            oAuthTokenMap.put("Access_Token",listOfTokens.get(index+1));
+                        } else if(listOfTokens.get(index).equals("Access_Token_Secret")){
+                            oAuthTokenMap.put("Access_Token_Secret",listOfTokens.get(index+1));
+                        }
+                    }
+                    if(oAuthTokenMap.size()!= 4) {
+                        System.out.println("File did not contain 4 needed Twitter OAuth Tokens");
+                    }
+                } else {
+                    System.out.println("File is not formatted correctly");
+                }
+            } catch (IOException e) {
+                System.out.println("Error when attempting to read the Twitter_OAuth text file!");
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("OAuth Tokens must be located in Data/Twitter_OAuth.txt");
+        }
+        return oAuthTokenMap;
+    }
+
 }
