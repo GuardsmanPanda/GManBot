@@ -14,17 +14,11 @@ import org.pircbotx.hooks.events.PrivateMessageEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.LinkedList;
 
 public class TwitchChat {
     private static boolean connected = false;
     private static final PircBotX bot;
     private static final String channel = "#guardsmanbob";
-    private static final LinkedList<ChatListener> listeners = new LinkedList<>();
-
-    public interface ChatListener {
-        public void onMessage(String message);
-    }
 
     // Configure bot
     static {
@@ -40,20 +34,6 @@ public class TwitchChat {
                 .addAutoJoinChannel(channel)
                 .buildForServer("irc.chat.twitch.tv", 6667, getPassword());
         bot = new PircBotX(config);
-    }
-
-    public static void addListener(ChatListener listener) {
-        listeners.add(listener);
-    }
-
-    public static void removeListener(ChatListener listener) {
-        listeners.remove(listener);
-    }
-
-    private static void notifyListeners(String message) {
-        for(ChatListener l : listeners) {
-            l.onMessage(message);
-        }
     }
 
 
@@ -91,6 +71,10 @@ public class TwitchChat {
 
     public static void addListener(ListenerAdapter listener) {
         bot.getConfiguration().getListenerManager().addListener(listener);
+    }
+
+    public static void removeListener(ListenerAdapter listener) {
+        bot.getConfiguration().getListenerManager().removeListener(listener);
     }
 
 
@@ -147,7 +131,6 @@ public class TwitchChat {
                 );
 
             System.out.println(message);
-            notifyListeners(message);
         }
 
         @Override

@@ -3,6 +3,8 @@ package UI;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
+import org.pircbotx.hooks.ListenerAdapter;
+import org.pircbotx.hooks.events.MessageEvent;
 import twitch.TwitchChat;
 
 public class ChatOverlay {
@@ -10,9 +12,11 @@ public class ChatOverlay {
     private static TextArea textArea = new TextArea();
     private static Boolean initialized = false;
 
-    private static TwitchChat.ChatListener listener = new TwitchChat.ChatListener() {
-        public void onMessage(String message) {
-            textArea.appendText(message + "\n");
+    private static ListenerAdapter listener = new ListenerAdapter() {
+        public void onMessage(MessageEvent event) {
+            String text = event.getMessage();
+            String name = event.getUser().getNick();
+            textArea.appendText(String.format("%s: %s\n", name, text));
         }
     };
 
