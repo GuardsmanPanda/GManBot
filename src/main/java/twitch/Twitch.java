@@ -73,11 +73,13 @@ public class Twitch {
 
             //check for errors
             if (rootNode.has("error")) {
+                if (rootNode.get("error").asText().equalsIgnoreCase("Not Found")) return rootNode;
                 System.out.println("Error encountered sending GET request tot he twitch api");
                 System.out.println(rootNode.toString());
             }
             return rootNode;
         } catch (IOException e) {
+            //TODO: in case of IO error we really should return an empty node with a simple error entry instead
             e.printStackTrace();
         }
         return null;

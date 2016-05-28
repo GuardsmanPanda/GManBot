@@ -35,7 +35,7 @@ public class HostSelector extends ListenerAdapter {
         isActive = true;
         new Thread(() -> {
             TwitchChat.sendMessage("Starting the Host Selector");
-            TwitchChat.sendMessage("You can know vote on which stream to host by typing !host streamNameHere");
+            TwitchChat.sendMessage("You can now vote on which stream to host by typing !host streamNameHere");
 
             try { Thread.sleep(60000); } catch (InterruptedException e) { e.printStackTrace(); }
 
@@ -43,6 +43,9 @@ public class HostSelector extends ListenerAdapter {
             Multiset<String> channels = ImmutableMultiset.copyOf(streamVotes.values());
             TwitchChat.sendMessage(GManUtility.getMultisetLeaderText(channels, 3));
 
+            try { Thread.sleep(30000); } catch (InterruptedException e) { e.printStackTrace(); }
+            String winningStream = GManUtility.getElementWithHighestCount(channels);
+            TwitchChat.sendMessage("bobHype with " + channels.count(winningStream) + " votes " + winningStream + " was chosen to be hosted!");
         }).start();
     }
 

@@ -19,7 +19,7 @@ public class GManUtility {
     public static String getMultisetLeaderText(Multiset<String> multiSet, int numberOfLeaders) {
         String returnText = "";
         int entryNumber = 1;
-        for (String s : Multisets.copyHighestCountFirst(multiSet)) {
+        for (String s : Multisets.copyHighestCountFirst(multiSet).elementSet()) {
             if (entryNumber != 1) returnText += ", ";
             returnText += s + " " + multiSet.count(s);
             if (entryNumber == numberOfLeaders) break;
