@@ -1,4 +1,4 @@
-package UI;
+package ui;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -14,7 +14,7 @@ public class MainWindow {
     private static TextField messageInput = new TextField();
 
     public static void launch(Stage stage) {
-        stage.setTitle("World's second worst UI");
+        stage.setTitle("World's second worst ui");
 
         TabPane tabPane = new TabPane();
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);

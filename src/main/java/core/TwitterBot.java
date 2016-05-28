@@ -1,3 +1,5 @@
+package core;
+
 import twitch.TwitchChat;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
@@ -13,7 +15,7 @@ import java.util.Map;
 
 /**
  * Class responsible for posting in chat when a new tweet is made
- * Additional functionality for sending tweets directly from chat or UI should be considered
+ * Additional functionality for sending tweets directly from chat or ui should be considered
  */
 
 /**

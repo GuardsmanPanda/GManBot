@@ -1,4 +1,4 @@
-package UI;
+package ui;
 
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;

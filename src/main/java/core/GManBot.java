@@ -1,8 +1,8 @@
+package core;
+
 import javafx.stage.Stage;
 import javafx.application.Application;
 import twitch.TwitchChat;
-
-import java.util.logging.LogManager;
 
 public class GManBot extends Application {
     public static void main(String[] args)  {
@@ -19,6 +19,6 @@ public class GManBot extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        UI.MainWindow.launch(primaryStage);
+        ui.MainWindow.launch(primaryStage);
     }
 }

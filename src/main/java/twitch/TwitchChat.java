@@ -115,6 +115,7 @@ public class TwitchChat {
 
         @Override
         public void onMessage(MessageEvent event) throws Exception {
+            /*
             String displayName = event.getTags().get("display-name");
             if (displayName.isEmpty()) {
                 System.out.println("empty display name for message - " + event.getTags().toString() + " - nick: " + event.getUser().getNick());
@@ -131,6 +132,7 @@ public class TwitchChat {
                 );
 
             System.out.println(message);
+            */
         }
 
         @Override

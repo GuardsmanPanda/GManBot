@@ -39,12 +39,16 @@ public class Twitch {
     public synchronized static int getFollowerCount(String twitchName) {
         JsonNode rootNode = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/channels/" + twitchName));
 
-        if (rootNode.has("error")) {
-            System.out.println("No channel found for " + twitchName);
+        if (rootNode.has("followers")) return rootNode.get("followers").asInt();
+        else if (rootNode.has("error")) {
+            //If the channel does not exist, return 0
             return 0;
         }
-
-        return rootNode.get("followers").asInt();
+        else {
+            //Twitch API reply was not what was expected.
+            System.out.println("Unexpected API reply when trying to get follower count for: " + twitchName);
+            return 0;
+        }
     }
 
 
@@ -66,6 +70,12 @@ public class Twitch {
         try(InputStream input = client.execute(get).getEntity().getContent()) {
             JsonNode rootNode = new ObjectMapper().readTree(input);
             get.releaseConnection();
+
+            //check for errors
+            if (rootNode.has("error")) {
+                System.out.println("Error encountered sending GET request tot he twitch api");
+                System.out.println(rootNode.toString());
+            }
             return rootNode;
         } catch (IOException e) {
             e.printStackTrace();
