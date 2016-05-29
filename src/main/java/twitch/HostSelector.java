@@ -23,6 +23,7 @@ public class HostSelector extends ListenerAdapter {
 
     private static final ConcurrentHashMap<String, Boolean> streamViability = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, String> streamVotes = new ConcurrentHashMap<>();
+    private static boolean isActivelyVoting = false;
     private static boolean isActive = false;
 
 
@@ -31,25 +32,37 @@ public class HostSelector extends ListenerAdapter {
         TwitchChat.addListener(new HostSelector());
     }
 
-    public static void startHostSelector() {
+    public synchronized static void startHostSelector() {
+        if (isActivelyVoting) return;
         isActive = true;
+        isActivelyVoting = true;
+        streamVotes.clear();
+
         new Thread(() -> {
             TwitchChat.sendMessage("Starting the Host Selector");
             TwitchChat.sendMessage("You can now vote on which stream to host by typing !host streamNameHere");
 
-            try { Thread.sleep(60000); } catch (InterruptedException e) { e.printStackTrace(); }
+            try { Thread.sleep(100000); } catch (InterruptedException e) { e.printStackTrace(); }
 
-            TwitchChat.sendMessage("bobHype 30 seconds left to vote for a stream to Host, most voted streams:");
-            Multiset<String> channels = ImmutableMultiset.copyOf(streamVotes.values());
-            TwitchChat.sendMessage(GManUtility.getMultisetLeaderText(channels, 3));
+            if (streamVotes.size() > 5) {
+                TwitchChat.sendMessage("bobHype 40 seconds left to vote for a stream to Host, most voted streams:");
+                Multiset<String> channels = ImmutableMultiset.copyOf(streamVotes.values());
+                TwitchChat.sendMessage(GManUtility.getMultisetLeaderText(channels, 3));
 
-            try { Thread.sleep(30000); } catch (InterruptedException e) { e.printStackTrace(); }
-            String winningStream = GManUtility.getElementWithHighestCount(channels);
-            TwitchChat.sendMessage("bobHype with " + channels.count(winningStream) + " votes " + winningStream + " was chosen to be hosted!");
+                try { Thread.sleep(40000); } catch (InterruptedException e) { e.printStackTrace(); }
+
+                String winningStream = GManUtility.getElementWithHighestCount(channels);
+                TwitchChat.sendMessage("bobHype with " + channels.count(winningStream) + " votes " + winningStream + " was chosen to be hosted!");
+                TwitchChat.sendMessage("/Host " + winningStream);
+            } else {
+                TwitchChat.sendMessage("Stream Host Voting, must have at least 6 votes");
+            }
+            isActivelyVoting = false;
         }).start();
     }
 
     public static void changeHost() {
+        if (isActivelyVoting) return;
         TwitchChat.sendMessage("Starting vote for new Stream to Host");
     }
 
