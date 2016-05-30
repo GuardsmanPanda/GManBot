@@ -17,9 +17,17 @@ public class Twitch {
     private static final HttpClient client = HttpClientBuilder.create().build();
 
     public static void main(String[] args) {
-        getFollowerCount("guardsmanbobbobobo");
+        System.out.println(isStreamOnline("thistreamdoesntexist3242rw3rwfsefsefsefsefwefqwerrqwe"));
     }
 
+    public synchronized static boolean isStreamOnline(String twitchName) {
+        JsonNode root = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/streams/" + twitchName));
+        if (root.has("stream") && !root.get("stream").isNull()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public synchronized static String getCurrentGame(String twitchName) {
         JsonNode rootNode = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/channels/" + twitchName));

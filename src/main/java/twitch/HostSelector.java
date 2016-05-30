@@ -1,17 +1,12 @@
 package twitch;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMultiset;
-import com.google.common.collect.ImmutableSortedMultiset;
 import com.google.common.collect.Multiset;
-import com.google.common.collect.Multisets;
 import core.GManUtility;
 import org.apache.commons.lang3.StringUtils;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -42,7 +37,12 @@ public class HostSelector extends ListenerAdapter {
             TwitchChat.sendMessage("Starting the Host Selector");
             TwitchChat.sendMessage("You can now vote on which stream to host by typing !host streamNameHere");
 
-            try { Thread.sleep(100000); } catch (InterruptedException e) { e.printStackTrace(); }
+            try { Thread.sleep(60000); } catch (InterruptedException e) { e.printStackTrace(); }
+
+            if (streamVotes.size() <= 5) {
+                TwitchChat.sendMessage("There must be at least 6 vote to select a new stream to Host, current votes: " + streamVotes.size() + ". Type !host streamNameHere to vote for a stream.");
+                try { Thread.sleep(30000); } catch (InterruptedException e) { e.printStackTrace(); }
+            }
 
             if (streamVotes.size() > 5) {
                 TwitchChat.sendMessage("bobHype 40 seconds left to vote for a stream to Host, most voted streams:");
@@ -55,7 +55,7 @@ public class HostSelector extends ListenerAdapter {
                 TwitchChat.sendMessage("bobHype with " + channels.count(winningStream) + " votes " + winningStream + " was chosen to be hosted!");
                 TwitchChat.sendMessage("/Host " + winningStream);
             } else {
-                TwitchChat.sendMessage("Stream Host Voting, must have at least 6 votes");
+                TwitchChat.sendMessage("Stream Host Voting ended, not enough votes");
             }
             isActivelyVoting = false;
         }).start();
@@ -63,7 +63,7 @@ public class HostSelector extends ListenerAdapter {
 
     public static void changeHost() {
         if (isActivelyVoting) return;
-        TwitchChat.sendMessage("Starting vote for new Stream to Host");
+        startHostSelector();
     }
 
     public static void stopHostSelector() {
@@ -72,12 +72,13 @@ public class HostSelector extends ListenerAdapter {
         isActive = false;
     }
 
+    //TODO: introduce !votestarthost.. !votechangehost and !votestophost
     @Override
     public void onMessage(MessageEvent event) throws Exception {
         String message = event.getMessage().toLowerCase();
 
         if (event.getTags().containsKey("mod") && event.getTags().get("mod").equalsIgnoreCase("1")) {
-            if (message.startsWith("!starthost") && !isActive) startHostSelector();
+            if      (message.startsWith("!starthost") && !isActive) startHostSelector();
             else if (message.startsWith("!stophost") && isActive) stopHostSelector();
             else if (message.startsWith("!changehost") && isActive) changeHost();
         }
@@ -86,18 +87,16 @@ public class HostSelector extends ListenerAdapter {
             String sender = event.getUser().getNick().toLowerCase();
             String content = StringUtils.substringAfter(message, " ");
             boolean isViable = false;
-            System.out.println("stream vote! " + sender + ", " + content);
 
             if (streamViability.containsKey(content)) isViable = streamViability.get(content);
-                //TODO: add stream online check
-            else if (Twitch.getFollowerCount(content) > MINIMUMFOLLOWERS) {
-                System.out.println("stream found viable by lookup");
+            else if (Twitch.getFollowerCount(content) > MINIMUMFOLLOWERS && Twitch.isStreamOnline(content)) {
+                System.out.println("stream " + content + "found viable by lookup");
                 isViable = true;
                 streamViability.put(content, true);
             } else {
                 streamViability.put(content, false);
+                System.out.println("stream " + content + "found NOT viable by lookup");
             }
-            System.out.println("Stream viability: " + isViable);
 
             if (isViable) {
                 streamVotes.put(sender, content);
