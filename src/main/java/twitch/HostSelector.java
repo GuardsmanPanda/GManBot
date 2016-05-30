@@ -2,7 +2,7 @@ package twitch;
 
 import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.Multiset;
-import core.GManUtility;
+import core.GBUtility;
 import org.apache.commons.lang3.StringUtils;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
@@ -47,11 +47,11 @@ public class HostSelector extends ListenerAdapter {
             if (streamVotes.size() > 5) {
                 TwitchChat.sendMessage("bobHype 40 seconds left to vote for a stream to Host, most voted streams:");
                 Multiset<String> channels = ImmutableMultiset.copyOf(streamVotes.values());
-                TwitchChat.sendMessage(GManUtility.getMultisetLeaderText(channels, 3));
+                TwitchChat.sendMessage(GBUtility.getMultisetLeaderText(channels, 3));
 
                 try { Thread.sleep(40000); } catch (InterruptedException e) { e.printStackTrace(); }
 
-                String winningStream = GManUtility.getElementWithHighestCount(channels);
+                String winningStream = GBUtility.getElementWithHighestCount(channels);
                 TwitchChat.sendMessage("bobHype with " + channels.count(winningStream) + " votes " + winningStream + " was chosen to be hosted!");
                 TwitchChat.sendMessage("/Host " + winningStream);
             } else {
@@ -75,6 +75,7 @@ public class HostSelector extends ListenerAdapter {
     //TODO: introduce !votestarthost.. !votechangehost and !votestophost
     @Override
     public void onMessage(MessageEvent event) throws Exception {
+        if (event.getUser().getNick().equalsIgnoreCase("gmanbot")) return;
         String message = event.getMessage().toLowerCase();
 
         if (event.getTags().containsKey("mod") && event.getTags().get("mod").equalsIgnoreCase("1")) {
@@ -90,12 +91,12 @@ public class HostSelector extends ListenerAdapter {
 
             if (streamViability.containsKey(content)) isViable = streamViability.get(content);
             else if (Twitch.getFollowerCount(content) > MINIMUMFOLLOWERS && Twitch.isStreamOnline(content)) {
-                System.out.println("stream " + content + "found viable by lookup");
+                System.out.println("stream " + content + " found viable by lookup");
                 isViable = true;
                 streamViability.put(content, true);
             } else {
                 streamViability.put(content, false);
-                System.out.println("stream " + content + "found NOT viable by lookup");
+                System.out.println("stream " + content + " found NOT viable by lookup");
             }
 
             if (isViable) {

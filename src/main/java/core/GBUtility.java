@@ -10,7 +10,7 @@ import java.nio.file.Path;
 /**
  *
  */
-public class GManUtility {
+public class GBUtility {
 
     public static <E> E getElementWithHighestCount(Multiset<E> multiSet) {
         return Multisets.copyHighestCountFirst(multiSet).iterator().next();
