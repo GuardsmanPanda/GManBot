@@ -34,6 +34,7 @@ import java.util.Map;
 public class TwitterBot {
     //TODO: Make const pkg to contain all constants used by program.
     private static final int MAX_TWIT_COUNT = 140; // Twitter message length
+    private static final int MAX_DM_COUNT = 10000; // Direct message length
     private static final int OAUTH_ENTRIES = 8; // 4 headers for 4 tokens, 8 lines
     private static Twitter twitter;
     private static boolean runMentionCheck = false;
@@ -81,10 +82,19 @@ public class TwitterBot {
 
     /**
      * I'm envisioning this to be called to send private messages to users, winners of something?
-     * //TODO:
      */
-    public static void sendDirectMessage(String tweet){
-
+    public static void sendDirectMessage(String receiver,String tweet){
+            try {
+                if(tweet.length()<MAX_DM_COUNT) {
+                    twitter.sendDirectMessage(receiver, tweet);
+                    System.out.println("Sent private message: " + tweet +" to user: "+receiver);
+                }else{
+                    System.out.println("We've got an error, " + tweet +" is "
+                            +(tweet.length()-MAX_TWIT_COUNT) +" characters too long");
+                }
+            } catch (TwitterException e) {
+                System.out.println(e.getMessage());
+            }
     }
 
     /**
@@ -101,7 +111,6 @@ public class TwitterBot {
      * Start watching @guardsmanbob on twitter and alert in chat when new tweets emerge
      */
     public static void startTwitterWatch() {
-        // TODO: Add checks to make sure only one thread can be created.
 
         Thread mentionThread = new Thread()  {
             public void run() {
@@ -115,7 +124,12 @@ public class TwitterBot {
                 }
             }
         };
-        mentionThread.start();
+        /**
+         * makes sure the Thread isn't already running
+         */
+        if(!mentionThread.isAlive()) {
+            mentionThread.start();
+        }
     }
 
     /**
@@ -129,7 +143,6 @@ public class TwitterBot {
      * Start thread that starts checking for tweets sent by Bob
      */
     public static void startBobWatch() {
-        // TODO: Add checks to make sure only one thread can be created.
         Thread bobThread = new Thread()  {
             public void run() {
                 runBobCheck = true;
@@ -142,7 +155,12 @@ public class TwitterBot {
                 }
             }
         };
-        bobThread.start();
+        /**
+         * makes sure the Thread isn't already running
+         */
+        if(!bobThread.isAlive()) {
+            bobThread.start();
+        }
     }
 
     /**
