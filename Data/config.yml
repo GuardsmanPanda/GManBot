@@ -1,0 +1,4 @@
+modules: 
+   twitter: 
+      MAX_DM_COUNT: 10000
+      MAX_TWIT_COUNT: 140
