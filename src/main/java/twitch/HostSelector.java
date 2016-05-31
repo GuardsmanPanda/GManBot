@@ -14,13 +14,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * voting for a stream to host will be done by typing !host twitchNameHere
  */
 public class HostSelector extends ListenerAdapter {
-    private int MINIMUMFOLLOWERS = 100;
+    private static int MAXTIMETOWAITINSECONDS = 300;
+    private static int MINIMUMFOLLOWERS = 100;
+    private static int MINVOTESNEEDED = 6;
+    private static boolean watchingStream = false;
 
     private static final ConcurrentHashMap<String, Boolean> streamViability = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, String> streamVotes = new ConcurrentHashMap<>();
     private static boolean isActivelyVoting = false;
     private static boolean isActive = false;
-
 
     public static void main(String[] args) {
         TwitchChat.connect();
@@ -32,28 +34,30 @@ public class HostSelector extends ListenerAdapter {
         isActive = true;
         isActivelyVoting = true;
         streamVotes.clear();
+        stopStreamWatch();
 
         new Thread(() -> {
-            TwitchChat.sendMessage("Starting the Host Selector");
             TwitchChat.sendMessage("You can now vote on which stream to host by typing !host streamNameHere");
+            try { Thread.sleep(20000); } catch (InterruptedException e) { e.printStackTrace(); }
 
-            try { Thread.sleep(60000); } catch (InterruptedException e) { e.printStackTrace(); }
-
-            if (streamVotes.size() <= 5) {
-                TwitchChat.sendMessage("There must be at least 6 vote to select a new stream to Host, current votes: " + streamVotes.size() + ". Type !host streamNameHere to vote for a stream.");
-                try { Thread.sleep(30000); } catch (InterruptedException e) { e.printStackTrace(); }
+            for (int i = 1; i <= MAXTIMETOWAITINSECONDS; i++) {
+                if (streamVotes.size() >= MINVOTESNEEDED) break;
+                if (i % 60 == 0) TwitchChat.sendMessage("There must be at least 6 vote to select a new stream to Host, current votes: " + streamVotes.size() + ". Type !host streamNameHere to vote for a stream.");
+                try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
             }
 
-            if (streamVotes.size() > 5) {
+            if (streamVotes.size() >= MINVOTESNEEDED) {
                 TwitchChat.sendMessage("bobHype 40 seconds left to vote for a stream to Host, most voted streams:");
                 Multiset<String> channels = ImmutableMultiset.copyOf(streamVotes.values());
                 TwitchChat.sendMessage(GBUtility.getMultisetLeaderText(channels, 3));
 
                 try { Thread.sleep(40000); } catch (InterruptedException e) { e.printStackTrace(); }
 
+                channels = ImmutableMultiset.copyOf(streamVotes.values());
                 String winningStream = GBUtility.getElementWithHighestCount(channels);
                 TwitchChat.sendMessage("bobHype with " + channels.count(winningStream) + " votes " + winningStream + " was chosen to be hosted!");
                 TwitchChat.sendMessage("/Host " + winningStream);
+                startStreamWatch(winningStream);
             } else {
                 TwitchChat.sendMessage("Stream Host Voting ended, not enough votes");
             }
@@ -67,9 +71,10 @@ public class HostSelector extends ListenerAdapter {
     }
 
     public static void stopHostSelector() {
-        TwitchChat.sendMessage("Stopping the Host Selector");
         TwitchChat.sendMessage("/unhost");
+        stopStreamWatch();
         isActive = false;
+
     }
 
     //TODO: introduce !votestarthost.. !votechangehost and !votestophost
@@ -79,8 +84,14 @@ public class HostSelector extends ListenerAdapter {
         String message = event.getMessage().toLowerCase();
 
         if (event.getTags().containsKey("mod") && event.getTags().get("mod").equalsIgnoreCase("1")) {
-            if      (message.startsWith("!starthost") && !isActive) startHostSelector();
-            else if (message.startsWith("!stophost") && isActive) stopHostSelector();
+            if (message.startsWith("!starthost") && !isActive) {
+                TwitchChat.sendMessage("Starting the Host Selector");
+                startHostSelector();
+            }
+            else if (message.startsWith("!stophost") && isActive) {
+                TwitchChat.sendMessage("Stopping the Host Selector");
+                stopHostSelector();
+            }
             else if (message.startsWith("!changehost") && isActive) changeHost();
         }
 
@@ -90,7 +101,7 @@ public class HostSelector extends ListenerAdapter {
             boolean isViable = false;
 
             if (streamViability.containsKey(content)) isViable = streamViability.get(content);
-            else if (Twitch.getFollowerCount(content) > MINIMUMFOLLOWERS && Twitch.isStreamOnline(content)) {
+            else if (Twitch.getFollowerCount(content) > MINIMUMFOLLOWERS) {
                 System.out.println("stream " + content + " found viable by lookup");
                 isViable = true;
                 streamViability.put(content, true);
@@ -104,5 +115,30 @@ public class HostSelector extends ListenerAdapter {
                 if (event.getTags().get("subscriber").equalsIgnoreCase("1")) streamVotes.put(sender + "subvote", content);
             }
         }
+    }
+
+    /**
+     * Check if the hosted stream goes offline and start vote for new stream to host in this case.
+     * @param twitchName
+     */
+    private static void startStreamWatch(String twitchName) {
+        watchingStream = true;
+        new Thread(() -> {
+            while(watchingStream) {
+                if (!Twitch.isStreamOnline(twitchName)) {
+                    try { Thread.sleep(20000); } catch (InterruptedException e) { e.printStackTrace(); }
+                    if (!Twitch.isStreamOnline(twitchName)) {
+                        TwitchChat.sendMessage("Stream " + twitchName + " appears to be offline, starting vote for new stream to host!");
+                        stopHostSelector();
+                        startHostSelector();
+                    }
+                }
+                try { Thread.sleep(15000); } catch (InterruptedException e) { e.printStackTrace(); }
+            }
+        }).start();
+    }
+
+    private static void stopStreamWatch() {
+        watchingStream = false;
     }
 }

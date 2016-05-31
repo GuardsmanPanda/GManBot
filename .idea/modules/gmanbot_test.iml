@@ -17,6 +17,7 @@
     <orderEntry type="library" name="Gradle: org.pircbotx:pircbotx:2.1" level="project" />
     <orderEntry type="library" name="Gradle: com.1stleg:jnativehook:2.0.2" level="project" />
     <orderEntry type="library" name="Gradle: org.twitter4j:twitter4j-core:4.0.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.esotericsoftware.yamlbeans:yamlbeans:1.08" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.11" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.httpcomponents.core5:httpcore5:5.0-alpha1" level="project" />
     <orderEntry type="library" name="Gradle: commons-logging:commons-logging:1.2" level="project" />

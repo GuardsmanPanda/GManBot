@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 
-public class configLoader {
+public class ConfigLoader {
 
     //TODO: currently all saved variables are Strings maybe there is a way to elegantly fix this?
 
