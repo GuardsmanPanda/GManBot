@@ -17,21 +17,22 @@ public class Twitch {
     private static final HttpClient client = HttpClientBuilder.create().build();
 
     public static void main(String[] args) {
-        System.out.println(isStreamOnline("clock888"));
+        System.out.println(isStreamOnline("random"));
     }
 
-    // {"error":"Not Found","message":"Channel 'thistreamdoesntexist3242rw3rwfsefsefsefsefwefqwerrqwe' does not exist","status":404}
     public synchronized static boolean isStreamOnline(String twitchName) {
         JsonNode root = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/streams/" + twitchName));
-        System.out.println(root.toString());
         if (root.has("stream") && root.get("stream").isNull()) {
             //stream exists but is not online
             return false;
-        } else if (root.has("stream" ) && !root.get("stream").isNull()) {
+        } else if (root.has("stream") && !root.get("stream").isNull()) {
             //Stream exists and is online
             return true;
         } else if (root.has("error") && root.get("error").asText().equalsIgnoreCase("not found")) {
             //Stream does not exist
+            return false;
+        } else if (root.has("error") && root.has("message") && root.get("message").asText().equalsIgnoreCase("channel '" + twitchName + "' is unavailable")) {
+            //If the channel is unavailible we treat it as being offline
             return false;
         } else {
             //else we do not understand the reply, and thus we make the assumption that the stream is online

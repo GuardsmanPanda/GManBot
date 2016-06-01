@@ -99,18 +99,23 @@ public class HostSelector extends ListenerAdapter {
             String sender = event.getUser().getNick().toLowerCase();
             String content = StringUtils.substringAfter(message, " ");
             boolean isViable = false;
+            int followerCount = Twitch.getFollowerCount(content);
 
             if (streamViability.containsKey(content)) isViable = streamViability.get(content);
-            else if (Twitch.getFollowerCount(content) > MINIMUMFOLLOWERS) {
+            else if (followerCount > MINIMUMFOLLOWERS) {
                 System.out.println("stream " + content + " found viable by lookup");
                 isViable = true;
                 streamViability.put(content, true);
             } else {
-                streamViability.put(content, false);
+                if (followerCount < MINIMUMFOLLOWERS && followerCount > 0) streamViability.put(content, false);
                 System.out.println("stream " + content + " found NOT viable by lookup");
             }
 
             if (isViable) {
+                if (!Twitch.isStreamOnline(content)) {
+                    event.respond(content + " appears to be offline, you can only vote for online streams");
+                    return;
+                }
                 streamVotes.put(sender, content);
                 if (event.getTags().get("subscriber").equalsIgnoreCase("1")) streamVotes.put(sender + "subvote", content);
             }
