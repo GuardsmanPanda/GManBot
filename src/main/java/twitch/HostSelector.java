@@ -30,7 +30,10 @@ public class HostSelector extends ListenerAdapter {
     }
 
     public synchronized static void startHostSelector() {
-        if (isActivelyVoting) return;
+        if (isActivelyVoting) {
+            TwitchChat.sendMessage("Cannot start the host selector while actively voting");
+            return;
+        }
         isActive = true;
         isActivelyVoting = true;
         streamVotes.clear();
@@ -92,7 +95,7 @@ public class HostSelector extends ListenerAdapter {
                 TwitchChat.sendMessage("Stopping the Host Selector");
                 stopHostSelector();
             }
-            else if (message.startsWith("!changehost") && isActive) changeHost();
+            else if (message.startsWith("!changehost")) changeHost();
         }
 
         if (message.startsWith("!host") && message.contains(" ")) {
@@ -133,9 +136,11 @@ public class HostSelector extends ListenerAdapter {
                 if (!Twitch.isStreamOnline(twitchName)) {
                     try { Thread.sleep(20000); } catch (InterruptedException e) { e.printStackTrace(); }
                     if (!Twitch.isStreamOnline(twitchName)) {
-                        TwitchChat.sendMessage("Stream " + twitchName + " appears to be offline, starting vote for new stream to host!");
-                        stopHostSelector();
-                        startHostSelector();
+                        if (watchingStream) {
+                            TwitchChat.sendMessage("Stream " + twitchName + " appears to be offline, starting vote for new stream to host!");
+                            stopHostSelector();
+                            startHostSelector();
+                        }
                     }
                 }
                 try { Thread.sleep(15000); } catch (InterruptedException e) { e.printStackTrace(); }
