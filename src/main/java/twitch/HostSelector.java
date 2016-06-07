@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 
+import java.awt.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -24,7 +25,7 @@ public class HostSelector extends ListenerAdapter {
     private static boolean isActivelyVoting = false;
     private static boolean isActive = false;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws AWTException {
         TwitchChat.connect();
         TwitchChat.addListener(new HostSelector());
     }
@@ -115,7 +116,7 @@ public class HostSelector extends ListenerAdapter {
             }
 
             if (isViable) {
-                if (!Twitch.isStreamOnline(content)) {
+                if (!Twitch.isStreamOnline(content, true)) {
                     event.respond(content + " appears to be offline, you can only vote for online streams");
                     return;
                 }
@@ -133,9 +134,9 @@ public class HostSelector extends ListenerAdapter {
         watchingStream = true;
         new Thread(() -> {
             while(watchingStream) {
-                if (!Twitch.isStreamOnline(twitchName)) {
+                if (!Twitch.isStreamOnline(twitchName, true)) {
                     try { Thread.sleep(20000); } catch (InterruptedException e) { e.printStackTrace(); }
-                    if (!Twitch.isStreamOnline(twitchName)) {
+                    if (!Twitch.isStreamOnline(twitchName, true)) {
                         if (watchingStream) {
                             TwitchChat.sendMessage("Stream " + twitchName + " appears to be offline, starting vote for new stream to host!");
                             stopHostSelector();

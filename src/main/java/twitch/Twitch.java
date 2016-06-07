@@ -17,10 +17,10 @@ public class Twitch {
     private static final HttpClient client = HttpClientBuilder.create().build();
 
     public static void main(String[] args) {
-        System.out.println(isStreamOnline("random"));
+
     }
 
-    public synchronized static boolean isStreamOnline(String twitchName) {
+    public synchronized static boolean isStreamOnline(String twitchName, boolean defaultAssumption) {
         JsonNode root = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/streams/" + twitchName));
         if (root.has("stream") && root.get("stream").isNull()) {
             //stream exists but is not online
@@ -38,7 +38,7 @@ public class Twitch {
             //else we do not understand the reply, and thus we make the assumption that the stream is online
             System.out.println("Unknown reply for stream online status!!");
             System.out.println(root.toString());
-            return true;
+            return defaultAssumption;
         }
 
     }
