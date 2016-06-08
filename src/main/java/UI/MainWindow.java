@@ -12,6 +12,7 @@ import twitch.TwitchChat;
 
 public class MainWindow {
     private static TextField messageInput = new TextField();
+    private static TextField urlInput = new TextField();
 
     public static void launch(Stage stage) {
         stage.setTitle("World's second worst ui");
@@ -22,6 +23,8 @@ public class MainWindow {
 
         tabs.add(makeChatTab());
         tabs.add(makeTwitterTab());
+        tabs.add(makeHostingTab());
+        tabs.add(makeWebTab());
 
         Scene scene = new Scene(tabPane, 300, 250);
         stage.setOnCloseRequest(event -> System.exit(0));
@@ -30,8 +33,7 @@ public class MainWindow {
     }
 
     static private Tab makeChatTab() {
-        Tab tab = new Tab();
-        tab.setText("Chat");
+        Tab tab = new Tab("Chat");
 
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -63,13 +65,49 @@ public class MainWindow {
     }
 
     private static Tab makeTwitterTab() {
-        Tab tab = new Tab();
-        tab.setText("Twitter");
+        Tab tab = new Tab("Twitter");
+        return tab;
+    }
+
+    private static Tab makeHostingTab() {
+        Tab tab = new Tab("Twitch Hosting");
+        return tab;
+    }
+
+    private static Tab makeWebTab() {
+        Tab tab = new Tab("Web View");
+
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setVgap(10);
+
+        Button openUrlButton = new Button("Open");
+        openUrlButton.setOnAction(ActionEvent -> openUrl());
+
+        urlInput.setPromptText("Url");
+        urlInput.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ENTER) {
+                openUrl();
+            }
+        });
+
+        HBox hbox = new HBox();
+        hbox.getChildren().addAll(urlInput, openUrlButton);
+        hbox.setSpacing(10);
+
+        grid.add(hbox, 0, 0);
+
+        tab.setContent(grid);
+
         return tab;
     }
 
     private static void sendMessage() {
         TwitchChat.sendMessage(messageInput.getText());
         messageInput.clear();
+    }
+
+    private static void openUrl() {
+        Browser.open(urlInput.getText());
     }
 }
