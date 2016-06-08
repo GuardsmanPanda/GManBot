@@ -21,6 +21,7 @@ import java.util.logging.LogManager;
 public class ActionDisplay implements NativeMouseListener, NativeKeyListener {
     private List<Long> actions = new ArrayList<>();
     private boolean printAPMFlag = true;
+    private int lastPressCode = 0;
 
     public static void main(String[] args) throws NativeHookException {
         ActionDisplay apmCounter = new ActionDisplay();
@@ -39,10 +40,12 @@ public class ActionDisplay implements NativeMouseListener, NativeKeyListener {
             while (printAPMFlag) {
                 int APM = 0;
                 for (Long action : actions) {
-                    if (action + 10000 > System.currentTimeMillis()) APM++;
+                    if (action + 15000 > System.currentTimeMillis()) APM++;
                 }
-                System.out.println("APM: " + APM * 6);
-                try { Thread.sleep(5000); } catch (InterruptedException e) { e.printStackTrace(); }
+                GBUtility.writeTextToFile("APM: " + APM * 4, "output/APM.txt", false);
+                //System.out.println("APM: " + APM * 6);
+
+                try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
             }
         }).start();
     }
@@ -55,7 +58,11 @@ public class ActionDisplay implements NativeMouseListener, NativeKeyListener {
     @Override
     public void nativeMousePressed(NativeMouseEvent nativeMouseEvent) {
         //System.out.println("Mouse Pressed: " + nativeMouseEvent.getButton());
-        actions.add(System.currentTimeMillis());
+        if (nativeMouseEvent.getButton() != lastPressCode) {
+            actions.add(System.currentTimeMillis());
+            lastPressCode = nativeMouseEvent.getButton();
+        }
+
     }
 
     @Override
@@ -66,7 +73,11 @@ public class ActionDisplay implements NativeMouseListener, NativeKeyListener {
     @Override
     public void nativeKeyPressed(NativeKeyEvent nativeKeyEvent) {
         //System.out.println("Key Pressed: " + nativeKeyEvent.getKeyCode());
-        actions.add(System.currentTimeMillis());
+        if (nativeKeyEvent.getKeyCode() != lastPressCode) {
+            actions.add(System.currentTimeMillis());
+            lastPressCode = nativeKeyEvent.getKeyCode();
+        }
+
     }
 
     @Override

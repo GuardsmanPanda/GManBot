@@ -39,7 +39,7 @@ public class BoblightTimeStamps implements NativeKeyListener {
      */
     public static synchronized void createBoblightTimestamp(String type) {
         if (!activeStreamSession) return;
-        GBUtility.writeTextToFile(type, "output/Stream Highlights.txt");
+        GBUtility.writeTextToFile(type, "output/Stream Highlights.txt", true);
     }
 
 
