@@ -11,6 +11,7 @@ import org.jnativehook.mouse.NativeMouseListener;
 import java.awt.*;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -19,7 +20,7 @@ import java.util.logging.LogManager;
  * Created by Dons on 07-06-2016.
  */
 public class ActionDisplay implements NativeMouseListener, NativeKeyListener {
-    private List<Long> actions = new ArrayList<>();
+    private HashSet<Long> actions = new HashSet<>();
     private boolean printAPMFlag = true;
     private int lastPressCode = 0;
 
@@ -39,12 +40,15 @@ public class ActionDisplay implements NativeMouseListener, NativeKeyListener {
         new Thread(() -> {
             while (printAPMFlag) {
                 int APM = 0;
+                HashSet<Long> removalSet = new HashSet<>();
                 for (Long action : actions) {
                     if (action + 15000 > System.currentTimeMillis()) APM++;
+                    else removalSet.add(action);
                 }
+                actions.removeAll(removalSet);
+
                 GBUtility.writeTextToFile("APM: " + APM * 4, "output/APM.txt", false);
                 //System.out.println("APM: " + APM * 6);
-
                 try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
             }
         }).start();
@@ -73,6 +77,7 @@ public class ActionDisplay implements NativeMouseListener, NativeKeyListener {
     @Override
     public void nativeKeyPressed(NativeKeyEvent nativeKeyEvent) {
         //System.out.println("Key Pressed: " + nativeKeyEvent.getKeyCode());
+        if (nativeKeyEvent.getKeyCode() == 57) return;
         if (nativeKeyEvent.getKeyCode() != lastPressCode) {
             actions.add(System.currentTimeMillis());
             lastPressCode = nativeKeyEvent.getKeyCode();

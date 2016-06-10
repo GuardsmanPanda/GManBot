@@ -138,9 +138,9 @@ public class HostSelector extends ListenerAdapter {
                     try { Thread.sleep(20000); } catch (InterruptedException e) { e.printStackTrace(); }
                     if (!Twitch.isStreamOnline(twitchName, true)) {
                         if (watchingStream) {
-                            TwitchChat.sendMessage("Stream " + twitchName + " appears to be offline, starting vote for new stream to host!");
-                            stopHostSelector();
-                            startHostSelector();
+                            //TwitchChat.sendMessage("Stream " + twitchName + " appears to be offline, starting vote for new stream to host!");
+                            //stopHostSelector();
+                            //startHostSelector();
                         }
                     }
                 }

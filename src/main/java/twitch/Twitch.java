@@ -95,9 +95,10 @@ public class Twitch {
 
             //check for errors
             if (rootNode.has("error")) {
-                if (rootNode.get("error").asText().equalsIgnoreCase("Not Found")) return rootNode;
-                System.out.println("Error encountered sending GET request tot he twitch api");
+                System.out.println("Error encountered sending GET request to the twitch api");
                 System.out.println(rootNode.toString());
+                if (rootNode.get("error").asText().equalsIgnoreCase("Not Found")) return rootNode;
+
             }
             return rootNode;
         } catch (IOException e) {
