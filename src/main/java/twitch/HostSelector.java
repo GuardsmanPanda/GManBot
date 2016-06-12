@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class HostSelector extends ListenerAdapter {
     private static int MAXTIMETOWAITINSECONDS = 300;
-    private static int MINIMUMFOLLOWERS = 100;
+    private static int MINIMUMFOLLOWERS = 10;
     private static int MINVOTESNEEDED = 6;
     private static boolean watchingStream = false;
 
