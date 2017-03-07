@@ -4,6 +4,9 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 import com.google.common.io.CharStreams;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.nio.file.Path;
 
@@ -11,6 +14,11 @@ import java.nio.file.Path;
  *
  */
 public class GBUtility {
+    private static Robot robot;
+
+    static {
+        try { robot = new Robot(); } catch (AWTException e) { e.printStackTrace(); }
+    }
 
     public static <E> E getElementWithHighestCount(Multiset<E> multiSet) {
         return Multisets.copyHighestCountFirst(multiSet).iterator().next();
@@ -26,6 +34,28 @@ public class GBUtility {
             entryNumber++;
         }
         return returnText;
+    }
+
+    /**
+     * !name content here .. return "content here"
+     * returns empty string on no content
+     */
+    public static String getIRCMessageContent(String message) {
+        if (message.contains(" ")) return message.substring(message.indexOf(" ")).trim();
+        else return "";
+    }
+
+    /**
+     * Writes the string as if the user typed it on his keyboard.
+     * @param stringToPaste
+     */
+    public static void copyAndPasteString(String stringToPaste) {
+        StringSelection text = new StringSelection(stringToPaste);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(text, text);
+        robot.keyPress(KeyEvent.VK_CONTROL);
+        robot.keyPress(KeyEvent.VK_V);
+        robot.keyRelease(KeyEvent.VK_CONTROL);
+        robot.keyRelease(KeyEvent.VK_V);
     }
 
     public static void writeTextToFile(String text, String filePath, boolean append) {

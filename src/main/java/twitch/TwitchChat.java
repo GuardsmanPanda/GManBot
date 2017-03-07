@@ -14,6 +14,7 @@ import org.pircbotx.hooks.events.PrivateMessageEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.stream.StreamSupport;
 
 public class TwitchChat {
     private static boolean connected = false;
@@ -52,6 +53,7 @@ public class TwitchChat {
     }
 
 
+
     /**
      * Sends an action to the chat channel.
      * This method can silently fail for any reason.
@@ -67,6 +69,10 @@ public class TwitchChat {
      */
     public static synchronized void sendMessage(String message) {
         bot.send().message(channel, message);
+    }
+
+    public static synchronized void sendWhisper(String twitchName, String message) {
+        bot.send().message(twitchName, message);
     }
 
     public static void addListener(ListenerAdapter listener) {
@@ -101,20 +107,20 @@ public class TwitchChat {
     private static class ChatUtility extends ListenerAdapter {
 
         @Override
-        public void onConnect(ConnectEvent event) throws Exception {
+        public void onConnect(ConnectEvent event) {
             connected = true;
             System.out.println("Connected to Twitch Chat Server");
         }
 
         @Override
-        public void onJoin(JoinEvent event) throws Exception {
+        public void onJoin(JoinEvent event) {
             if (event.getUser().getNick().equalsIgnoreCase(bot.getNick())) {
                 System.out.println("Joined Channel " + event.getChannel().getName());
             }
         }
 
         @Override
-        public void onMessage(MessageEvent event) throws Exception {
+        public void onMessage(MessageEvent event) {
             /*
             String displayName = event.getTags().get("display-name");
             if (displayName.isEmpty()) {
@@ -123,20 +129,24 @@ public class TwitchChat {
             }
 
             String color = event.getTags().get("color");
+            String message = "";
 
-            String message = String.format("%s %s <%s> %s",
-                    event.getChannel().getName(),
-                    color,
+            for (String tag : event.getTags().keySet()) {
+                message += "[" + tag;
+                message += "=" + event.getTags().get(tag);
+                message += "] ";
+            }
+
+            message += String.format("<%s> %s",
                     displayName,
                     event.getMessage()
                 );
-
             System.out.println(message);
             */
         }
 
         @Override
-        public void onPrivateMessage(PrivateMessageEvent event) throws Exception {
+        public void onPrivateMessage(PrivateMessageEvent event) {
             System.out.println("PM from:" + event.getUser().getNick() + " - " + event.getMessage());
         }
     }
