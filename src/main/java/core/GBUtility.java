@@ -3,6 +3,7 @@ package core;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 import com.google.common.io.CharStreams;
+import org.pircbotx.hooks.events.MessageEvent;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -43,6 +44,12 @@ public class GBUtility {
     public static String getIRCMessageContent(String message) {
         if (message.contains(" ")) return message.substring(message.indexOf(" ")).trim();
         else return "";
+    }
+
+    public static String getTwitchDisplayName(MessageEvent messageEvent) {
+        String name = messageEvent.getTags().get("display-name");
+        if (name.isEmpty()) name = messageEvent.getUser().getNick();
+        return name;
     }
 
     /**

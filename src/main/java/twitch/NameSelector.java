@@ -1,54 +1,74 @@
 package twitch;
 
 import core.GBUtility;
+import org.jnativehook.GlobalScreen;
+import org.jnativehook.NativeHookException;
+import org.jnativehook.keyboard.NativeKeyEvent;
+import org.jnativehook.keyboard.NativeKeyListener;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
-/**
- * Created by Dons on 28-11-2016.
- */
 public class NameSelector extends ListenerAdapter {
-    private static final HashMap<String, String> nameSuggestions = new HashMap<>();
-    private static int NAMESUGGESTIONTIME = 60; // In seconds
-    private static boolean isRunning = false;
+    private static Map<String, LocalDateTime> activeChatUsers = new HashMap<>();
+    private static final HashSet<String> selectedNames = new HashSet<>();
+    private static final int ACTIVECHATDURATIONINMINUTES = 15;
     private static final Random random;
 
     static {
+        selectedNames.add("GManBot");
         random = new Random();
+        try {
+            GlobalScreen.registerNativeHook();
+            GlobalScreen.addNativeKeyListener(new KeyListener());
+        } catch (NativeHookException e) {
+            e.printStackTrace();
+        }
     }
 
+    public synchronized static void selectAndPrintTwitchName() {
+        System.out.println("Selecting from " + activeChatUsers.size() + " active names in chat");
+        activeChatUsers = activeChatUsers.entrySet().stream()
+                .filter(e -> e.getValue().isAfter(LocalDateTime.now()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    public static void startNameSelector(int maxLength) {
-        nameSuggestions.clear();
-        isRunning = true;
-        TwitchChat.sendMessage("Suggest a name! .. by typing: !name nameSuggestionHere");
-    }
+        System.out.println("Removed some names now " + activeChatUsers.size() + " left");
+        List<String> names = new ArrayList<>();
+        names.addAll(activeChatUsers.keySet());
+        String winningName = names.get(random.nextInt(names.size()));
 
-    public static void selectName() {
-        ArrayList<String> twitchNames = new ArrayList<>(nameSuggestions.keySet());
-        String winner = twitchNames.get(random.nextInt(twitchNames.size()));
-        String winningName = nameSuggestions.get(winner);
-
-        TwitchChat.sendMessage("Chosen Name: " + winningName);
+        selectedNames.add(winningName);
+        activeChatUsers.remove(winningName);
         GBUtility.copyAndPasteString(winningName);
-        nameSuggestions.remove(winner);
+
     }
 
     @Override
-    public void onMessage(MessageEvent event) {
-        String content = GBUtility.getIRCMessageContent(event.getMessage());
-        if (isRunning && event.getMessage().startsWith("!name") && !content.isEmpty()) {
-            String twitchName = event.getUser().getNick();
-            nameSuggestions.put(twitchName, content);
-            //Add extra chance for a subs name to get picked
-            if (event.getTags().get("subscriber").equalsIgnoreCase("1")) {
-                System.out.println("Found subscriber");
-                nameSuggestions.put(twitchName + "subVote", content);
-            }
+    public synchronized void onMessage(MessageEvent event) {
+        String twitchName = GBUtility.getTwitchDisplayName(event);
+        if (!selectedNames.contains(twitchName)) {
+            activeChatUsers.put(twitchName, LocalDateTime.now().plusMinutes(ACTIVECHATDURATIONINMINUTES));
+        }
+    }
+
+    private static class KeyListener implements NativeKeyListener{
+        @Override
+        public void nativeKeyPressed(NativeKeyEvent nativeKeyEvent) {
+            if (nativeKeyEvent.getKeyCode() == 57420) selectAndPrintTwitchName();
+        }
+
+        @Override
+        public void nativeKeyReleased(NativeKeyEvent nativeKeyEvent) {
+
+        }
+
+        @Override
+        public void nativeKeyTyped(NativeKeyEvent nativeKeyEvent) {
+
         }
     }
 }

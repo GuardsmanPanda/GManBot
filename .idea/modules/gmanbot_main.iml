@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module external.linked.project.id="gmanbot:main" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="com.guardsmanbot" external.system.module.type="sourceSet" external.system.module.version="1.0-SNAPSHOT" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_9">
     <output url="file://$MODULE_DIR$/../../build/classes/main" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../src/main">
@@ -14,7 +14,7 @@
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.7.4" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.httpcomponents.client5:httpclient5:5.0-alpha1" level="project" />
     <orderEntry type="library" name="Gradle: org.pircbotx:pircbotx:2.1" level="project" />
-    <orderEntry type="library" name="Gradle: com.1stleg:jnativehook:2.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.1stleg:jnativehook:2.1.0" level="project" />
     <orderEntry type="library" name="Gradle: org.twitter4j:twitter4j-core:4.0.4" level="project" />
     <orderEntry type="library" name="Gradle: com.esotericsoftware.yamlbeans:yamlbeans:1.08" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.httpcomponents.core5:httpcore5:5.0-alpha1" level="project" />
