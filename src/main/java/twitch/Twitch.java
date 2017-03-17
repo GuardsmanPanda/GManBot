@@ -9,6 +9,9 @@ import org.apache.hc.client5.http.sync.HttpClient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.stream.StreamSupport;
 
 /**
  * For interacting with the Twitch API
@@ -17,7 +20,7 @@ public class Twitch {
     private static final HttpClient client = HttpClientBuilder.create().build();
 
     public static void main(String[] args) {
-
+        System.out.println(Arrays.toString(getSubscriberEmoticons("guardsmanbob").toArray()));
     }
 
     public synchronized static boolean isStreamOnline(String twitchName, boolean defaultAssumption) {
@@ -41,6 +44,15 @@ public class Twitch {
             return defaultAssumption;
         }
 
+    }
+
+    public synchronized static HashSet<String> getSubscriberEmoticons(String channelName) {
+        HashSet<String> returnSet = new HashSet<>();
+        JsonNode rootNode = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/chat/guardsmanbob/emoticons"));
+        StreamSupport.stream(rootNode.get("emoticons").spliterator(), false)
+                .filter(node -> node.get("subscriber_only").asBoolean())
+                .forEach(node -> returnSet.add(node.get("regex").asText()));
+        return returnSet;
     }
 
     public synchronized static String getCurrentGame(String twitchName) {
@@ -98,7 +110,6 @@ public class Twitch {
                 System.out.println("Error encountered sending GET request to the twitch api");
                 System.out.println(rootNode.toString());
                 if (rootNode.get("error").asText().equalsIgnoreCase("Not Found")) return rootNode;
-
             }
             return rootNode;
         } catch (IOException e) {
