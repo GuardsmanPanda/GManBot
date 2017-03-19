@@ -1,6 +1,5 @@
 package twitch;
 
-
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import org.pircbotx.hooks.ListenerAdapter;

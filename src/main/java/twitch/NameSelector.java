@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class NameSelector extends ListenerAdapter {
     private static Map<String, LocalDateTime> activeChatUsers = new HashMap<>();
     private static final HashSet<String> selectedNames = new HashSet<>();
-    private static final int ACTIVECHATDURATIONINMINUTES = 15;
+    private static final int ACTIVECHATDURATIONINMINUTES = 25;
     private static final Random random;
 
     static {

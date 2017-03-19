@@ -3,6 +3,7 @@ package core;
 import javafx.stage.Stage;
 import javafx.application.Application;
 import twitch.NameSelector;
+import twitch.StreamStats;
 import twitch.TwitchChat;
 
 import java.util.logging.Level;
@@ -16,6 +17,7 @@ public class GManBot extends Application {
         //Ask the twitch handler to open the chat connection, this may take several seconds
         TwitchChat.connect();
         TwitchChat.addListener(new NameSelector());
+        TwitchChat.addListener(new StreamStats());
 
         // Blocking call, do not include code past this point
         launch(args);
