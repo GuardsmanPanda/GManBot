@@ -38,21 +38,6 @@ public class GBUtility {
     }
 
     /**
-     * !name content here .. return "content here"
-     * returns empty string on no content
-     */
-    public static String getIRCMessageContent(String message) {
-        if (message.contains(" ")) return message.substring(message.indexOf(" ")).trim();
-        else return "";
-    }
-
-    public static String getTwitchDisplayName(MessageEvent messageEvent) {
-        String name = messageEvent.getTags().get("display-name");
-        if (name.isEmpty()) name = messageEvent.getUser().getNick();
-        return name;
-    }
-
-    /**
      * Writes the string as if the user typed it on his keyboard.
      * @param stringToPaste
      */

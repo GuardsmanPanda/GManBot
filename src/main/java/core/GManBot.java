@@ -3,9 +3,11 @@ package core;
 import javafx.stage.Stage;
 import javafx.application.Application;
 import twitch.NameSelector;
+import twitch.SongAnnouncer;
 import twitch.StreamStats;
 import twitch.TwitchChat;
 
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -18,6 +20,7 @@ public class GManBot extends Application {
         TwitchChat.connect();
         TwitchChat.addListener(new NameSelector());
         TwitchChat.addListener(new StreamStats());
+        TwitchChat.addListener(new SongAnnouncer(Paths.get("C:/Users/Dons/IdeaProjects/GManBot2/winamp.txt")));
 
         // Blocking call, do not include code past this point
         launch(args);

@@ -142,8 +142,9 @@ public class TwitchChat {
                     event.getMessage()
                 );
             System.out.println(message);
-            */
+*/
         }
+
 
         @Override
         public void onPrivateMessage(PrivateMessageEvent event) {

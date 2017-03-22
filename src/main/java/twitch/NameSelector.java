@@ -7,6 +7,7 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
+import org.pircbotx.hooks.events.ModeEvent;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -43,12 +44,12 @@ public class NameSelector extends ListenerAdapter {
         selectedNames.add(winningName);
         activeChatUsers.remove(winningName);
         GBUtility.copyAndPasteString(winningName);
-
     }
+
 
     @Override
     public synchronized void onMessage(MessageEvent event) {
-        String twitchName = GBUtility.getTwitchDisplayName(event);
+        String twitchName = new TwitchChatMessage(event).displayName;
         if (!selectedNames.contains(twitchName)) {
             activeChatUsers.put(twitchName, LocalDateTime.now().plusMinutes(ACTIVECHATDURATIONINMINUTES));
         }

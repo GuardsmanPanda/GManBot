@@ -3,17 +3,44 @@ package twitch;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import core.BobsDatabase;
+import org.pircbotx.hooks.ListenerAdapter;
+import org.pircbotx.hooks.events.MessageEvent;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import java.nio.file.*;
+import java.util.List;
 
-public class SongAnnouncer {
+//TODO: Account for stream delay of ~16seconds
+public class SongAnnouncer extends ListenerAdapter {
+    private static final int STREAMDELAYINSECONDS = 15;
     private static String currentSong = "Guardsman Bob";
 
-    public static void main(String[] args) {
+    public SongAnnouncer(Path songFilePath) {
         startSongAnnouncer();
-        watchSongFile(Paths.get("C:/Users/Dons/IdeaProjects/GManBot2/winamp.txt"));
+        watchSongFile(songFilePath);
+    }
+
+
+    @Override
+    public void onMessage(MessageEvent event) {
+        if (event.getMessage().toLowerCase().startsWith("!rate ")) {
+            TwitchChatMessage tcm = new TwitchChatMessage(event);
+            String songQuote = "none";
+            System.out.println("Rating from " + tcm.displayName);
+            try {
+                int rating = Integer.parseInt(tcm.getMessageContent().split(" ")[0]);
+                if (tcm.getMessageContent().contains(" ")) songQuote = tcm.getMessageContent().substring(tcm.getMessageContent().indexOf(" ")).trim();
+
+                BobsDatabase.addSongRating(tcm.userID, tcm.displayName, currentSong, rating, songQuote);
+                System.out.println("Rating: " + rating + " Quote: " + songQuote);
+            } catch (NumberFormatException nfe) {
+                System.out.println("No rating found!!");
+                nfe.printStackTrace();
+            }
+        }
     }
 
     public static void startSongAnnouncer() {
@@ -28,7 +55,8 @@ public class SongAnnouncer {
     }
 
     private static void watchSongFile(Path songFileLocation) {
-        try {
+        new Thread(() -> {
+            try {
             WatchService fileWatcher = FileSystems.getDefault().newWatchService();
             songFileLocation.getParent().register(fileWatcher, StandardWatchEventKinds.ENTRY_MODIFY);
             while (true) {
@@ -36,8 +64,13 @@ public class SongAnnouncer {
                 for (WatchEvent event : key.pollEvents()) {
                     Path eventFilePath = (Path) event.context();
                     if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY && eventFilePath.endsWith(songFileLocation.getFileName())) {
-                        String songName = Files.readAllLines(songFileLocation).get(0);
+                        List<String> songFileLineArray = Files.readAllLines(songFileLocation, Charset.forName("windows-1252"));
+                        //if for some reason the file is empty just ignore it.
+                        if (songFileLineArray.size() == 0) break;
+
+                        String songName = songFileLineArray.get(0);
                         if (!currentSong.equalsIgnoreCase(songName)) {
+
                             System.out.println("New Song: " + songName);
                             currentSong = songName;
                         }
@@ -52,14 +85,15 @@ public class SongAnnouncer {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }} ).start();
     }
 
     static class songHttpHandler implements HttpHandler {
         private static int number = 0;
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            String response = currentSong;
+            String dummyRating = "9,21";
+            String response = currentSong + " <span style=\"color:#82CAFA\">" + dummyRating + "</span>";
 
             exchange.sendResponseHeaders(200, response.getBytes().length);
             exchange.getResponseBody().write(response.getBytes());
@@ -75,7 +109,7 @@ public class SongAnnouncer {
             String response = "<html>" +
                     "<head>" +
                     "   <style>" +
-                    "       body { font: 32px \"Helvetica Neue\",Helvetica,Arial,sans-serif; color: #FFFDF2; " +
+                    "       body { font: 32px \"Helvetica Neue\",Helvetica,Arial,sans-serif; color: #FFFFFF; " +
                     "       font-weight: 700;" +
                     "       text-shadow: 0px 0px 20px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000; }" +
                     "   </style>" +
