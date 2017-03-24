@@ -7,16 +7,20 @@ import core.BobsDatabase;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 
+import javax.sql.rowset.CachedRowSet;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.file.*;
+import java.sql.SQLException;
 import java.util.List;
 
 //TODO: Account for stream delay of ~16seconds
 public class SongAnnouncer extends ListenerAdapter {
-    private static final int STREAMDELAYINSECONDS = 15;
+    private static final int STREAMDELAYINSECONDS = 10;
     private static String currentSong = "Guardsman Bob";
+    private static String displayOnStreamSong = "Guardsman Bob";
+    private static float displayOnStreamSongRating = 0f;
 
     public SongAnnouncer(Path songFilePath) {
         startSongAnnouncer();
@@ -32,13 +36,15 @@ public class SongAnnouncer extends ListenerAdapter {
             System.out.println("Rating from " + tcm.displayName);
             try {
                 int rating = Integer.parseInt(tcm.getMessageContent().split(" ")[0]);
+                if (rating < 1 ) rating = 1;
+                if (rating > 11) rating = 11;
                 if (tcm.getMessageContent().contains(" ")) songQuote = tcm.getMessageContent().substring(tcm.getMessageContent().indexOf(" ")).trim();
 
                 BobsDatabase.addSongRating(tcm.userID, tcm.displayName, currentSong, rating, songQuote);
+                displayOnStreamSongRating = getSongRating(displayOnStreamSong);
                 System.out.println("Rating: " + rating + " Quote: " + songQuote);
             } catch (NumberFormatException nfe) {
-                System.out.println("No rating found!!");
-                nfe.printStackTrace();
+                // Silently kill number format exceptions
             }
         }
     }
@@ -54,11 +60,41 @@ public class SongAnnouncer extends ListenerAdapter {
         }
     }
 
+    public static float getSongRating(String songName) {
+        CachedRowSet songRatingSet = BobsDatabase.getCachedRowSetFromSQL("SELECT songRating FROM SongRatings WHERE songName = ?", songName);
+        int numberOfRatings = 0;
+        int totalRating = 0;
+        try {
+            while (songRatingSet.next()) {
+                totalRating += songRatingSet.getInt("songRating");
+                numberOfRatings++;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (numberOfRatings == 0) return 0f;
+        return (float) totalRating/numberOfRatings;
+    }
+
+    private static void songFileChange(String newSongName) {
+        BobsDatabase.addSongRating("39837384", "GManBot", newSongName, 10, "none" );
+        displayOnStreamSong = newSongName;
+        displayOnStreamSongRating = getSongRating(newSongName);
+        if (newSongName.equalsIgnoreCase("Guardsman Bob")) return;
+        new Thread(() -> {
+            try { Thread.sleep(1000 * STREAMDELAYINSECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
+            currentSong = newSongName;
+            //TwitchChat.sendMessage <- new song etc.
+        }).start();
+    }
+
+
     private static void watchSongFile(Path songFileLocation) {
         new Thread(() -> {
             try {
             WatchService fileWatcher = FileSystems.getDefault().newWatchService();
             songFileLocation.getParent().register(fileWatcher, StandardWatchEventKinds.ENTRY_MODIFY);
+            String lastSongNameInFile = "none";
             while (true) {
                 WatchKey key = fileWatcher.take();
                 for (WatchEvent event : key.pollEvents()) {
@@ -67,12 +103,11 @@ public class SongAnnouncer extends ListenerAdapter {
                         List<String> songFileLineArray = Files.readAllLines(songFileLocation, Charset.forName("windows-1252"));
                         //if for some reason the file is empty just ignore it.
                         if (songFileLineArray.size() == 0) break;
-
-                        String songName = songFileLineArray.get(0);
-                        if (!currentSong.equalsIgnoreCase(songName)) {
-
-                            System.out.println("New Song: " + songName);
-                            currentSong = songName;
+                        String newSongNameInFile = songFileLineArray.get(0);
+                        if (!lastSongNameInFile.equalsIgnoreCase(newSongNameInFile)) {
+                            System.out.println("New Song: " + newSongNameInFile);
+                            songFileChange(newSongNameInFile);
+                            lastSongNameInFile = newSongNameInFile;
                         }
                     }
                 }
@@ -88,12 +123,17 @@ public class SongAnnouncer extends ListenerAdapter {
         }} ).start();
     }
 
-    static class songHttpHandler implements HttpHandler {
-        private static int number = 0;
+    private static class songHttpHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            String dummyRating = "9,21";
-            String response = currentSong + " <span style=\"color:#82CAFA\">" + dummyRating + "</span>";
+            String hexColor = "#0044ff";
+            if      (displayOnStreamSongRating >= 10f) hexColor = "#ff2200";
+            else if (displayOnStreamSongRating >=  9f) hexColor = "#ff9900";
+            else if (displayOnStreamSongRating >=  8f) hexColor = "#CCff00";
+            else if (displayOnStreamSongRating >=  7f) hexColor = "#33ff66";
+            else if (displayOnStreamSongRating >=  6f) hexColor = "#0099ff";
+
+            String response = displayOnStreamSong + " <span style=\"color:" + hexColor + "\">" + String.format("%.2f", displayOnStreamSongRating) + "</span>";
 
             exchange.sendResponseHeaders(200, response.getBytes().length);
             exchange.getResponseBody().write(response.getBytes());
@@ -102,14 +142,14 @@ public class SongAnnouncer extends ListenerAdapter {
         }
     }
 
-    static class songOverlayHttpHandler implements HttpHandler {
+    private static class songOverlayHttpHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             System.out.println(exchange.getRequestURI().toString());
             String response = "<html>" +
                     "<head>" +
                     "   <style>" +
-                    "       body { font: 32px \"Helvetica Neue\",Helvetica,Arial,sans-serif; color: #FFFFFF; " +
+                    "       body { font: 30px \"Helvetica Neue\",Helvetica,Arial,sans-serif; color: #FFFFFF; " +
                     "       font-weight: 700;" +
                     "       text-shadow: 0px 0px 20px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000; }" +
                     "   </style>" +

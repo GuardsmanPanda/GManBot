@@ -20,7 +20,9 @@ public class Twitch {
     private static final HttpClient client = HttpClientBuilder.create().build();
 
     public static void main(String[] args) {
-        System.out.println(Arrays.toString(getSubscriberEmoticons("guardsmanbob").toArray()));
+        //System.out.println(Arrays.toString(getSubscriberEmoticons("guardsmanbob").toArray()));
+        System.out.println(getTwitchUserID("gmanbot"));
+        //System.out.println(executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/channels/kusieru/stream_key")).toString());
     }
 
     public synchronized static boolean isStreamOnline(String twitchName, boolean defaultAssumption) {
@@ -53,6 +55,12 @@ public class Twitch {
                 .filter(node -> node.get("subscriber_only").asBoolean())
                 .forEach(node -> returnSet.add(node.get("regex").asText()));
         return returnSet;
+    }
+
+    public synchronized static String getTwitchUserID(String twitchName) {
+        JsonNode rootNode = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/users/" + twitchName));
+        if (rootNode.has("_id")) return rootNode.get("_id").asText();
+        else return "";
     }
 
     public synchronized static String getCurrentGame(String twitchName) {
@@ -105,12 +113,12 @@ public class Twitch {
             JsonNode rootNode = new ObjectMapper().readTree(input);
             get.releaseConnection();
 
-            //check for errors
+            /* ignore errors for now
             if (rootNode.has("error")) {
                 System.out.println("Error encountered sending GET request to the twitch api");
                 System.out.println(rootNode.toString());
-                if (rootNode.get("error").asText().equalsIgnoreCase("Not Found")) return rootNode;
             }
+            */
             return rootNode;
         } catch (IOException e) {
             //TODO: in case of IO error we really should return an empty node with a simple error entry instead

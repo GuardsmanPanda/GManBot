@@ -94,12 +94,14 @@ public class BobsDatabase {
         if (songQuote.equalsIgnoreCase("none")) songQuote = oldQuote;
 
         if (songRatingExists) {
-            try (PreparedStatement statement = connection.prepareStatement("UPDATE SongRatings SET twitchDisplayName = ?, songRating = ?, songQuote = ? WHERE twitchUserID = ? AND songName = ?")) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE SongRatings SET twitchDisplayName = ?, songRating = ?, songQuote = ?, ratingTimestamp = ? WHERE twitchUserID = ? AND songName = ?")) {
                 statement.setString(1, twitchDisplayName);
                 statement.setInt(2, songRating);
                 statement.setString(3, songQuote);
-                statement.setString(4, twitchUserID);
-                statement.setString(5, songName);
+                statement.setTimestamp(4, Timestamp.from(Instant.now()));
+                statement.setString(5, twitchUserID);
+                statement.setString(6, songName);
+
                 int result = statement.executeUpdate();
                 if (result == 1) return true;
             } catch (SQLException e) {
