@@ -1,5 +1,6 @@
 package core;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 import com.google.common.io.CharStreams;
@@ -10,6 +11,8 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.nio.file.Path;
+import java.util.Iterator;
+import java.util.stream.StreamSupport;
 
 /**
  *
@@ -50,6 +53,20 @@ public class GBUtility {
         robot.keyRelease(KeyEvent.VK_V);
     }
 
+    public static void systemPrintJSonNode(JsonNode node, String indent) {
+        Iterator<JsonNode> nodeIterator = node.elements();
+        if (nodeIterator.hasNext()) {
+            System.out.println(indent + node.asText());
+            indent += "  ";
+            while (nodeIterator.hasNext()) {
+                systemPrintJSonNode(nodeIterator.next(), indent);
+            }
+        } else {
+            System.out.println(indent + node.toString());
+        }
+
+    }
+
     public static void writeTextToFile(String text, String filePath, boolean append) {
         File file = new File(filePath);
         if (!file.exists()) {
@@ -73,6 +90,6 @@ public class GBUtility {
      * @param text The text to appeand at the end of output/TextToBob.txt
      */
     public static void textToBob(String text) {
-        writeTextToFile(text, "output/textToBob.txt", true);
+        writeTextToFile(text + System.lineSeparator(), "output/textToBob.txt", true);
      }
 }
