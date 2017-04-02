@@ -1,6 +1,8 @@
 package core;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 import com.google.common.io.CharStreams;
@@ -53,18 +55,13 @@ public class GBUtility {
         robot.keyRelease(KeyEvent.VK_V);
     }
 
-    public static void systemPrintJSonNode(JsonNode node, String indent) {
-        Iterator<JsonNode> nodeIterator = node.elements();
-        if (nodeIterator.hasNext()) {
-            System.out.println(indent + node.asText());
-            indent += "  ";
-            while (nodeIterator.hasNext()) {
-                systemPrintJSonNode(nodeIterator.next(), indent);
-            }
-        } else {
-            System.out.println(indent + node.toString());
+    public static void prettyPrintJSonNode(JsonNode node) {
+        try {
+            System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(node));
+        } catch (JsonProcessingException e) {
+            System.out.println("Error printing JsonNode");
+            e.printStackTrace();
         }
-
     }
 
     public static void writeTextToFile(String text, String filePath, boolean append) {

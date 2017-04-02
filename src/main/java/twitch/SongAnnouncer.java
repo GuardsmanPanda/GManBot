@@ -16,11 +16,15 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 //TODO: Account for stream delay of ~16seconds
 public class SongAnnouncer extends ListenerAdapter {
     private static final int STREAMDELAYINSECONDS = 10;
+    private static final Random random = new Random();
     private static String currentSong = "Guardsman Bob";
     private static String displayOnStreamSong = "Guardsman Bob";
     private static float displayOnStreamSongRating = 0f;
@@ -84,20 +88,47 @@ public class SongAnnouncer extends ListenerAdapter {
         return new Pair<>((float) totalRating/numberOfRatings, numberOfRatings);
     }
 
+    /**
+     * Select all song quotes and pick a random one, half the time we want to guarentee that we pick a quote from someone in chat
+     * @return a random song quote
+     */ //TODO: select 50% of the quotes form people in chat.
+    private static String getSongQuote(String songName, boolean nameFirst) {
+        Map<String, String> nameToQuoteMap = new HashMap<>();
+        String selectQuoteFrom = "";
+
+        CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT twitchDisplayName, songQuote FROM SongRatings WHERE songName = ? AND songQuote <> 'none'", songName);
+        int quoteToPick = random.nextInt(cachedRowSet.size()) + 1;
+        try {
+            while (cachedRowSet.next()) {
+                selectQuoteFrom = cachedRowSet.getString("twitchDisplayName");
+                nameToQuoteMap.put(cachedRowSet.getString("twitchDisplayName"), cachedRowSet.getString("songQuote"));
+                System.out.println("Found Quote " +cachedRowSet.getRow() + " <> " + cachedRowSet.getString("twitchDisplayName") + ": " + cachedRowSet.getString("songQuote"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        String returnQuote = nameFirst ? selectQuoteFrom + ": " + nameToQuoteMap.get(selectQuoteFrom) : nameToQuoteMap.get(selectQuoteFrom) + " - " + selectQuoteFrom;
+        return returnQuote;
+    }
+
     private static void songFileChange(String newSongName) {
-        BobsDatabase.addSongRating("39837384", "GManBot", newSongName, 10, "none" );
+        if (newSongName.equalsIgnoreCase("Guardsman Bob")) return;
+
         Pair<Float, Integer> songRatingPair = getSongRating(newSongName);
         float newSongRating = songRatingPair.getKey();
         displayOnStreamSong = newSongName;
         displayOnStreamSongRating = newSongRating;
         displayonStreamNumberOfRatings = songRatingPair.getValue();
-        if (newSongName.equalsIgnoreCase("Guardsman Bob")) return;
+        System.out.println("New Song: " + newSongName + " .. Song quote: " + getSongQuote(newSongName, true));
+
         if (newSongRating < 7.8f) GBUtility.textToBob("Do you want to remove the song: " + newSongName + " <> rating: " +newSongRating);
         new Thread(() -> {
             try { Thread.sleep(1000 * STREAMDELAYINSECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
             currentSong = newSongName;
             //TwitchChat.sendMessage <- new song etc.
         }).start();
+        BobsDatabase.addSongRating("39837384", "GManBot", newSongName, 11, "none" );
     }
 
 
@@ -117,7 +148,6 @@ public class SongAnnouncer extends ListenerAdapter {
                         if (songFileLineArray.size() == 0) break;
                         String newSongNameInFile = songFileLineArray.get(0);
                         if (!lastSongNameInFile.equalsIgnoreCase(newSongNameInFile)) {
-                            System.out.println("New Song: " + newSongNameInFile);
                             songFileChange(newSongNameInFile);
                             lastSongNameInFile = newSongNameInFile;
                         }
@@ -139,11 +169,12 @@ public class SongAnnouncer extends ListenerAdapter {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String hexColor = "#0044ff";
-            if      (displayOnStreamSongRating >= 10f) hexColor = "#ff2200";
+            if      (displayOnStreamSongRating >= 10f) hexColor = "#ff3300";
             else if (displayOnStreamSongRating >=  9f) hexColor = "#ff9900";
-            else if (displayOnStreamSongRating >=  8f) hexColor = "#CCff00";
+            else if (displayOnStreamSongRating >=  8f) hexColor = "#CCdd00";
             else if (displayOnStreamSongRating >=  7f) hexColor = "#33ff66";
             else if (displayOnStreamSongRating >=  6f) hexColor = "#0099ff";
+            else if (displayOnStreamSongRating < 0.1f) hexColor = "#CCCCCC";
 
             //String response = displayOnStreamSong + " <span style=\"color:" + hexColor + "\">" + String.format("%.2f", displayOnStreamSongRating) + "</span>";
             String response = parseSongDataToJSON(displayOnStreamSong, String.format("%.2f", displayOnStreamSongRating), displayonStreamNumberOfRatings, hexColor);
@@ -162,7 +193,7 @@ public class SongAnnouncer extends ListenerAdapter {
             String response = "<html>" +
                     "<head>" +
                     "   <style>" +
-                    "       body { font: 28px \"Helvetica Neue\",Helvetica,Arial,sans-serif; color: #FFFFFF; " +
+                    "       body { font: 26px \"Helvetica Neue\",Helvetica,Arial,sans-serif; color: #eeeeee; " +
                     "           font-weight: 700;" +
                     "           text-shadow: 0px 0px 20px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000; " +
                     "       }" +
@@ -175,7 +206,7 @@ public class SongAnnouncer extends ListenerAdapter {
                     "<body>" +
                     "   <div id =\"song\" class=\"tlt\" style=\"display: inline-block; visibility: hidden; \">Bobs Song Rating!</div>" +
                     "   <div class=\"tlt2\" style=\"display: inline-block; color: #ff9900; visibility: hidden;\">10,00</div>" +
-                    "   <div class=\"tlt3\" style=\"display: inline-block; color: #00dddd; font-weight: 300; font-size: 20px; vertical-align: middle; visibility: hidden;\"> [150]</div>" +
+                    "   <div class=\"tlt3\" style=\"display: inline-block; color: #dddddd; font-weight: 300; font-size: 20px; vertical-align: middle; visibility: hidden;\"> [150]</div>" +
                     "<script>" +
                     "   var currentSongPlaying = 'Guardsman';" +
                     "   var currentSongRating = '9,50';" +
@@ -197,12 +228,21 @@ public class SongAnnouncer extends ListenerAdapter {
                     "   }" +
                     "   function updateSong(newSongJSON) {" +
                     "       if (currentSongPlaying === newSongJSON.songName) {" +
-                    "           timeToNextUpdate = 2000;" + //TODO: update song rating
+                    "           if (currentSongRating === newSongJSON.songRating) {" +
+                    "               timeToNextUpdate = 2000;" +
+                    "           } else {" +
+                    "               timeToNextUpdate = 5000;" +
+                    "               currentSongRating = newSongJSON.songRating;" +
+                    "               songRatingColor = newSongJSON.songRatingColor;" +
+                    "               $('.tlt2').textillate('out');" +
+                    "               setTimeout(songRatingIn, 1000)" +
+                    "           }" +
                     "       } else {" +
-                    "           timeToNextUpdate = 6000;" +
+                    "           timeToNextUpdate = 7000;" +
                     "           currentSongPlaying = newSongJSON.songName;" +
                     "           currentSongRating = newSongJSON.songRating;" +
                     "           numberOfRatings = newSongJSON.numberOfRatings;" +
+                    "           songRatingColor = newSongJSON.songRatingColor;" +
                     "           $('.tlt').textillate('out');" +
                     "           $('.tlt2').textillate('out');" +
                     "       }" +
@@ -216,11 +256,12 @@ public class SongAnnouncer extends ListenerAdapter {
                     "   }" +
                     "   function songRatingIn() {" +
                     "       $('.tlt2').find('li').html(currentSongRating);" +
+                    "       $('.tlt2').css('color',songRatingColor);" +
                     "       $('.tlt2').textillate('in');" +
                     "   }" +
                     "   function numberOfRatingsOut() { $('.tlt3').textillate('out'); }" +
-                    "$('.tlt').textillate({initialDelay: 500, in: { effect: 'bounceIn', callback: songRatingIn }, out: { effect: 'bounceOut', sync: true, callback: setNewSong }, type: 'word' });" +
-                    "$('.tlt2').textillate({ autoStart: false, in: { effect: 'bounceIn' }, out: { effect: 'bounceOut', sync: true }, type: 'word' });" +
+                    "$('.tlt').textillate({initialDelay: 1500, in: { effect: 'bounceIn', callback: songRatingIn }, out: { effect: 'bounceOut', sync: true, callback: setNewSong }, type: 'word' });" +
+                    "$('.tlt2').textillate({ autoStart: false, in: { effect: 'fadeIn' }, out: { effect: 'hinge', sync: true }, type: 'word' });" +
                     "$('.tlt3').textillate({ initialDelay: 4000, autoStart: false, in: { effect: 'fadeInRightBig' }, out: { effect: 'fadeOut' }, type: 'word' });" +
                     "setTimeout(runUpdates, 5000);" +
                     "</script>" +

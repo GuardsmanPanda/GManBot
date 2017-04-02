@@ -37,7 +37,6 @@ public class TwitchChat {
         bot = new PircBotX(config);
     }
 
-
     /**
      * Attempts to connect to the chat server, this may take several seconds so this method should be called before
      * using the bot to send or receive messages.
@@ -51,8 +50,6 @@ public class TwitchChat {
             }
         }).start();
     }
-
-
 
     /**
      * Sends an action to the chat channel.

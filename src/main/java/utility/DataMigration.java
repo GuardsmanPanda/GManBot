@@ -14,6 +14,7 @@ public class DataMigration {
     public static void main(String[] args) throws Exception {
         loadTwitchNameToIDMap();
         //importSongRatings();
+        //TODO: Loop through song rating database and update to current displayname.
     }
 
     public static void importSongRatings() throws Exception {

@@ -3,18 +3,13 @@ package twitch;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import core.GBUtility;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.hc.client5.http.impl.sync.HttpClientBuilder;
 import org.apache.hc.client5.http.methods.HttpGet;
 import org.apache.hc.client5.http.sync.HttpClient;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.StreamSupport;
