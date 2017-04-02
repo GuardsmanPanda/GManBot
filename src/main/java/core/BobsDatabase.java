@@ -29,6 +29,13 @@ public class BobsDatabase {
         } catch (SQLException e) {
             // Silently ignore if the table already exists, TODO: Probably shouldn't ... Whenever derby supports CREATE TABLE IF NOT EXISTS
         }
+
+        try {
+            connection.createStatement().execute("CREATE TABLE TwitchChatUsers (twitchUserID VARCHAR(255) NOT NULL PRIMARY KEY, twitchDisplayName VARCHAR(255) UNIQUE NOT NULL, welcomeMessage VARCHAR(255) NOT NULL DEFAULT 'none')");
+            System.out.println("Created TwitchChatUsers Table");
+        } catch (SQLException e) {
+            // Silently ignore if the table already exists, TODO: Probably shouldn't ... Whenever derby supports CREATE TABLE IF NOT EXISTS
+        }
     }
 
     public static void main(String[] args) {

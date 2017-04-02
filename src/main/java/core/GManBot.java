@@ -4,7 +4,7 @@ import javafx.stage.Stage;
 import javafx.application.Application;
 import twitch.NameSelector;
 import twitch.SongAnnouncer;
-import twitch.StreamStats;
+import twitch.TwitchChatStats;
 import twitch.TwitchChat;
 
 import java.nio.file.Paths;
@@ -19,7 +19,7 @@ public class GManBot extends Application {
         //Ask the twitch handler to open the chat connection, this may take several seconds
         TwitchChat.connect();
         TwitchChat.addListener(new NameSelector());
-        TwitchChat.addListener(new StreamStats());
+        TwitchChat.addListener(new TwitchChatStats());
         TwitchChat.addListener(new SongAnnouncer(Paths.get("C:/Users/Dons/IdeaProjects/GManBot2/winamp.txt")));
 
         // Blocking call, do not include code past this point
