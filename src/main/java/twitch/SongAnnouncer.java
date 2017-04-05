@@ -97,12 +97,13 @@ public class SongAnnouncer extends ListenerAdapter {
         String selectQuoteFrom = "";
 
         CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT twitchDisplayName, songQuote FROM SongRatings WHERE songName = ? AND songQuote <> 'none'", songName);
-        int quoteToPick = random.nextInt(cachedRowSet.size()) + 1;
+        int quoteToPick = 0;
+        if (cachedRowSet.size() > 0) quoteToPick = random.nextInt(cachedRowSet.size()) + 1;
         try {
             while (cachedRowSet.next()) {
                 selectQuoteFrom = cachedRowSet.getString("twitchDisplayName");
                 nameToQuoteMap.put(cachedRowSet.getString("twitchDisplayName"), cachedRowSet.getString("songQuote"));
-                System.out.println("Found Quote " +cachedRowSet.getRow() + " <> " + cachedRowSet.getString("twitchDisplayName") + ": " + cachedRowSet.getString("songQuote"));
+                //System.out.println("Found Quote " +cachedRowSet.getRow() + " <> " + cachedRowSet.getString("twitchDisplayName") + ": " + cachedRowSet.getString("songQuote"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -231,14 +232,14 @@ public class SongAnnouncer extends ListenerAdapter {
                     "           if (currentSongRating === newSongJSON.songRating) {" +
                     "               timeToNextUpdate = 2000;" +
                     "           } else {" +
-                    "               timeToNextUpdate = 5000;" +
+                    "               timeToNextUpdate = 6000;" +
                     "               currentSongRating = newSongJSON.songRating;" +
                     "               songRatingColor = newSongJSON.songRatingColor;" +
                     "               $('.tlt2').textillate('out');" +
-                    "               setTimeout(songRatingIn, 1000)" +
+                    "               setTimeout(songRatingIn, 1500)" +
                     "           }" +
                     "       } else {" +
-                    "           timeToNextUpdate = 7000;" +
+                    "           timeToNextUpdate = 8000;" +
                     "           currentSongPlaying = newSongJSON.songName;" +
                     "           currentSongRating = newSongJSON.songRating;" +
                     "           numberOfRatings = newSongJSON.numberOfRatings;" +
@@ -249,20 +250,20 @@ public class SongAnnouncer extends ListenerAdapter {
                     "   }" +
                     "   function setNewSong() {" +
                     "       $('.tlt').find('li').html(currentSongPlaying);" +
-                    "       $('.tlt3').find('li').html(' >' + numberOfRatings);" +
+                    "       $('.tlt3').find('li').html(' Vote Count: ' + numberOfRatings);" +
                     "       $('.tlt').textillate('start');" +
                     "       $('.tlt3').textillate('start');" +
                     "       setTimeout(numberOfRatingsOut, 11000);" +
                     "   }" +
                     "   function songRatingIn() {" +
                     "       $('.tlt2').find('li').html(currentSongRating);" +
-                    "       $('.tlt2').css('color',songRatingColor);" +
+                    "       $('.tlt2').css('color','hsl('+ ((currentSongRating.replace(',','.') - 1)*24-120) +',100%,50%)');" +
                     "       $('.tlt2').textillate('in');" +
                     "   }" +
                     "   function numberOfRatingsOut() { $('.tlt3').textillate('out'); }" +
                     "$('.tlt').textillate({initialDelay: 1500, in: { effect: 'bounceIn', callback: songRatingIn }, out: { effect: 'bounceOut', sync: true, callback: setNewSong }, type: 'word' });" +
                     "$('.tlt2').textillate({ autoStart: false, in: { effect: 'fadeIn' }, out: { effect: 'hinge', sync: true }, type: 'word' });" +
-                    "$('.tlt3').textillate({ initialDelay: 4000, autoStart: false, in: { effect: 'fadeInRightBig' }, out: { effect: 'fadeOut' }, type: 'word' });" +
+                    "$('.tlt3').textillate({ initialDelay: 4000, autoStart: false, in: { effect: 'fadeInRight', sync: true }, out: { effect: 'fadeOut' }, type: 'word' });" +
                     "setTimeout(runUpdates, 5000);" +
                     "</script>" +
                     "</body>" +

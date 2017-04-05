@@ -36,6 +36,20 @@ public class BobsDatabase {
         } catch (SQLException e) {
             // Silently ignore if the table already exists, TODO: Probably shouldn't ... Whenever derby supports CREATE TABLE IF NOT EXISTS
         }
+
+        try {
+            connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD hasSubscribed BOOLEAN NOT NULL DEFAULT false");
+            System.out.println("Adding 'hasSubscribed' column to TwitchChatUsers Table");
+        } catch (SQLException e) {
+            //silently kill exception if column already exists because javadb is a bastard.
+        }
+
+        try {
+            connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD twitchLowerCaseName GENERATED ALWAYS AS (LOWER(twitchDisplayName))");
+            connection.createStatement().execute("CREATE INDEX twitchLowerIndex ON TwitchChatUsers(twitchLowerCaseName)");
+        } catch (SQLException e) {
+            //silently kill exception if column already exists because javadb is a bastard.
+        }
     }
 
     public static void main(String[] args) {

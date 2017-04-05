@@ -3,6 +3,7 @@ package twitch;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import core.GBUtility;
 import org.apache.hc.client5.http.impl.sync.HttpClientBuilder;
 import org.apache.hc.client5.http.methods.HttpGet;
 import org.apache.hc.client5.http.sync.HttpClient;
@@ -21,9 +22,7 @@ public class Twitch {
     private static final HttpClient client = HttpClientBuilder.create().build();
 
     public static void main(String[] args) {
-        //System.out.println(Arrays.toString(getSubscriberEmoticons("guardsmanbob").toArray()));
-        List<String> streamers = getListOfStreamsForGame("oxygen not included", 30, 0);
-        //System.out.println(ArrayUtils.toString(streamers.toArray()));
+        System.out.println(getTwitchUserID("dark050"));
     }
 
     public static boolean isStreamOnline(String twitchName, boolean defaultAssumption) {

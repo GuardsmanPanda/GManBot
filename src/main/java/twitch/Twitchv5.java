@@ -2,6 +2,7 @@ package twitch;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import core.GBUtility;
 import jdk.incubator.http.HttpClient;
 import jdk.incubator.http.HttpRequest;
 import jdk.incubator.http.HttpResponse;
@@ -12,9 +13,13 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Twitchv5 {
     private static final HttpClient httpClient = HttpClient.newHttpClient();
+    private static final int CHANNELID = 30084132;
     private static String twitchApiKey = "";
     static {
         Path apiKeyPath = Paths.get("Data/twitchapikey.txt");
@@ -27,16 +32,29 @@ public class Twitchv5 {
     }
 
     public static void main(String[] args) {
-        System.out.println(getDisplayName("39837384"));
     }
 
     public static String getDisplayName(String twitchUserID) {
         JsonNode rootNode = executeHttpGet("https://api.twitch.tv/kraken/users/" + twitchUserID);
-        if (rootNode.has("error")) {
-            System.out.println("Error requesting user ID " + twitchUserID);
-            return "";
-        } else {
+        if (rootNode.has("display_name")) {
             return rootNode.get("display_name").asText();
+        } else {
+            System.out.println("Error requesting user ID " + twitchUserID);
+            GBUtility.prettyPrintJSonNode(rootNode);
+            return "";
+        }
+    }
+    public static LocalDate getFollowDate(String twitchUserID) {
+        JsonNode rootNode = executeHttpGet("https://api.twitch.tv/kraken/users/" + twitchUserID + "/follows/channels/30084132");
+        if (rootNode.has("created_at")) {
+            return LocalDate.parse(rootNode.get("created_at").asText().split("T")[0]);
+        } else if (rootNode.has("error") && rootNode.has("message") && rootNode.get("message").asText().equalsIgnoreCase("follow not found")) {
+            //if the twitchUserID is not a stream follower return null
+            return null;
+        } else {
+            System.out.println("Something went wrong getting followDateTime for " + twitchUserID);
+            GBUtility.prettyPrintJSonNode(rootNode);
+            return LocalDate.now();
         }
     }
 
@@ -52,10 +70,10 @@ public class Twitchv5 {
 
             if (response.statusCode() == 200) {
                 return new ObjectMapper().readTree(response.body());
-            } else if (response.statusCode() == 400) {
+            } else if (response.statusCode() == 400 || response.statusCode() == 404) {
                 //Bad request, for example requesting a user that doesn't exist anymore.
                 return new ObjectMapper().readTree(response.body());
-            } else  {
+            } else {
                 System.out.println("Something went wrong when executing GET: " + requestURIString);
                 System.out.println(response.statusCode());
                 System.out.println(response.body());

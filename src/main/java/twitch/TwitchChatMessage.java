@@ -34,4 +34,8 @@ public class TwitchChatMessage {
         if (message.contains(" ")) return message.substring(message.indexOf(" ")).trim();
         else return message;
     }
+
+    public String getMessageCommand() {
+        return message.split(" ")[0].toLowerCase().trim();
+    }
 }
