@@ -32,7 +32,7 @@ public class TwitchChatMessage {
      */
     public String getMessageContent() {
         if (message.contains(" ")) return message.substring(message.indexOf(" ")).trim();
-        else return message;
+        else return "";
     }
 
     public String getMessageCommand() {

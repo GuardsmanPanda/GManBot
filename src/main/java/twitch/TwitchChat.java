@@ -1,8 +1,10 @@
 package twitch;
 
 import com.google.common.io.Files;
+import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
+import org.pircbotx.UserHostmask;
 import org.pircbotx.cap.EnableCapHandler;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.ListenerAdapter;
@@ -113,6 +115,7 @@ public class TwitchChat {
         public void onJoin(JoinEvent event) {
             if (event.getUser().getNick().equalsIgnoreCase(bot.getNick())) {
                 System.out.println("Joined Channel " + event.getChannel().getName());
+                System.out.println();
             }
         }
 
@@ -139,7 +142,7 @@ public class TwitchChat {
                     event.getMessage()
                 );
             System.out.println(message);
-*/
+            */
         }
 
 

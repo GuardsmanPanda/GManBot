@@ -7,7 +7,7 @@ import org.pircbotx.hooks.events.MessageEvent;
 
 import java.util.HashSet;
 
-public class TwitchChatStats extends ListenerAdapter {
+public class TwitchChatPassiveInformation extends ListenerAdapter {
     private static final HashSet<String> emoticons = new HashSet<>();
     private static final Multiset<String> emoticonUsage = HashMultiset.create();
 
@@ -20,11 +20,15 @@ public class TwitchChatStats extends ListenerAdapter {
     }
 
     @Override
-    public void onMessage(MessageEvent event) throws Exception {
-        super.onMessage(event);
-        String chatMessage = event.getMessage();
+    public void onMessage(MessageEvent event)  {
+        TwitchChatMessage chatMessage = new TwitchChatMessage(event);
+
+        if (chatMessage.displayName.equalsIgnoreCase("twitchnotify")) {
+
+        }
+
         emoticons.parallelStream()
-                 .filter(chatMessage::contains)
+                 .filter(chatMessage.message::contains)
                  .forEach(emoticonUsage::add);
     }
 }

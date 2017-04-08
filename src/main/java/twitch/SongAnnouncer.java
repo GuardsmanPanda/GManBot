@@ -33,10 +33,7 @@ public class SongAnnouncer extends ListenerAdapter {
     public SongAnnouncer(Path songFilePath) {
         startSongAnnouncer();
         watchSongFile(songFilePath);
-    }
 
-    public static void main(String[] args) {
-        System.out.println(parseSongDataToJSON("bobs song", "7.13", 100, "Hello"));
     }
 
     @Override
@@ -44,7 +41,6 @@ public class SongAnnouncer extends ListenerAdapter {
         if (event.getMessage().toLowerCase().startsWith("!rate ")) {
             TwitchChatMessage tcm = new TwitchChatMessage(event);
             String songQuote = "none";
-            System.out.println("Rating from " + tcm.displayName);
             try {
                 int rating = Integer.parseInt(tcm.getMessageContent().split(" ")[0]);
                 if (rating < 1 ) rating = 1;
@@ -54,7 +50,6 @@ public class SongAnnouncer extends ListenerAdapter {
                 BobsDatabase.addSongRating(tcm.userID, tcm.displayName, currentSong, rating, songQuote);
                 Pair<Float, Integer> songRatingPair = getSongRating(displayOnStreamSong);
                 displayOnStreamSongRating = songRatingPair.getKey();
-                System.out.println("Rating: " + rating + " Quote: " + songQuote);
             } catch (NumberFormatException nfe) {
                 // Silently kill number format exceptions
             }

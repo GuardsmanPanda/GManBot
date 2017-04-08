@@ -31,29 +31,23 @@ public class BobsDatabase {
         }
 
         try {
-            connection.createStatement().execute("CREATE TABLE TwitchChatUsers (twitchUserID VARCHAR(255) NOT NULL PRIMARY KEY, twitchDisplayName VARCHAR(255) UNIQUE NOT NULL, welcomeMessage VARCHAR(255) NOT NULL DEFAULT 'none')");
+            connection.createStatement().execute("CREATE TABLE TwitchChatUsers (twitchUserID VARCHAR(25) NOT NULL PRIMARY KEY, twitchDisplayName VARCHAR(30) UNIQUE NOT NULL, twitchLowerCaseName GENERATED ALWAYS AS (LOWER(twitchDisplayName)), hasSubscribed BOOLEAN NOT NULL DEFAULT false, welcomeMessage VARCHAR(255) NOT NULL DEFAULT 'none')");
+            connection.createStatement().execute("CREATE INDEX twitchLowerIndex ON TwitchChatUsers(twitchLowerCaseName)");
             System.out.println("Created TwitchChatUsers Table");
         } catch (SQLException e) {
             // Silently ignore if the table already exists, TODO: Probably shouldn't ... Whenever derby supports CREATE TABLE IF NOT EXISTS
         }
 
         try {
-            connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD hasSubscribed BOOLEAN NOT NULL DEFAULT false");
-            System.out.println("Adding 'hasSubscribed' column to TwitchChatUsers Table");
-        } catch (SQLException e) {
-            //silently kill exception if column already exists because javadb is a bastard.
-        }
 
-        try {
-            connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD twitchLowerCaseName GENERATED ALWAYS AS (LOWER(twitchDisplayName))");
-            connection.createStatement().execute("CREATE INDEX twitchLowerIndex ON TwitchChatUsers(twitchLowerCaseName)");
+            connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD subscriberMonths INTEGER NOT NULL DEFAULT 0");
         } catch (SQLException e) {
-            //silently kill exception if column already exists because javadb is a bastard.
+            // probably should check for column and only add if not exists, but im lazy
         }
     }
 
-    public static void main(String[] args) {
-        printTable("SongRatings");
+    public static void main(String[] args) throws SQLException {
+
     }
 
     /**

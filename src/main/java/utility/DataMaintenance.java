@@ -1,8 +1,27 @@
 package utility;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import core.BobsDatabaseHelper;
+import core.GBUtility;
+import twitch.Twitchv5;
+
+import java.util.stream.StreamSupport;
+
 public class DataMaintenance {
 
+    public static void main(String[] args) {
 
+    }
 
+    public static void addAllCurrentSubsAndPrimeSubstoDB() {
+        int total = 1000;
+        for (int offset = 0; offset < total; offset +=99) {
+            JsonNode node = Twitchv5.executeHttpGet("https://api.twitch.tv/kraken/channels/30084132/subscriptions?offset=" + offset);
+            total = node.get("_total").asInt();
+            StreamSupport.stream(node.get("subscriptions").spliterator(),false)
+                    .map(json -> json.get("user").get("_id").asText())
+                    .forEach(BobsDatabaseHelper::setHasSubscribed);
+        }
+    }
 }

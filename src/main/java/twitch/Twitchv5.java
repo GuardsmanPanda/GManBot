@@ -10,6 +10,7 @@ import jdk.incubator.http.HttpResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,17 +22,22 @@ public class Twitchv5 {
     private static final HttpClient httpClient = HttpClient.newHttpClient();
     private static final int CHANNELID = 30084132;
     private static String twitchApiKey = "";
+    private static String twitchAccessToken = "";
+
     static {
         Path apiKeyPath = Paths.get("Data/twitchapikey.txt");
         try {
             twitchApiKey = Files.readAllLines(apiKeyPath).get(0);
+            twitchAccessToken = Files.readAllLines(Paths.get("Data/twitchoauthtoken.txt")).get(0);
         } catch (IOException e) {
             System.out.println("Expecting api key as first line in file: " + apiKeyPath.toString());
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
+        //System.out.println(Twitch.getTwitchUserID("guardsmanbob"));
+        //System.out.println(getDisplayName("30084132"));
     }
 
     public static String getDisplayName(String twitchUserID) {
@@ -65,6 +71,7 @@ public class Twitchv5 {
             HttpRequest getRequest = HttpRequest.newBuilder(requestURI)
                     .header("Accept", "application/vnd.twitchtv.v5+json")
                     .header("Client-ID", twitchApiKey)
+                    .header("Authorization", "OAuth " + twitchAccessToken)
                     .GET().build();
             HttpResponse<String> response = httpClient.send(getRequest, HttpResponse.BodyHandler.asString());
 

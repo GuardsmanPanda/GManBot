@@ -5,8 +5,6 @@ import javafx.application.Application;
 import twitch.*;
 
 import java.nio.file.Paths;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
 
 public class GManBot extends Application {
     public static void main(String[] args)  {
@@ -16,7 +14,7 @@ public class GManBot extends Application {
         //Ask the twitch handler to open the chat connection, this may take several seconds
         TwitchChat.connect();
         //TwitchChat.addListener(new NameSelector());
-        TwitchChat.addListener(new TwitchChatStats());
+        TwitchChat.addListener(new TwitchChatPassiveInformation());
         TwitchChat.addListener(new TwitchChatExtras());
         TwitchChat.addListener(new SongAnnouncer(Paths.get("C:/Users/Dons/IdeaProjects/GManBot2/winamp.txt")));
 

@@ -1,6 +1,7 @@
 package utility;
 
 import core.BobsDatabase;
+import core.BobsDatabaseHelper;
 import twitch.Twitch;
 
 import javax.sql.rowset.CachedRowSet;
@@ -12,9 +13,7 @@ public class DataMigration {
     private static HashMap<String, String> twitchNameToIDMap = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
-        loadTwitchNameToIDMap();
-        //importSongRatings();
-        //TODO: Loop through song rating database and update to current displayname.
+        //migrateSubStatusandWelcomeMessages();
     }
 
     public static void importSongRatings() throws Exception {
@@ -55,16 +54,34 @@ public class DataMigration {
         }
     }
 
-    private static void loadTwitchNameToIDMap() {
-        CachedRowSet songRatingNamesAndIDs = BobsDatabase.getCachedRowSetFromSQL("Select twitchUserID, twitchDisplayName FROM SongRatings");
-        System.out.println("Loaded " + songRatingNamesAndIDs.size() + " song ratings");
-        try {
-            while (songRatingNamesAndIDs.next()) {
-                twitchNameToIDMap.put(songRatingNamesAndIDs.getString("twitchDisplayName"), songRatingNamesAndIDs.getString("twitchUserID"));
+    public static void migrateSubStatusandWelcomeMessages() throws Exception {
+        Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+        Connection databaseConnection = DriverManager.getConnection("jdbc:derby:gmanbotdb");
+
+        ResultSet resultSet = databaseConnection.createStatement().executeQuery("SELECT twitchName, welcomeMessage, subscriberStatus FROM Chat WHERE subscriberStatus = true OR  welcomeMessage <> 'none'");
+        CachedRowSet cachedRowSet = RowSetProvider.newFactory().createCachedRowSet();
+        cachedRowSet.populate(resultSet);
+
+        while (cachedRowSet.next()) {
+            String twitchName = cachedRowSet.getString("twitchName");
+            String welcomeMessage = cachedRowSet.getString("welcomeMessage");
+            Boolean hasSubcribed = cachedRowSet.getBoolean("subScriberStatus");
+            String twitchUserID = Twitch.getTwitchUserID(twitchName);
+
+            if (twitchUserID.isEmpty()) {
+                System.out.println("empty user ID for " + Twitch.getTwitchUserID(cachedRowSet.getString("twitchName")));
+            } else {
+                if (welcomeMessage.equalsIgnoreCase("none") || welcomeMessage.equalsIgnoreCase("!setwelcomemessage")) {
+                    System.out.println("no welcome message for " + twitchName);
+                } else {
+                    BobsDatabaseHelper.setWelcomeMessage(twitchUserID, welcomeMessage);
+                    System.out.println("set welcome message for " + twitchName + " to: " +welcomeMessage);
+                }
+                if (hasSubcribed) {
+                    BobsDatabaseHelper.setHasSubscribed(twitchUserID);
+                    System.out.println(twitchName + " has subscribed!");
+                }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        System.out.println("Found " + twitchNameToIDMap.size() + " twitch ID's");
     }
 }

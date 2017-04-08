@@ -1,36 +1,62 @@
 package twitch;
 
-import core.GBUtility;
-import org.apache.commons.lang3.time.DurationFormatUtils;
+import core.BobsDatabaseHelper;
+import org.apache.commons.lang3.tuple.Triple;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.MessageEvent;
-import org.pircbotx.hooks.events.SetModeratedEvent;
 
-import java.time.Duration;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 
-/**
- * Created by Dons on 02-04-2017.
- */
 public class TwitchChatExtras extends ListenerAdapter {
+    private static HashMap<String, LocalDateTime> lastWelcomeMessageTime = new HashMap<>();
+    private static final LocalDateTime startTime = LocalDateTime.now();
 
     @Override
     public void onMessage(MessageEvent event)  {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
         switch (chatMessage.getMessageCommand()) {
             case "!followage": followAge(chatMessage); break;
+            case "!setwelcomemessage": setWelcomeMessage(chatMessage); break;
         }
     }
 
-    @Override
+    @Override // todo: add a 5-6 second delay on welcome message
     public void onJoin(JoinEvent event) {
-        System.out.println(event.getUser().getRealName());
-        System.out.println(event.getUserHostmask().getNick());
-        System.out.println(event.getUserHostmask().getHostname());
+        //ignore join events for the first 2 minutes of a restart to avoid mass channel spam.
+        if (startTime.plusMinutes(2).isAfter(LocalDateTime.now())) return;
+
+        Triple<String, String, Boolean> welcomeTriple = BobsDatabaseHelper.getDisplayNameWelcomeMessageAndHasSubbedStatus(event.getUserHostmask().getNick());
+        String displayName = welcomeTriple.getLeft();
+        String welcomeMessage = welcomeTriple.getMiddle();
+        Boolean hasSubscribed = welcomeTriple.getRight();
+
+        if (hasSubscribed && !welcomeMessage.equalsIgnoreCase("none")) {
+            System.out.println("join " + displayName + " welcome message: " +welcomeMessage);
+            if (welcomeMessage.startsWith("/") && !welcomeMessage.toLowerCase().startsWith("/me ")) return;
+
+            if (lastWelcomeMessageTime.containsKey(displayName) && lastWelcomeMessageTime.get(displayName).isAfter(LocalDateTime.now().minus(2, ChronoUnit.HOURS))) {
+                //we have recently sent a welcome message to the user
+                System.out.println("Already sent welcome message for " + displayName);
+            } else {
+                new Thread(() -> {
+                    try { Thread.sleep(4000); } catch (InterruptedException e) { e.printStackTrace(); }
+                    if (welcomeMessage.toLowerCase().startsWith("/me ")) {
+                        TwitchChat.sendAction(welcomeMessage.substring(4));
+                    }
+                    else {
+                        TwitchChat.sendMessage(welcomeMessage);
+                    }
+                    lastWelcomeMessageTime.put(displayName, LocalDateTime.now());
+                }).start();
+            }
+        }
     }
+
 
     private static void followAge(TwitchChatMessage chatMessage) {
         LocalDate followDate = Twitchv5.getFollowDate(chatMessage.userID);
@@ -48,5 +74,9 @@ public class TwitchChatExtras extends ListenerAdapter {
 
         String printString = chatMessage.displayName + ": Followed for " + followPeriodString + ".";
         TwitchChat.sendMessage(printString);
+    }
+    private static void setWelcomeMessage(TwitchChatMessage chatMessage) {
+        BobsDatabaseHelper.setWelcomeMessage(chatMessage.userID, chatMessage.getMessageContent());
+        if (chatMessage.isSubOrPrime) BobsDatabaseHelper.setHasSubscribed(chatMessage.userID);
     }
 }
