@@ -6,13 +6,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 import com.google.common.io.CharStreams;
+import org.apache.commons.lang3.StringUtils;
 import org.pircbotx.hooks.events.MessageEvent;
 
+import javax.sql.rowset.CachedRowSet;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.nio.file.Path;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.stream.StreamSupport;
 
@@ -24,6 +28,12 @@ public class GBUtility {
 
     static {
         try { robot = new Robot(); } catch (AWTException e) { e.printStackTrace(); }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(strictFill("javaisthebestever", 12) + " 9");
+        System.out.println(strictFill("somethingsho", 12) + " 7");
+        System.out.println(strictFill("hello", 12) + " 5");
     }
 
     public static <E> E getElementWithHighestCount(Multiset<E> multiSet) {
@@ -42,6 +52,16 @@ public class GBUtility {
         return returnText;
     }
 
+    public static String strictFill(String text, int maximumLength) { return strictFill(text, " ", maximumLength); }
+    public static String strictFill(String text, String fill, int maximumLength) {
+        if (text.length() <= maximumLength) return stringFill(text, fill, maximumLength);
+        else return text.substring(0, maximumLength - 2) + "..";
+    }
+    public static String stringFill(String text, int minimumLength) { return  stringFill(text, " ", minimumLength); }
+    public static String stringFill(String text, String fill, int minimumLength) {
+        return text + StringUtils.repeat(fill, minimumLength - text.length());
+    }
+
     /**
      * Writes the string as if the user typed it on his keyboard.
      * @param stringToPaste
@@ -54,7 +74,6 @@ public class GBUtility {
         robot.keyRelease(KeyEvent.VK_CONTROL);
         robot.keyRelease(KeyEvent.VK_V);
     }
-
     public static void prettyPrintJSonNode(JsonNode node) {
         try {
             System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(node));
@@ -63,7 +82,23 @@ public class GBUtility {
             e.printStackTrace();
         }
     }
+    public static void prettyPrintCachedRowSet(CachedRowSet cachedRowSet, int rowsToPrint) {
+        try {
+            ResultSetMetaData metaData = cachedRowSet.getMetaData();
+            String columnNames = "";
+            for (int i = 1; i <= metaData.getColumnCount(); i++) columnNames += strictFill(metaData.getColumnLabel(i), 20) + " ";
+            System.out.println(columnNames.trim());
 
+            while (cachedRowSet.next()) {
+                String rowString = "";
+                for (int i = 1; i <= metaData.getColumnCount(); i++) rowString += strictFill(cachedRowSet.getString(i), 20) + " ";
+                System.out.println(rowString.trim());
+                if (cachedRowSet.getRow() >= rowsToPrint) break;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     public static void writeTextToFile(String text, String filePath, boolean append) {
         File file = new File(filePath);
         if (!file.exists()) {
@@ -81,7 +116,6 @@ public class GBUtility {
             e.printStackTrace();
         }
     }
-
     /**
      * Saves text for bob to read, usually related to configuration changes needed, such as adding to the translation maps
      * @param text The text to appeand at the end of output/TextToBob.txt

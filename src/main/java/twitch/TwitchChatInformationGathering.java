@@ -7,7 +7,7 @@ import org.pircbotx.hooks.events.MessageEvent;
 
 import java.util.HashSet;
 
-public class TwitchChatPassiveInformation extends ListenerAdapter {
+public class TwitchChatInformationGathering extends ListenerAdapter {
     private static final HashSet<String> emoticons = new HashSet<>();
     private static final Multiset<String> emoticonUsage = HashMultiset.create();
 

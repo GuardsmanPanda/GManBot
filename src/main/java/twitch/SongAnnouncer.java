@@ -118,7 +118,7 @@ public class SongAnnouncer extends ListenerAdapter {
         displayonStreamNumberOfRatings = songRatingPair.getValue();
         System.out.println("New Song: " + newSongName + " .. Song quote: " + getSongQuote(newSongName, true));
 
-        if (newSongRating < 7.8f) GBUtility.textToBob("Do you want to remove the song: " + newSongName + " <> rating: " +newSongRating);
+        if (newSongRating < 7.7f) GBUtility.textToBob("Do you want to remove the song: " + newSongName + " <> rating: " +newSongRating);
         new Thread(() -> {
             try { Thread.sleep(1000 * STREAMDELAYINSECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
             currentSong = newSongName;

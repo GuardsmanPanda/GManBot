@@ -25,10 +25,9 @@ public class TwitchChatExtras extends ListenerAdapter {
         }
     }
 
-    @Override // todo: add a 5-6 second delay on welcome message
     public void onJoin(JoinEvent event) {
         //ignore join events for the first 2 minutes of a restart to avoid mass channel spam.
-        if (startTime.plusMinutes(2).isAfter(LocalDateTime.now())) return;
+        if (startTime.plusMinutes(3).isAfter(LocalDateTime.now())) return;
 
         Triple<String, String, Boolean> welcomeTriple = BobsDatabaseHelper.getDisplayNameWelcomeMessageAndHasSubbedStatus(event.getUserHostmask().getNick());
         String displayName = welcomeTriple.getLeft();

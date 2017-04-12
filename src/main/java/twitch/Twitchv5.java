@@ -14,6 +14,7 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,6 +39,7 @@ public class Twitchv5 {
     public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
         //System.out.println(Twitch.getTwitchUserID("guardsmanbob"));
         //System.out.println(getDisplayName("30084132"));
+        //GBUtility.prettyPrintJSonNode(executeHttpGet("https://api.twitch.tv/kraken/channels/30084132/subscriptions?offset=0"));
     }
 
     public static String getDisplayName(String twitchUserID) {
@@ -65,13 +67,14 @@ public class Twitchv5 {
     }
 
 
-    public static JsonNode executeHttpGet(String requestURIString) {
+    public synchronized static JsonNode executeHttpGet(String requestURIString) {
         try {
             URI requestURI  = new URI(requestURIString);
             HttpRequest getRequest = HttpRequest.newBuilder(requestURI)
                     .header("Accept", "application/vnd.twitchtv.v5+json")
                     .header("Client-ID", twitchApiKey)
                     .header("Authorization", "OAuth " + twitchAccessToken)
+                    .timeout(Duration.ofSeconds(5))
                     .GET().build();
             HttpResponse<String> response = httpClient.send(getRequest, HttpResponse.BodyHandler.asString());
 

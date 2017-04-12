@@ -16,8 +16,14 @@ import org.pircbotx.hooks.events.PrivateMessageEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+//TODO Code a spam filter that prevents sending the same message to tchat withint x minutes
 public class TwitchChat {
     private static boolean connected = false;
     private static final PircBotX bot;
@@ -80,6 +86,12 @@ public class TwitchChat {
 
     public static void removeListener(ListenerAdapter listener) {
         bot.getConfiguration().getListenerManager().removeListener(listener);
+    }
+
+    public static Set<String> getLowerCaseNamesInChannel(String channelName) {
+        return bot.getUserChannelDao().getUsers(bot.getUserChannelDao().getChannel(channelName)).stream()
+                .map(user -> user.getNick().toLowerCase())
+                .collect(Collectors.toSet());
     }
 
 
