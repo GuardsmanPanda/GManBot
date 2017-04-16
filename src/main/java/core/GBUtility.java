@@ -54,8 +54,10 @@ public class GBUtility {
 
     public static String strictFill(String text, int maximumLength) { return strictFill(text, " ", maximumLength); }
     public static String strictFill(String text, String fill, int maximumLength) {
-        if (text.length() <= maximumLength) return stringFill(text, fill, maximumLength);
-        else return text.substring(0, maximumLength - 2) + "..";
+        if (text.length() <= maximumLength)
+            return stringFill(text, fill, maximumLength);
+        else
+            return text.substring(0, maximumLength - 2) + "..";
     }
     public static String stringFill(String text, int minimumLength) { return  stringFill(text, " ", minimumLength); }
     public static String stringFill(String text, String fill, int minimumLength) {
@@ -83,15 +85,18 @@ public class GBUtility {
         }
     }
     public static void prettyPrintCachedRowSet(CachedRowSet cachedRowSet, int rowsToPrint) {
+        prettyPrintCachedRowSet(cachedRowSet, rowsToPrint, 20);
+    }
+    public static void prettyPrintCachedRowSet(CachedRowSet cachedRowSet, int rowsToPrint, int rowLength) {
         try {
             ResultSetMetaData metaData = cachedRowSet.getMetaData();
             String columnNames = "";
-            for (int i = 1; i <= metaData.getColumnCount(); i++) columnNames += strictFill(metaData.getColumnLabel(i), 20) + " ";
+            for (int i = 1; i <= metaData.getColumnCount(); i++) columnNames += strictFill(metaData.getColumnLabel(i), rowLength) + " ";
             System.out.println(columnNames.trim());
 
             while (cachedRowSet.next()) {
                 String rowString = "";
-                for (int i = 1; i <= metaData.getColumnCount(); i++) rowString += strictFill(cachedRowSet.getString(i), 20) + " ";
+                for (int i = 1; i <= metaData.getColumnCount(); i++) rowString += strictFill(cachedRowSet.getString(i), rowLength) + " ";
                 System.out.println(rowString.trim());
                 if (cachedRowSet.getRow() >= rowsToPrint) break;
             }
@@ -99,6 +104,7 @@ public class GBUtility {
             e.printStackTrace();
         }
     }
+
     public static void writeTextToFile(String text, String filePath, boolean append) {
         File file = new File(filePath);
         if (!file.exists()) {

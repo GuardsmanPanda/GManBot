@@ -5,10 +5,7 @@ module gmanbot.main {
     requires jackson.databind;
     requires jackson.core;
     requires jackson.annotations;
-    requires commons.lang;
     requires java.desktop;
-    requires httpclient;
-    requires httpcore;
     requires jnativehook;
     requires commons.logging;
     requires slf4j.api;

@@ -74,7 +74,7 @@ public class Twitchv5 {
                     .header("Accept", "application/vnd.twitchtv.v5+json")
                     .header("Client-ID", twitchApiKey)
                     .header("Authorization", "OAuth " + twitchAccessToken)
-                    .timeout(Duration.ofSeconds(5))
+                    //.timeout(Duration.ofSeconds(5))
                     .GET().build();
             HttpResponse<String> response = httpClient.send(getRequest, HttpResponse.BodyHandler.asString());
 

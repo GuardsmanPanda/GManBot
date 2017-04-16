@@ -16,13 +16,13 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 //TODO: Account for stream delay of ~16seconds
 public class SongAnnouncer extends ListenerAdapter {
+    private static final HashMap<String, String> ratingReminderMap = new HashMap<>();
+    private static final HashMap<String, String> quoteReminderMap = new HashMap<>();
     private static final int STREAMDELAYINSECONDS = 10;
     private static final Random random = new Random();
     private static String currentSong = "Guardsman Bob";
@@ -38,8 +38,8 @@ public class SongAnnouncer extends ListenerAdapter {
 
     @Override
     public void onMessage(MessageEvent event) {
-        if (event.getMessage().toLowerCase().startsWith("!rate ")) {
-            TwitchChatMessage tcm = new TwitchChatMessage(event);
+        TwitchChatMessage tcm = new TwitchChatMessage(event);
+        if (tcm.message.toLowerCase().startsWith("!rate ")) {
             String songQuote = "none";
             try {
                 int rating = Integer.parseInt(tcm.getMessageContent().split(" ")[0]);
@@ -52,6 +52,11 @@ public class SongAnnouncer extends ListenerAdapter {
                 displayOnStreamSongRating = songRatingPair.getKey();
             } catch (NumberFormatException nfe) {
                 // Silently kill number format exceptions
+            }
+        } else {
+            switch (tcm.getMessageCommand()) {
+                case "!songreminder": case "!ratingreminder": case "!addsongreminder": case "!addratingreminder": ratingReminderMap.put(tcm.userID, tcm.displayName); break;
+                case "!removeratingreminder":case "!removesongreminder": ratingReminderMap.remove(tcm.userID); break;
             }
         }
     }
@@ -91,6 +96,7 @@ public class SongAnnouncer extends ListenerAdapter {
         Map<String, String> nameToQuoteMap = new HashMap<>();
         String selectQuoteFrom = "";
 
+
         CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT twitchDisplayName, songQuote FROM SongRatings WHERE songName = ? AND songQuote <> 'none'", songName);
         int quoteToPick = 0;
         if (cachedRowSet.size() > 0) quoteToPick = random.nextInt(cachedRowSet.size()) + 1;
@@ -119,14 +125,38 @@ public class SongAnnouncer extends ListenerAdapter {
         System.out.println("New Song: " + newSongName + " .. Song quote: " + getSongQuote(newSongName, true));
 
         if (newSongRating < 7.7f) GBUtility.textToBob("Do you want to remove the song: " + newSongName + " <> rating: " +newSongRating);
+
         new Thread(() -> {
             try { Thread.sleep(1000 * STREAMDELAYINSECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
-            currentSong = newSongName;
-            //TwitchChat.sendMessage <- new song etc.
+            //Check if the song to be announced in chat is actually still playing
+            if (displayOnStreamSong.equalsIgnoreCase(newSongName)) {
+                currentSong = newSongName;
+                //TwitchChat.sendMessage <- TODO <-
+                try { Thread.sleep(8000); } catch (InterruptedException e) { e.printStackTrace(); }
+                Set<String> peopleInChat = TwitchChat.getLowerCaseNamesInChannel("#guardsmanbob");
+                String remindString = ratingReminderMap.keySet().stream()
+                        .filter(twitchID -> peopleInChat.contains(ratingReminderMap.get(twitchID).toLowerCase()))
+                        .filter(twitchID -> getIndividualSongRating(twitchID, newSongName) == 0)
+                        .limit(10)
+                        .map(ratingReminderMap::get)
+                        .collect(Collectors.joining(", "));
+                if (!remindString.isEmpty()) TwitchChat.sendMessage("Rate The Song! -> " + remindString);
+            }
         }).start();
         BobsDatabase.addSongRating("39837384", "GManBot", newSongName, 11, "none" );
     }
 
+    private static int getIndividualSongRating(String twitchUserID, String songName) {
+        int returnRating = 0;
+
+        try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT songRating FROM SongRatings WHERE twitchUserID = ? AND songName = ?", twitchUserID, songName)) {
+            while (cachedRowSet.next()) returnRating = cachedRowSet.getInt("songRating");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return returnRating;
+    }
 
     private static void watchSongFile(Path songFileLocation) {
         new Thread(() -> {

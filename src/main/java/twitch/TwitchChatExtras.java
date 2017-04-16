@@ -75,7 +75,10 @@ public class TwitchChatExtras extends ListenerAdapter {
         TwitchChat.sendMessage(printString);
     }
     private static void setWelcomeMessage(TwitchChatMessage chatMessage) {
-        BobsDatabaseHelper.setWelcomeMessage(chatMessage.userID, chatMessage.getMessageContent());
-        if (chatMessage.isSubOrPrime) BobsDatabaseHelper.setHasSubscribed(chatMessage.userID);
+        if (chatMessage.getMessageContent().equalsIgnoreCase("!setwelcomemessage")) return;
+
+        if (chatMessage.isSubOrPrime) BobsDatabaseHelper.setHasSubscribed(chatMessage.userID, chatMessage.displayName);
+
+        BobsDatabaseHelper.setWelcomeMessage(chatMessage.userID, chatMessage.displayName, chatMessage.getMessageContent());
     }
 }

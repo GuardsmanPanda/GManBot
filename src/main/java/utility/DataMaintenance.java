@@ -15,7 +15,8 @@ import java.util.stream.StreamSupport;
 public class DataMaintenance {
 
     public static void main(String[] args) throws SQLException {
-        //cleanSongRatingDB();
+        //GBUtility.prettyPrintJSonNode(Twitchv5.executeHttpGet("https://api.twitch.tv/kraken/channels/30084132/subscriptions?offset=" + 50));
+        addAllCurrentSubsAndPrimeSubstoDB();
     }
 
     //TODO, version 1 removes songs not rated by gmanbot, version 2 should remove songs not rated by gmanbot since date x
@@ -44,8 +45,7 @@ public class DataMaintenance {
             JsonNode node = Twitchv5.executeHttpGet("https://api.twitch.tv/kraken/channels/30084132/subscriptions?offset=" + offset);
             total = node.get("_total").asInt();
             StreamSupport.stream(node.get("subscriptions").spliterator(),false)
-                    .map(json -> json.get("user").get("_id").asText())
-                    .forEach(BobsDatabaseHelper::setHasSubscribed);
+                    .forEach(json -> BobsDatabaseHelper.setHasSubscribed(json.get("user").get("_id").asText(), json.get("user").get("display_name").asText()));
         }
     }
 }

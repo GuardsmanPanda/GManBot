@@ -138,17 +138,4 @@ public class BobsDatabase {
         }
         throw new RuntimeException("something went wrong when trying to add song rating: " + twitchUserID + " name: " + twitchDisplayName + " songname: " + songName);
     }
-
-    private static void printTable(String tableName) {
-        CachedRowSet tableSET = getCachedRowSetFromSQL("SELECT * FROM " + tableName);
-        try {
-            while (tableSET.next()) {
-                String toPrint = "";
-                for (int i = 1; i <= tableSET.getMetaData().getColumnCount(); i++) toPrint += tableSET.getString(i) + " ";
-                System.out.println(toPrint);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }

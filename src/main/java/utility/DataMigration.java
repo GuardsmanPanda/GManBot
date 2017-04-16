@@ -13,7 +13,7 @@ public class DataMigration {
     private static HashMap<String, String> twitchNameToIDMap = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
-        //migrateSubStatusandWelcomeMessages();
+
     }
 
     public static void importSongRatings() throws Exception {
@@ -51,37 +51,6 @@ public class DataMigration {
             }
             System.out.println("Migrated " + entryNumber + "entries to the new song rating database!");
             entryNumber++;
-        }
-    }
-
-    public static void migrateSubStatusandWelcomeMessages() throws Exception {
-        Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-        Connection databaseConnection = DriverManager.getConnection("jdbc:derby:gmanbotdb");
-
-        ResultSet resultSet = databaseConnection.createStatement().executeQuery("SELECT twitchName, welcomeMessage, subscriberStatus FROM Chat WHERE subscriberStatus = true OR  welcomeMessage <> 'none'");
-        CachedRowSet cachedRowSet = RowSetProvider.newFactory().createCachedRowSet();
-        cachedRowSet.populate(resultSet);
-
-        while (cachedRowSet.next()) {
-            String twitchName = cachedRowSet.getString("twitchName");
-            String welcomeMessage = cachedRowSet.getString("welcomeMessage");
-            Boolean hasSubcribed = cachedRowSet.getBoolean("subScriberStatus");
-            String twitchUserID = Twitch.getTwitchUserID(twitchName);
-
-            if (twitchUserID.isEmpty()) {
-                System.out.println("empty user ID for " + Twitch.getTwitchUserID(cachedRowSet.getString("twitchName")));
-            } else {
-                if (welcomeMessage.equalsIgnoreCase("none") || welcomeMessage.equalsIgnoreCase("!setwelcomemessage")) {
-                    System.out.println("no welcome message for " + twitchName);
-                } else {
-                    BobsDatabaseHelper.setWelcomeMessage(twitchUserID, welcomeMessage);
-                    System.out.println("set welcome message for " + twitchName + " to: " +welcomeMessage);
-                }
-                if (hasSubcribed) {
-                    BobsDatabaseHelper.setHasSubscribed(twitchUserID);
-                    System.out.println(twitchName + " has subscribed!");
-                }
-            }
         }
     }
 }
