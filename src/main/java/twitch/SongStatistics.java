@@ -13,12 +13,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class TwitchChatStatistics {
+public class SongStatistics {
 
     public static void main(String[] args) throws InterruptedException, AWTException {
-        //GBUtility.prettyPrintCachedRowSet(BobsDatabase.getCachedRowSetFromSQL("SELECT * from SongRatings WHERE songrating = 12"),100);
-        //GBUtility.prettyPrintCachedRowSet(BobsDatabase.getCachedRowSetFromSQL("SELECT * FROM SongRatings s1 INNER JOIN (SELECT songName FROM SongRatings WHERE songRating = 4 GROUP BY songName) s2 ON s1.songName = s2.songName"),100);
-        GBUtility.prettyPrintCachedRowSet(BobsDatabase.getCachedRowSetFromSQL("SELECT * FROM SongRatings s1 INNER JOIN (SELECT DISTINCT songName FROM songRatings WHERE songRating = 4) s2 ON s1.songName = s2.songName"), 100, 30);
 
     }
 
@@ -64,7 +61,7 @@ public class TwitchChatStatistics {
         }
 
         return songRatings.keySet().stream()
-                .filter(songName -> songRatings.get(songName).size() >= minRatingAmount)
+                .filter(songName -> songRatings.get(songName).size() >= minRatingAmount + 1)
                 .collect(Collectors.toMap(
                         songName -> songName,
                         songName -> ((double)songRatings.get(songName).stream().mapToInt(i->i).sum()) / songRatings.get(songName).size()));

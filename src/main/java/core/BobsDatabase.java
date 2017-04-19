@@ -24,6 +24,12 @@ public class BobsDatabase {
         }
 
         try {
+            connection.createStatement().execute("CREATE TABLE GameRatings (twitchUserID VARCHAR(50) NOT NULL, gameName VARCHAR(255) NOT NULL, gameRating INTEGER NOT NULL, gameQuote VARCHAR (255) NOT NULL DEFAULT 'none', ratingDateTime DATE NOT NULL DEFAULT CURRENT DATE, PRIMARY KEY (twitchUserID, gameName))");
+        } catch (SQLException e) {
+            //ya I'm terrible
+        }
+
+        try {
             connection.createStatement().execute("CREATE TABLE SongRatings (twitchUserID VARCHAR(255) NOT NULL, twitchDisplayName VARCHAR(255) NOT NULL, songName VARCHAR(255) NOT NULL, songRating INTEGER NOT NULL, songQuote VARCHAR(255) NOT NULL DEFAULT 'none', ratingTimestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (twitchUserID, songName))");
             System.out.println("Crated SongRating Table");
         } catch (SQLException e) {

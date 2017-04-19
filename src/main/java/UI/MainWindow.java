@@ -1,11 +1,13 @@
 package ui;
 
 import core.GBUtility;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -15,8 +17,11 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import twitch.TwitchChat;
-import twitch.TwitchChatStatistics;
+import twitch.SongStatistics;
 
+import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Map;
@@ -24,6 +29,13 @@ import java.util.Map;
 public class MainWindow {
     private static TextField messageInput = new TextField();
     private static TextField urlInput = new TextField();
+    private static Robot robot;
+
+    static {
+        try { robot = new Robot(); } catch (AWTException e) { e.printStackTrace(); }
+    }
+
+
 
     public static void launch(Stage stage) {
         stage.setTitle("World's second worst ui");
@@ -38,7 +50,7 @@ public class MainWindow {
         tabs.add(makeWebTab());
         tabs.add(makeTopSongRatingsTab());
 
-        Scene scene = new Scene(tabPane, 300, 250);
+        Scene scene = new Scene(tabPane, 400, 350);
         stage.setOnCloseRequest(event -> System.exit(0));
         stage.setScene(scene);
         stage.show();
@@ -130,12 +142,13 @@ public class MainWindow {
         minRatingsText.setPrefColumnCount(2);
 
         VBox songListBox = new VBox();
+        songListBox.setAlignment(Pos.CENTER_LEFT);
 
         Button songButton = new Button("Top Songs!");
         songButton.setOnAction(event -> {
             int minNumberOfRatings = Integer.parseInt(minRatingsText.getCharacters().toString());
             int notPlayedDays = Integer.parseInt(notPlayedText.getCharacters().toString());
-            fillSongListBox(TwitchChatStatistics.getTopRatedSongsByPeopleInChat(minNumberOfRatings, LocalDateTime.now().minusDays(notPlayedDays), everyoneBox.isSelected()), songListBox);
+            fillSongListBox(SongStatistics.getTopRatedSongsByPeopleInChat(minNumberOfRatings, LocalDateTime.now().minusDays(notPlayedDays), everyoneBox.isSelected()), songListBox);
         });
 
         VBox vBox = new VBox();
@@ -156,7 +169,7 @@ public class MainWindow {
         songListBox.getChildren().clear();
         HBox names = new HBox();
 
-        Text songName = new Text("Song Name                             ");
+        Text songName = new Text("            Song Name                           ");
         songName.setFont(Font.font("Verdana", FontWeight.BOLD, 16));
         names.getChildren().add(songName);
 
@@ -166,15 +179,50 @@ public class MainWindow {
 
         songListBox.getChildren().add(names);
 
+        final int[] number = {0};
         songData.keySet().stream()
                 .sorted(Comparator.comparingDouble(songData::get).reversed())
                 .limit(40)
-                .forEach(song -> {
+                .forEachOrdered(song -> {
                     HBox songListing = new HBox();
-                    Label songLabel = new Label(GBUtility.strictFill(song, 45));
+                    Label songNumber = new Label(((number[0] < 9) ? "   " : " ") + ++number[0] + " ");
+                    Label songLabel = new Label("  " + GBUtility.strictFill(song, 45));
                     songLabel.setPrefWidth(260.0);
+                    Label ratingLabel = new Label(String.format("%.2f",songData.get(song)));
+
+                    Button queueButton = new Button("Queue");
+                    queueButton.setMaxHeight(songLabel.getHeight());
+                    queueButton.setStyle("-fx-padding: 1;");
+                    queueButton.setOnAction(event -> {
+                        int startX = MouseInfo.getPointerInfo().getLocation().x;
+                        int startY = MouseInfo.getPointerInfo().getLocation().y;
+                        robot.mouseMove(3254, 216);
+                        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+                        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+                        try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+                        robot.keyPress(KeyEvent.VK_CONTROL);
+                        robot.keyPress(KeyEvent.VK_A);
+                        robot.keyRelease(KeyEvent.VK_CONTROL);
+                        robot.keyRelease(KeyEvent.VK_A);
+                        try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+                        GBUtility.copyAndPasteString(song);
+                        try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
+                        robot.mouseMove(3259, 252);
+                        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+                        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+                        try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+                        robot.mouseMove(3198, 702);
+                        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+                        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+                        try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+                        robot.mouseMove(startX, startY);
+                    });
+                    songListing.getChildren().add(songNumber);
+                    songListing.getChildren().add(queueButton);
                     songListing.getChildren().add(songLabel);
-                    songListing.getChildren().add(new Label(String.format("%.2f",songData.get(song))));
+                    songListing.getChildren().add(ratingLabel);
+
+
                     songListBox.getChildren().add(songListing);
                 });
     }

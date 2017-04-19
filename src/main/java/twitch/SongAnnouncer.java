@@ -16,6 +16,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,7 @@ public class SongAnnouncer extends ListenerAdapter {
             }
         } else {
             switch (tcm.getMessageCommand()) {
-                case "!songreminder": case "!ratingreminder": case "!addsongreminder": case "!addratingreminder": ratingReminderMap.put(tcm.userID, tcm.displayName); break;
+                case "!ratereminder": ratingReminderMap.put(tcm.userID, tcm.displayName); break;
                 case "!removeratingreminder":case "!removesongreminder": ratingReminderMap.remove(tcm.userID); break;
             }
         }
@@ -117,6 +118,8 @@ public class SongAnnouncer extends ListenerAdapter {
     private static void songFileChange(String newSongName) {
         if (newSongName.equalsIgnoreCase("Guardsman Bob")) return;
 
+        String lastSongString = displayOnStreamSong + " >> Rating: " + String.format("%.2f", displayOnStreamSongRating) + " [" + displayonStreamNumberOfRatings + "]";
+
         Pair<Float, Integer> songRatingPair = getSongRating(newSongName);
         float newSongRating = songRatingPair.getKey();
         displayOnStreamSong = newSongName;
@@ -131,16 +134,20 @@ public class SongAnnouncer extends ListenerAdapter {
             //Check if the song to be announced in chat is actually still playing
             if (displayOnStreamSong.equalsIgnoreCase(newSongName)) {
                 currentSong = newSongName;
-                //TwitchChat.sendMessage <- TODO <-
-                try { Thread.sleep(8000); } catch (InterruptedException e) { e.printStackTrace(); }
-                Set<String> peopleInChat = TwitchChat.getLowerCaseNamesInChannel("#guardsmanbob");
+                TwitchChat.sendMessage("** Now Playing: " + newSongName + " || Last Song: " + lastSongString);
+
+                //Add long delay before song rating reminder, so allow for people to rate the song and not be reminded.
+                try { Thread.sleep(25000); } catch (InterruptedException e) { e.printStackTrace(); }
+                Set<String> peopleInChat = TwitchChat.getActiveUserIDsInChannel(Duration.ofMinutes(90));
                 String remindString = ratingReminderMap.keySet().stream()
-                        .filter(twitchID -> peopleInChat.contains(ratingReminderMap.get(twitchID).toLowerCase()))
+                        .filter(peopleInChat::contains)
                         .filter(twitchID -> getIndividualSongRating(twitchID, newSongName) == 0)
                         .limit(10)
                         .map(ratingReminderMap::get)
                         .collect(Collectors.joining(", "));
                 if (!remindString.isEmpty()) TwitchChat.sendMessage("Rate The Song! -> " + remindString);
+            } else {
+                System.out.println("ignoring " + newSongName + "Another song is already playing");
             }
         }).start();
         BobsDatabase.addSongRating("39837384", "GManBot", newSongName, 11, "none" );

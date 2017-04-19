@@ -16,23 +16,27 @@ import org.pircbotx.hooks.events.PrivateMessageEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 //TODO Code a spam filter that prevents sending the same message to tchat withint x minutes
 public class TwitchChat {
-    private static boolean connected = false;
-    private static final PircBotX bot;
+    private static final HashMap<String, Instant> lastUserActivityTime = new HashMap<>();
     private static final String channel = "#guardsmanbob";
+    private static final PircBotX bot;
+
+    private static boolean connected = false;
 
     // Configure bot
     static {
         Configuration config = new Configuration.Builder()
                 .setName("BotManG").setMessageDelay(1900)
+                .setListenerManager(new TranslatingListenerManager())
                 .setOnJoinWhoEnabled(false)
                 .setAutoNickChange(false)
                 .setAutoReconnect(true)
@@ -67,7 +71,6 @@ public class TwitchChat {
     public static synchronized void sendAction(String action) {
         bot.send().action(channel, action);
     }
-
     /**
      * Sends a message to the chat channel on twitch.
      * This method can silently fail for any reason.
@@ -94,6 +97,12 @@ public class TwitchChat {
                 .collect(Collectors.toSet());
     }
 
+    public static Set<String> getActiveUserIDsInChannel(Duration timeSpan) {
+        return lastUserActivityTime.entrySet().stream()
+                .filter(entry -> Instant.now().minus(timeSpan).isBefore(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+    }
 
 
     /**
@@ -127,12 +136,16 @@ public class TwitchChat {
         public void onJoin(JoinEvent event) {
             if (event.getUser().getNick().equalsIgnoreCase(bot.getNick())) {
                 System.out.println("Joined Channel " + event.getChannel().getName());
-                System.out.println();
+                System.out.println("-------------------------------------------");
+                sendMessage("I Am Alive! bobHype bobHype bobHype");
             }
         }
 
         @Override
         public void onMessage(MessageEvent event) {
+            //TODO: this really should be a true caching map
+            lastUserActivityTime.put(event.getTags().get("user-id"), Instant.now());
+
             /*
             String displayName = event.getTags().get("display-name");
             if (displayName.isEmpty()) {

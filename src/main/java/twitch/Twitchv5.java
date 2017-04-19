@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Twitchv5 {
     private static final HttpClient httpClient = HttpClient.newHttpClient();
-    private static final int CHANNELID = 30084132;
+    private static final String CHANNELID = "30084132";
     private static String twitchApiKey = "";
     private static String twitchAccessToken = "";
 
@@ -37,9 +37,20 @@ public class Twitchv5 {
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
-        //System.out.println(Twitch.getTwitchUserID("guardsmanbob"));
-        //System.out.println(getDisplayName("30084132"));
-        //GBUtility.prettyPrintJSonNode(executeHttpGet("https://api.twitch.tv/kraken/channels/30084132/subscriptions?offset=0"));
+        System.out.println(getGameTitle());
+    }
+
+    public static String getGameTitle() {
+        return getGameTitle(CHANNELID);
+    }
+    public static String getGameTitle(String channelID) {
+        JsonNode rootNode = executeHttpGet("https://api.twitch.tv/kraken/channels/" + channelID);
+        if (rootNode != null && rootNode.has("game")) return rootNode.get("game").asText();
+
+        else {
+            System.out.println("Could not find game for channel + " + channelID);
+            return "";
+        }
     }
 
     public static String getDisplayName(String twitchUserID) {
@@ -65,7 +76,6 @@ public class Twitchv5 {
             return LocalDate.now();
         }
     }
-
 
     public synchronized static JsonNode executeHttpGet(String requestURIString) {
         try {
