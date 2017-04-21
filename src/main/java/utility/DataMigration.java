@@ -2,6 +2,7 @@ package utility;
 
 import core.BobsDatabase;
 import core.BobsDatabaseHelper;
+import twitch.SongDatabase;
 import twitch.Twitch;
 
 import javax.sql.rowset.CachedRowSet;
@@ -47,7 +48,7 @@ public class DataMigration {
             });
 
             if (!twitchID.isEmpty()) {
-                BobsDatabase.addSongRating(twitchID, twitchName, songName, songRating, songQuote);
+                SongDatabase.addSongRating(twitchID, twitchName, songName, songRating, songQuote);
             }
             System.out.println("Migrated " + entryNumber + "entries to the new song rating database!");
             entryNumber++;

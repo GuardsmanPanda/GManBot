@@ -19,33 +19,20 @@ public class BobsDatabase {
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
             connection = DriverManager.getConnection("jdbc:derby:BobsDB;create=true");
             System.out.println("Connected To DataBase");
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
 
         try {
             connection.createStatement().execute("CREATE TABLE GameRatings (twitchUserID VARCHAR(50) NOT NULL, gameName VARCHAR(255) NOT NULL, gameRating INTEGER NOT NULL, gameQuote VARCHAR (255) NOT NULL DEFAULT 'none', ratingDateTime DATE NOT NULL DEFAULT CURRENT DATE, PRIMARY KEY (twitchUserID, gameName))");
-        } catch (SQLException e) {
-            //ya I'm terrible
-        }
-
-        try {
             connection.createStatement().execute("CREATE TABLE SongRatings (twitchUserID VARCHAR(255) NOT NULL, twitchDisplayName VARCHAR(255) NOT NULL, songName VARCHAR(255) NOT NULL, songRating INTEGER NOT NULL, songQuote VARCHAR(255) NOT NULL DEFAULT 'none', ratingTimestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (twitchUserID, songName))");
-            System.out.println("Crated SongRating Table");
-        } catch (SQLException e) {
-            // Silently ignore if the table already exists, TODO: Probably shouldn't ... Whenever derby supports CREATE TABLE IF NOT EXISTS
-        }
-
-        try {
             connection.createStatement().execute("CREATE TABLE TwitchChatUsers (twitchUserID VARCHAR(25) NOT NULL PRIMARY KEY, twitchDisplayName VARCHAR(30) UNIQUE NOT NULL, twitchLowerCaseName GENERATED ALWAYS AS (LOWER(twitchDisplayName)), hasSubscribed BOOLEAN NOT NULL DEFAULT false, welcomeMessage VARCHAR(255) NOT NULL DEFAULT 'none')");
             connection.createStatement().execute("CREATE INDEX twitchLowerIndex ON TwitchChatUsers(twitchLowerCaseName)");
-            System.out.println("Created TwitchChatUsers Table");
+            System.out.println("Created Tables");
         } catch (SQLException e) {
             // Silently ignore if the table already exists, TODO: Probably shouldn't ... Whenever derby supports CREATE TABLE IF NOT EXISTS
         }
 
         try {
-
+            connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD songRatingReminder BOOLEAN NOT NULL DEFAULT false");
             connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD subscriberMonths INTEGER NOT NULL DEFAULT 0");
         } catch (SQLException e) {
             // probably should check for column and only add if not exists, but im lazy
@@ -100,9 +87,7 @@ public class BobsDatabase {
         boolean songRatingExists = false;
         String oldQuote = "none";
 
-        CachedRowSet songLookupSet = getCachedRowSetFromSQL("SELECT * FROM SongRatings WHERE twitchUserID = ? AND songName = ? ", twitchUserID, songName);
-
-        try {
+        try (CachedRowSet songLookupSet = getCachedRowSetFromSQL("SELECT * FROM SongRatings WHERE twitchUserID = ? AND songName = ? ", twitchUserID, songName)) {
             if (songLookupSet.next()) {
                 songRatingExists = true;
                 oldQuote = songLookupSet.getString("songQuote");
@@ -144,4 +129,5 @@ public class BobsDatabase {
         }
         throw new RuntimeException("something went wrong when trying to add song rating: " + twitchUserID + " name: " + twitchDisplayName + " songname: " + songName);
     }
+
 }

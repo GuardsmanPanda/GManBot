@@ -17,7 +17,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import twitch.TwitchChat;
-import twitch.SongStatistics;
+import twitch.SongDatabase;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
@@ -148,7 +148,7 @@ public class MainWindow {
         songButton.setOnAction(event -> {
             int minNumberOfRatings = Integer.parseInt(minRatingsText.getCharacters().toString());
             int notPlayedDays = Integer.parseInt(notPlayedText.getCharacters().toString());
-            fillSongListBox(SongStatistics.getTopRatedSongsByPeopleInChat(minNumberOfRatings, LocalDateTime.now().minusDays(notPlayedDays), everyoneBox.isSelected()), songListBox);
+            fillSongListBox(SongDatabase.getTopRatedSongsByPeopleInChat(minNumberOfRatings, LocalDateTime.now().minusDays(notPlayedDays), everyoneBox.isSelected()), songListBox);
         });
 
         VBox vBox = new VBox();

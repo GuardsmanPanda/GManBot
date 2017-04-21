@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import core.BobsDatabase;
+import core.BobsDatabaseHelper;
 import core.GBUtility;
 import javafx.util.Pair;
 import org.pircbotx.hooks.ListenerAdapter;
@@ -35,6 +36,12 @@ public class SongAnnouncer extends ListenerAdapter {
         startSongAnnouncer();
         watchSongFile(songFilePath);
 
+        //Load the rating reminders
+        try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE songRatingReminder = true")) {
+            while (cachedRowSet.next()) ratingReminderMap.put(cachedRowSet.getString("twitchUserID"), cachedRowSet.getString("twitchDisplayName"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -48,7 +55,7 @@ public class SongAnnouncer extends ListenerAdapter {
                 if (rating > 11) rating = 11;
                 if (tcm.getMessageContent().contains(" ")) songQuote = tcm.getMessageContent().substring(tcm.getMessageContent().indexOf(" ")).trim();
 
-                BobsDatabase.addSongRating(tcm.userID, tcm.displayName, currentSong, rating, songQuote);
+                SongDatabase.addSongRating(tcm.userID, tcm.displayName, currentSong, rating, songQuote);
                 Pair<Float, Integer> songRatingPair = getSongRating(displayOnStreamSong);
                 displayOnStreamSongRating = songRatingPair.getKey();
             } catch (NumberFormatException nfe) {
@@ -56,8 +63,8 @@ public class SongAnnouncer extends ListenerAdapter {
             }
         } else {
             switch (tcm.getMessageCommand()) {
-                case "!ratereminder": ratingReminderMap.put(tcm.userID, tcm.displayName); break;
-                case "!removeratingreminder":case "!removesongreminder": ratingReminderMap.remove(tcm.userID); break;
+                case "!ratereminder": ratingReminderMap.put(tcm.userID, tcm.displayName); BobsDatabaseHelper.setSongRatingReminder(tcm.userID, tcm.displayName, true); break;
+                case "!removeratereminder": ratingReminderMap.remove(tcm.userID); BobsDatabaseHelper.setSongRatingReminder(tcm.userID, tcm.displayName,false); break;
             }
         }
     }
@@ -111,14 +118,13 @@ public class SongAnnouncer extends ListenerAdapter {
             e.printStackTrace();
         }
 
-        String returnQuote = nameFirst ? selectQuoteFrom + ": " + nameToQuoteMap.get(selectQuoteFrom) : nameToQuoteMap.get(selectQuoteFrom) + " - " + selectQuoteFrom;
-        return returnQuote;
+        return nameFirst ? (selectQuoteFrom + ": " + nameToQuoteMap.get(selectQuoteFrom)) : (nameToQuoteMap.get(selectQuoteFrom) + " - " + selectQuoteFrom);
     }
 
     private static void songFileChange(String newSongName) {
         if (newSongName.equalsIgnoreCase("Guardsman Bob")) return;
 
-        String lastSongString = displayOnStreamSong + " >> Rating: " + String.format("%.2f", displayOnStreamSongRating) + " [" + displayonStreamNumberOfRatings + "]";
+        String lastSongString = displayOnStreamSong + " ⏩ Rating: " + String.format("%.2f", displayOnStreamSongRating) + " [" + displayonStreamNumberOfRatings + "]";
 
         Pair<Float, Integer> songRatingPair = getSongRating(newSongName);
         float newSongRating = songRatingPair.getKey();
@@ -127,14 +133,14 @@ public class SongAnnouncer extends ListenerAdapter {
         displayonStreamNumberOfRatings = songRatingPair.getValue();
         System.out.println("New Song: " + newSongName + " .. Song quote: " + getSongQuote(newSongName, true));
 
-        if (newSongRating < 7.7f) GBUtility.textToBob("Do you want to remove the song: " + newSongName + " <> rating: " +newSongRating);
+        if (newSongRating < 7.7f) GBUtility.textToBob("Do you want to remove the song: " + newSongName + " ⏩ rating: " +newSongRating);
 
         new Thread(() -> {
             try { Thread.sleep(1000 * STREAMDELAYINSECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
             //Check if the song to be announced in chat is actually still playing
             if (displayOnStreamSong.equalsIgnoreCase(newSongName)) {
                 currentSong = newSongName;
-                TwitchChat.sendMessage("** Now Playing: " + newSongName + " || Last Song: " + lastSongString);
+                TwitchChat.sendMessage("\uD83C\uDFB8\uD83C\uDFBB Now Playing: " + newSongName + " \uD83D\uDD37\uD83D\uDD37 Last Song: " + lastSongString);
 
                 //Add long delay before song rating reminder, so allow for people to rate the song and not be reminded.
                 try { Thread.sleep(25000); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -150,7 +156,7 @@ public class SongAnnouncer extends ListenerAdapter {
                 System.out.println("ignoring " + newSongName + "Another song is already playing");
             }
         }).start();
-        BobsDatabase.addSongRating("39837384", "GManBot", newSongName, 11, "none" );
+        SongDatabase.addSongRating("39837384", "GManBot", newSongName, 11, "none" );
     }
 
     private static int getIndividualSongRating(String twitchUserID, String songName) {
@@ -197,6 +203,7 @@ public class SongAnnouncer extends ListenerAdapter {
             e.printStackTrace();
         }} ).start();
     }
+
 
     private static class songHttpHandler implements HttpHandler {
         @Override

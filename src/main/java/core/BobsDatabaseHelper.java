@@ -8,16 +8,9 @@ import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-/**
- * Created by Dons on 04-04-2017.
- */
 public class BobsDatabaseHelper {
     private static final HashMap<String, String> cachedUserIDs = new HashMap<>();
 
-    public static void main(String[] args) {
-        //BobsDatabase.executePreparedSQL("INSERT INTO TwitchChatUsers(twitchUserID, twitchDisplayName) VALUES (?, ?)", "3983733384", "gManBot");
-        //createUserIfNotExists("39837384");
-    }
     public static String getDisplayName(String twitchUserID) {
         createUserIfNotExists(twitchUserID);
         return (cachedUserIDs.getOrDefault(twitchUserID, ""));
@@ -40,6 +33,10 @@ public class BobsDatabaseHelper {
     public static void setHasSubscribed(String twitchUserID, String twitchDisplayName) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET hasSubscribed = true WHERE twitchUserID = ?", twitchUserID);
+    }
+    public static void setSongRatingReminder(String twitchUserID, String twitchDisplayName, boolean remindervalue) {
+        createUserIfNotExists(twitchUserID, twitchDisplayName);
+        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET songRatingReminder = " + remindervalue + " WHERE twitchUserID = ?", twitchUserID);
     }
     public static void addChatLine(String twitchUserID, String twitchUserName) {
 

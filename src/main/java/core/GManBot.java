@@ -17,6 +17,7 @@ public class GManBot extends Application {
         TwitchChat.addListener(new TwitchChatInformationGathering());
         TwitchChat.addListener(new TwitchChatExtras());
         TwitchChat.addListener(new SongAnnouncer(Paths.get("C:/Users/Dons/IdeaProjects/GManBot2/winamp.txt")));
+        TwitchChat.addListener(new GameRatings());
 
         // Blocking call, do not include code past this point
         launch(args);

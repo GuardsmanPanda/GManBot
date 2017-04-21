@@ -13,18 +13,20 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SongStatistics {
+public class SongDatabase {
 
-    public static void main(String[] args) throws InterruptedException, AWTException {
 
-    }
-
-    public static void printTopRatedSongsByPeopleInChat(int minRatingAmount, LocalDateTime endDateTime) {
-        Map<String, Double> songs = getTopRatedSongsByPeopleInChat(minRatingAmount, endDateTime, false);
-        songs.keySet().stream()
-                .sorted(Comparator.comparingDouble(songs::get).reversed())
-                .limit(30)
-                .forEach(songName -> System.out.println(GBUtility.strictFill(songName, 45) + " " + String.format("%.2f",songs.get(songName))));
+    public static void addSongRating(String twitchUserID, String twitchDisplayName, String songName, int songRating, String songQuote) {
+        try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT * FROM SongRatings WHERE twitchUserID = ? AND songName = ?", twitchUserID, songName)) {
+            if (cachedRowSet.next()) {
+                if (songQuote.equalsIgnoreCase("none")) songQuote = cachedRowSet.getString("songQuote");
+                BobsDatabase.executePreparedSQL("UPDATE SongRatings SET twitchDisplayName = ?, songRating = "+songRating+", songQuote = ?, ratingTimestamp = '"+Timestamp.valueOf(LocalDateTime.now())+"' WHERE twitchUserID = ? AND songName = ?", twitchDisplayName, songQuote, twitchUserID, songName);
+            } else {
+                BobsDatabase.executePreparedSQL("INSERT INTO SongRatings(twitchUserID, twitchDisplayName, songName, songRating, songQuote) VALUES(?, ?, ?, "+songRating+", ?)", twitchUserID, twitchDisplayName, songName, songQuote);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -52,7 +54,6 @@ public class SongStatistics {
             }
             CachedRowSet recentlyPlayedSongs = BobsDatabase.getCachedRowSetFromSQL("SELECT DISTINCT songName from SongRatings WHERE ratingTimestamp > timestamp('" + Timestamp.valueOf(endDateTime) + "')");
             System.out.println("Found " + songRatings.keySet().size() + " songs and " + songRatings.size() + " ratings, and "  + recentlyPlayedSongs.size() + " recently played songs");
-
             while (recentlyPlayedSongs.next()) songRatings.removeAll(recentlyPlayedSongs.getString("songName"));
             System.out.println("After removal there are now " + songRatings.keySet().size() + " songs and " + songRatings.size() + " ratings");
 

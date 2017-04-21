@@ -48,8 +48,16 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!addsongreminder", "!ratereminder");
         commandTranslationMap.put("!addratingreminder", "!ratereminder");
 
+        commandTranslationMap.put("!removeratereminder", "!removeratereminder");
+        commandTranslationMap.put("!removeratingreminder", "!removeratereminder");
+        commandTranslationMap.put("!removesongreminder", "!removeratereminder");
+
         commandTranslationMap.put("!rate", "!rate");
         commandTranslationMap.put("!songrate", "!rate");
         commandTranslationMap.put("!ratesong", "!rate");
+
+        commandTranslationMap.put("!rategame", "!rategame");
+        commandTranslationMap.put("!gamerate", "!rategame");
+        commandTranslationMap.put("!gamerating", "!rategame");
     }
 }
