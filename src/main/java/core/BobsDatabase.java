@@ -79,55 +79,33 @@ public class BobsDatabase {
         }
     }
 
-    /**
-     * Adds songRating to the songRating table
-     * @return returns true of exactly one entry was added or updated.
-     */
-    public static boolean addSongRating(String twitchUserID, String twitchDisplayName, String songName, int songRating, String songQuote) {
-        boolean songRatingExists = false;
-        String oldQuote = "none";
-
-        try (CachedRowSet songLookupSet = getCachedRowSetFromSQL("SELECT * FROM SongRatings WHERE twitchUserID = ? AND songName = ? ", twitchUserID, songName)) {
-            if (songLookupSet.next()) {
-                songRatingExists = true;
-                oldQuote = songLookupSet.getString("songQuote");
-                if (songLookupSet.next()) throw new RuntimeException("More than one song rating returned for ID: " + twitchUserID + " name: " + twitchDisplayName + " songname: " + songName);
-            }
+    public static String getStringFromSQL(String sql, String... arguments) {
+        String returnValue = "";
+        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
+            if (cachedRowSet.next()) returnValue = cachedRowSet.getString(1);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        if (songQuote.equalsIgnoreCase("none")) songQuote = oldQuote;
-
-        if (songRatingExists) {
-            try (PreparedStatement statement = connection.prepareStatement("UPDATE SongRatings SET twitchDisplayName = ?, songRating = ?, songQuote = ?, ratingTimestamp = ? WHERE twitchUserID = ? AND songName = ?")) {
-                statement.setString(1, twitchDisplayName);
-                statement.setInt(2, songRating);
-                statement.setString(3, songQuote);
-                statement.setTimestamp(4, Timestamp.from(Instant.now()));
-                statement.setString(5, twitchUserID);
-                statement.setString(6, songName);
-
-                int result = statement.executeUpdate();
-                if (result == 1) return true;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO SongRatings VALUES (?, ?, ?, ?, ?, ?)")) {
-                statement.setString(1, twitchUserID);
-                statement.setString(2, twitchDisplayName);
-                statement.setString(3, songName);
-                statement.setInt(4, songRating);
-                statement.setString(5, songQuote);
-                statement.setTimestamp(6, Timestamp.from(Instant.now()));
-                int result = statement.executeUpdate();
-                if (result == 1) return true;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        throw new RuntimeException("something went wrong when trying to add song rating: " + twitchUserID + " name: " + twitchDisplayName + " songname: " + songName);
+        return returnValue;
     }
 
+    public static int getIntFromSQL(String sql, String... arguments) {
+        int returnValue = 0;
+        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
+            if (cachedRowSet.next()) returnValue = cachedRowSet.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return returnValue;
+    }
+
+    public static double getDoubleFromSQL(String sql, String... arguments) {
+        double returnValue = 0.0;
+        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
+            if (cachedRowSet.next()) returnValue = cachedRowSet.getDouble(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return returnValue;
+    }
 }

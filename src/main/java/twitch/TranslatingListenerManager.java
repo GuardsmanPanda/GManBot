@@ -55,6 +55,17 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!rate", "!rate");
         commandTranslationMap.put("!songrate", "!rate");
         commandTranslationMap.put("!ratesong", "!rate");
+        commandTranslationMap.put("!rate1", "!rate 1");
+        commandTranslationMap.put("!rate2", "!rate 2");
+        commandTranslationMap.put("!rate3", "!rate 3");
+        commandTranslationMap.put("!rate4", "!rate 4");
+        commandTranslationMap.put("!rate5", "!rate 5");
+        commandTranslationMap.put("!rate6", "!rate 6");
+        commandTranslationMap.put("!rate7", "!rate 7");
+        commandTranslationMap.put("!rate8", "!rate 8");
+        commandTranslationMap.put("!rate9", "!rate 9");
+        commandTranslationMap.put("!rate10", "!rate 10");
+        commandTranslationMap.put("!rate11", "!rate 11");
 
         commandTranslationMap.put("!rategame", "!rategame");
         commandTranslationMap.put("!gamerate", "!rategame");

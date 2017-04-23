@@ -17,6 +17,9 @@ module gmanbot.main {
     requires javafx.controls;
     requires twitter4j.core;
     requires jdk.httpserver;
+    requires javax.websocket.api;
+    requires javafx.web;
+    requires Java.WebSocket;
     exports core;
     exports twitch;
     exports ui;
