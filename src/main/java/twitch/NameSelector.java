@@ -1,5 +1,7 @@
 package twitch;
 
+import core.BobsDatabase;
+import core.BobsDatabaseHelper;
 import core.GBUtility;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
@@ -9,19 +11,28 @@ import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.events.ModeEvent;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.stream.Collectors;
 
-public class NameSelector extends ListenerAdapter {
-    private static Map<String, LocalDateTime> activeChatUsers = new HashMap<>();
-    private static final HashSet<String> selectedNames = new HashSet<>();
-    private static final int ACTIVECHATDURATIONINMINUTES = 25;
-    private static final Random random;
+public class NameSelector {
+    private static final HashSet<String> selectedUserIDs = new HashSet<>();
+    private static final Random random = new Random();
 
     static {
-        selectedNames.add("GManBot");
-        random = new Random();
+        //ADD GManBot userID so that it wont get picked.
+        selectedUserIDs.add("39837384");
+    }
+
+    public static void main(String[] args) {
+        GBUtility.prettyPrintCachedRowSet(BobsDatabase.getCachedRowSetFromSQL("SELECT * FROM TwitchChatUsers ORDER BY chatLines DESC"), 200);
+    }
+
+    public static void enableNameSelector() {
+        LogManager.getLogManager().getLogger("").setLevel(Level.OFF);
         try {
             GlobalScreen.registerNativeHook();
             GlobalScreen.addNativeKeyListener(new KeyListener());
@@ -30,40 +41,37 @@ public class NameSelector extends ListenerAdapter {
         }
     }
 
-    public synchronized static void selectAndPrintTwitchName() {
-        System.out.println("Selecting from " + activeChatUsers.size() + " active names in chat");
-        activeChatUsers = activeChatUsers.entrySet().stream()
-                .filter(e -> e.getValue().isAfter(LocalDateTime.now()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        System.out.println("Removed some names now " + activeChatUsers.size() + " left");
-        List<String> names = new ArrayList<>();
-        names.addAll(activeChatUsers.keySet());
-        String winningName = names.get(random.nextInt(names.size()));
-
-        selectedNames.add(winningName);
-        activeChatUsers.remove(winningName);
-        GBUtility.copyAndPasteString(winningName);
-    }
-
-
-    @Override
-    public synchronized void onMessage(MessageEvent event) {
-        String twitchName = new TwitchChatMessage(event).displayName;
-        if (!selectedNames.contains(twitchName)) {
-            activeChatUsers.put(twitchName, LocalDateTime.now().plusMinutes(ACTIVECHATDURATIONINMINUTES));
+    public static void disableNameSelector() {
+        LogManager.getLogManager().getLogger("").setLevel(Level.ALL);
+        try {
+            GlobalScreen.unregisterNativeHook();
+        } catch (NativeHookException e) {
+            e.printStackTrace();
         }
     }
 
-    private static class KeyListener implements NativeKeyListener{
+    public synchronized static void selectAndPrintTwitchName() {
+        List<String> activeUserIDs = TwitchChat.getActiveUserIDsInChannel(Duration.ofMinutes(30)).stream()
+                .filter(userID -> !selectedUserIDs.contains(userID))
+                .collect(Collectors.toList());
+        System.out.println("Found " + activeUserIDs.size() + " Active user not already selected");
+        if (activeUserIDs.size() == 0) return;
+
+        String winningUserID = activeUserIDs.get(random.nextInt(activeUserIDs.size()));
+        selectedUserIDs.add(winningUserID);
+        System.out.println(winningUserID + " Won, printing " + BobsDatabaseHelper.getDisplayName(winningUserID));
+        GBUtility.copyAndPasteString(BobsDatabaseHelper.getDisplayName(winningUserID));
+    }
+
+    private static class KeyListener implements NativeKeyListener {
         @Override
         public void nativeKeyPressed(NativeKeyEvent nativeKeyEvent) {
-            if (nativeKeyEvent.getKeyCode() == 57420) selectAndPrintTwitchName();
+
         }
 
         @Override
         public void nativeKeyReleased(NativeKeyEvent nativeKeyEvent) {
-
+            if (nativeKeyEvent.getKeyCode() == 57420) selectAndPrintTwitchName();
         }
 
         @Override

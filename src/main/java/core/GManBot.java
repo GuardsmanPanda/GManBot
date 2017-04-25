@@ -10,10 +10,8 @@ public class GManBot extends Application {
     public static void main(String[] args)  {
         try { Thread.sleep(100); } catch (InterruptedException e) { e.printStackTrace(); }
 
-        //LogManager.getLogManager().getLogger("").setLevel(Level.ALL);
         //Ask the twitch handler to open the chat connection, this may take several seconds
         TwitchChat.connect();
-        //TwitchChat.addListener(new NameSelector());
         TwitchChat.addListener(new TwitchChatInformationGathering());
         TwitchChat.addListener(new TwitchChatExtras());
         TwitchChat.addListener(new SongAnnouncer(Paths.get("C:/Users/Dons/IdeaProjects/GManBot2/winamp.txt")));

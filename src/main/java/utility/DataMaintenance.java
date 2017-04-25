@@ -15,8 +15,8 @@ import java.util.stream.StreamSupport;
 public class DataMaintenance {
 
     public static void main(String[] args) throws SQLException {
-        //GBUtility.prettyPrintJSonNode(Twitchv5.executeHttpGet("https://api.twitch.tv/kraken/channels/30084132/subscriptions?offset=" + 50));
-        addAllCurrentSubsAndPrimeSubstoDB();
+
+        //addAllCurrentSubsAndPrimeSubstoDB();
     }
 
     //TODO, version 1 removes songs not rated by gmanbot, version 2 should remove songs not rated by gmanbot since date x

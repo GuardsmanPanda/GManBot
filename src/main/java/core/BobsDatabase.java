@@ -7,6 +7,7 @@ import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
 import java.sql.*;
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * In this class I think hard about life's problems and then database code appears.
@@ -19,7 +20,9 @@ public class BobsDatabase {
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
             connection = DriverManager.getConnection("jdbc:derby:BobsDB;create=true");
             System.out.println("Connected To DataBase");
-        } catch (ClassNotFoundException | SQLException e) { e.printStackTrace(); }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
 
         try {
             connection.createStatement().execute("CREATE TABLE GameRatings (twitchUserID VARCHAR(50) NOT NULL, gameName VARCHAR(255) NOT NULL, gameRating INTEGER NOT NULL, gameQuote VARCHAR (255) NOT NULL DEFAULT 'none', ratingDateTime DATE NOT NULL DEFAULT CURRENT DATE, PRIMARY KEY (twitchUserID, gameName))");
@@ -32,6 +35,11 @@ public class BobsDatabase {
         }
 
         try {
+            connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD chatLines INTEGER NOT NULL DEFAULT 0");
+            connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD activeHours  INTEGER NOT NULL DEFAULT 0");
+            connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD idleHours INTEGER NOT NULL DEFAULT 0");
+            connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD bobCoins INTEGER NOT NULL DEFAULT 0");
+            connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD heartsBob BOOLEAN NOT NULL DEFAULT false");
             connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD songRatingReminder BOOLEAN NOT NULL DEFAULT false");
             connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD subscriberMonths INTEGER NOT NULL DEFAULT 0");
         } catch (SQLException e) {
@@ -39,22 +47,21 @@ public class BobsDatabase {
         }
     }
 
-    public static void main(String[] args) throws SQLException {
-
-    }
 
     /**
      * Execute SQL against BobsDB
-     * @param sql The prepared statements to execute.
+     *
+     * @param sql       The prepared statements to execute.
      * @param arguments arguments for the statement.
      * @return the number of rows which were updated.
      */
     public static int executePreparedSQL(String sql, String... arguments) {
-        if (StringUtils.countMatches(sql, "?") != arguments.length) throw new RuntimeException("Your SQL sucks! " + sql);
+        if (StringUtils.countMatches(sql, "?") != arguments.length)
+            throw new RuntimeException("Your SQL sucks! " + sql);
 
         int rowsUpdated = 0;
 
-        try (PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             for (int i = 0; i < arguments.length; i++) statement.setString(i + 1, arguments[i]);
             rowsUpdated = statement.executeUpdate();
         } catch (SQLException e) {
@@ -64,7 +71,8 @@ public class BobsDatabase {
     }
 
     public static CachedRowSet getCachedRowSetFromSQL(String sql, String... arguments) {
-        if (StringUtils.countMatches(sql, "?") != arguments.length) throw new RuntimeException("Your SQL sucks! " + sql);
+        if (StringUtils.countMatches(sql, "?") != arguments.length)
+            throw new RuntimeException("Your SQL sucks! " + sql);
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             for (int i = 0; i < arguments.length; i++) statement.setString(i + 1, arguments[i]);
@@ -100,12 +108,27 @@ public class BobsDatabase {
     }
 
     public static double getDoubleFromSQL(String sql, String... arguments) {
-        double returnValue = 0.0;
         try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
-            if (cachedRowSet.next()) returnValue = cachedRowSet.getDouble(1);
+            if (cachedRowSet.size() > 1)
+                throw new RuntimeException("Only 1 result should be returned when asking for a single value");
+            return cachedRowSet.next() ? cachedRowSet.getDouble(1) : 0.0;
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException();
         }
-        return returnValue;
+    }
+
+    public static boolean getBooleanFromSQL(String sql, String... arguments) {
+        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
+            if (cachedRowSet.size() > 1)
+                throw new RuntimeException("Only 1 result should be returned when asking for a single value");
+            return cachedRowSet.next() && cachedRowSet.getBoolean(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
     }
 }
+
+    //TODO: Wait for project valhalla when we have generics over primitives.
+

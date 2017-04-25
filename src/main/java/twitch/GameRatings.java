@@ -46,7 +46,7 @@ public class GameRatings extends ListenerAdapter {
         }
     }
 
-    private static void updateOverlay() {
+    public static void updateOverlay() {
         if (Instant.now().isBefore(nextOverlayUpdate)) return;
 
         String gameTitle = Twitchv5.getGameTitle();

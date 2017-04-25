@@ -22,7 +22,7 @@
     <div class="gameVotes" style="display: inline-block; text-align:left; font-size: 20px; color:#cccccc; visibility: hidden;">Test3555557773!</div>
 </div>
 <script>
-    var connection = new WeAbSocket('ws://localhost:9102');
+    var connection = new WebSocket('ws://localhost:9102');
     connection.onopen = function(event) {
         connection.send("Hello socket!");
     }
@@ -55,7 +55,7 @@
 <script>
     $('.gameName').textillate({ autoStart: false, in: { effect: 'fadeInDown', sync: true }, out: { effect: 'rollOut', sync: true }, type:'word' });
     $('.gameRating').textillate({ initialDelay: 2000, autoStart: false, in: { effect: 'fadeInLeft', sync: true }, out: { effect: 'fadeOut', sync: true }, type:'word' });
-     $('.gameVotes').textillate({ initialDelay: 2000, autoStart: false, in: { effect: 'fadeInRight', sync: true }, out: { effect: 'fadeOut', sync: true }, type:'word' });
+    $('.gameVotes').textillate({ initialDelay: 2000, autoStart: false, in: { effect: 'fadeInRight', sync: true }, out: { effect: 'fadeOut', sync: true }, type:'word' });
 </script>
 </body>
 </html>

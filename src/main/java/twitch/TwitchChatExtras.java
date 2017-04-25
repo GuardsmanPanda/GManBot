@@ -56,7 +56,6 @@ public class TwitchChatExtras extends ListenerAdapter {
         }
     }
 
-
     private static void followAge(TwitchChatMessage chatMessage) {
         LocalDate followDate = Twitchv5.getFollowDate(chatMessage.userID);
         if (followDate == null) return;
@@ -68,10 +67,10 @@ public class TwitchChatExtras extends ListenerAdapter {
         String followPeriodString = followDate.until(LocalDate.now()).toString();
 
         followPeriodString = followPeriodString.replace("P", "").replace("Y", " Years, ").replace("M", " Months, ").replace("D", " Days,").trim();
-        followPeriodString = followPeriodString.replace("1 Years", "1 Year").replace(" 1 Months", "1 Month").replace(" 1 Days", "1 Day");
+        followPeriodString = followPeriodString.replace("1 Years", "1 Year").replace(" 1 Months", " 1 Month").replace(" 1 Days", "1 Day");
         followPeriodString = followPeriodString.substring(0, followPeriodString.length() - 1);
 
-        String printString = chatMessage.displayName + ": Followed for " + followPeriodString + ".";
+        String printString = chatMessage.displayName + ": Followed for " + followPeriodString + "!";
         TwitchChat.sendMessage(printString);
     }
     private static void setWelcomeMessage(TwitchChatMessage chatMessage) {
