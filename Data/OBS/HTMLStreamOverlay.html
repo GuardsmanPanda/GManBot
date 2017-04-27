@@ -33,16 +33,16 @@
     }
 
     function gameRatingUpdate(data) {
-        console.log('game rating update')
         $('.gameName').find('li').html(data.gameName);
         $('.gameRating').find('li').html('Rating: ' + data.gameRating);
         $('.gameVotes').find('li').html('Vote count: ' + data.gameVotes);
+        $('.gameRatingPosition').css("left", data.x);
+        $('.gameRatingPosition').css("top", data.y);
         $('.gameName').textillate('start');
         $('.gameRating').textillate('start');
         $('.gameVotes').textillate('start');
         setTimeout(gameNameOut, 20000);
     }
-
     function gameNameOut() {
         $('.gameName').textillate('out');
         $('.gameRating').textillate('out');

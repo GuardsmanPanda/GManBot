@@ -5,8 +5,6 @@ import com.google.common.collect.Multiset;
 import core.BobsDatabaseHelper;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
-import org.pircbotx.hooks.events.NoticeEvent;
-import org.pircbotx.hooks.events.UnknownEvent;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -15,16 +13,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class TwitchChatInformationGathering extends ListenerAdapter {
-    private static final HashSet<String> emoticons = new HashSet<>();
     private static final Multiset<String> emoticonUsage = HashMultiset.create();
+    private static final HashSet<String> emoticons = new HashSet<>();
 
     static {
         emoticons.addAll(Twitch.getSubscriberEmoticons("guardsmanbob"));
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> hourlyUpdate(), 0, 1, TimeUnit.HOURS);
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> hourlyUpdate(), 1, 1, TimeUnit.HOURS);
     }
 
     @Override
-    public void onMessage(MessageEvent event)  {
+    public void onMessage(MessageEvent event) {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
 
         BobsDatabaseHelper.addChatLine(chatMessage.userID, chatMessage.displayName);
@@ -42,7 +40,7 @@ public class TwitchChatInformationGathering extends ListenerAdapter {
             BobsDatabaseHelper.addActiveHour(userID);
             int coins = 6;
             if (BobsDatabaseHelper.getHasSubscribed(userID)) coins += 2;
-            BobsDatabaseHelper.addbobCoins(userID, coins);
+            BobsDatabaseHelper.addBobCoins(userID, coins);
         });
 
         namesInChannel.stream()
@@ -50,7 +48,7 @@ public class TwitchChatInformationGathering extends ListenerAdapter {
                 .filter(userID -> !userID.isEmpty() && !activeUserIDs.contains(userID))
                 .forEach(userID -> {
                     BobsDatabaseHelper.addIdleHour(userID);
-                    BobsDatabaseHelper.addbobCoins(userID, 4);
+                    BobsDatabaseHelper.addBobCoins(userID, 4);
                 });
     }
 }

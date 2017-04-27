@@ -16,6 +16,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import twitch.GameRatings;
+import twitch.NameSelector;
 import twitch.TwitchChat;
 import twitch.SongDatabase;
 
@@ -46,7 +48,7 @@ public class MainWindow {
 
         tabs.add(makeChatTab());
         tabs.add(makeTwitterTab());
-        tabs.add(makeHostingTab());
+        tabs.add(makeUtilityTab());
         tabs.add(makeWebTab());
         tabs.add(makeTopSongRatingsTab());
 
@@ -93,10 +95,36 @@ public class MainWindow {
         return tab;
     }
 
-    private static Tab makeHostingTab() {
-        Tab tab = new Tab("Twitch Hosting");
+
+
+    private static Tab makeUtilityTab() {
+        Tab tab = new Tab("Utility");
+        Button showGameRatingButton = new Button("Show Game Rating");
+        showGameRatingButton.setOnAction(event -> GameRatings.updateOverlay());
+
+
+        ToggleButton toggleNameSelectorButton = new ToggleButton("NameSelector Disabled");
+        toggleNameSelectorButton.setOnAction(event -> {
+            if (!toggleNameSelectorButton.isSelected()) {
+                toggleNameSelectorButton.setText("NameSelector Disabled");
+                NameSelector.disableNameSelector();
+            } else {
+                toggleNameSelectorButton.setText("NameSelector Enabled");
+                NameSelector.enableNameSelector();
+            }
+        });
+
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.CENTER_LEFT);
+
+        gridPane.add(showGameRatingButton, 0, 0);
+        gridPane.add(toggleNameSelectorButton, 0, 1);
+
+        tab.setContent(gridPane);
         return tab;
     }
+
+
 
     private static Tab makeWebTab() {
         Tab tab = new Tab("Web View");

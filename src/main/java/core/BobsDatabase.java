@@ -1,13 +1,12 @@
 package core;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
 import java.sql.*;
-import java.time.Instant;
-import java.util.Objects;
+import java.util.Arrays;
+
 
 /**
  * In this class I think hard about life's problems and then database code appears.
@@ -35,6 +34,7 @@ public class BobsDatabase {
         }
 
         try {
+            connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD flag VARCHAR(40) NOT NULL DEFAULT 'none'");
             connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD chatLines INTEGER NOT NULL DEFAULT 0");
             connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD activeHours  INTEGER NOT NULL DEFAULT 0");
             connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD idleHours INTEGER NOT NULL DEFAULT 0");
@@ -47,7 +47,6 @@ public class BobsDatabase {
         }
     }
 
-
     /**
      * Execute SQL against BobsDB
      *
@@ -56,8 +55,7 @@ public class BobsDatabase {
      * @return the number of rows which were updated.
      */
     public static int executePreparedSQL(String sql, String... arguments) {
-        if (StringUtils.countMatches(sql, "?") != arguments.length)
-            throw new RuntimeException("Your SQL sucks! " + sql);
+        if (StringUtils.countMatches(sql, "?") != arguments.length) throw new RuntimeException("Your SQL sucks! " + sql + " <> arguments: " + Arrays.toString(arguments));
 
         int rowsUpdated = 0;
 
@@ -71,8 +69,7 @@ public class BobsDatabase {
     }
 
     public static CachedRowSet getCachedRowSetFromSQL(String sql, String... arguments) {
-        if (StringUtils.countMatches(sql, "?") != arguments.length)
-            throw new RuntimeException("Your SQL sucks! " + sql);
+        if (StringUtils.countMatches(sql, "?") != arguments.length) throw new RuntimeException("Your SQL sucks! " + sql);
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             for (int i = 0; i < arguments.length; i++) statement.setString(i + 1, arguments[i]);
@@ -83,52 +80,50 @@ public class BobsDatabase {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("Something went horribly wrong trying to execute SQL: " + sql + " <> arguments: " + ArrayUtils.toString(arguments));
+            throw new RuntimeException("Something went horribly wrong trying to execute SQL: " + sql + " <> arguments: " + Arrays.toString(arguments));
         }
     }
 
     public static String getStringFromSQL(String sql, String... arguments) {
-        String returnValue = "";
-        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
-            if (cachedRowSet.next()) returnValue = cachedRowSet.getString(1);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        try { return getValueFromSQL(sql, String.class, arguments);
+        } catch (IllegalArgumentException e) {
+            return "";
         }
-        return returnValue;
     }
 
     public static int getIntFromSQL(String sql, String... arguments) {
-        int returnValue = 0;
-        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
-            if (cachedRowSet.next()) returnValue = cachedRowSet.getInt(1);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        try { return getValueFromSQL(sql, Integer.class, arguments);
+        } catch (IllegalArgumentException e) {
+            return 0;
         }
-        return returnValue;
     }
 
     public static double getDoubleFromSQL(String sql, String... arguments) {
-        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
-            if (cachedRowSet.size() > 1)
-                throw new RuntimeException("Only 1 result should be returned when asking for a single value");
-            return cachedRowSet.next() ? cachedRowSet.getDouble(1) : 0.0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException();
+        try { return getValueFromSQL(sql, Double.class, arguments);
+        } catch (IllegalArgumentException e) {
+            return 0.0;
         }
     }
 
     public static boolean getBooleanFromSQL(String sql, String... arguments) {
+        try { return getValueFromSQL(sql, Boolean.class, arguments);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public static <E> E getValueFromSQL(String sql, Class<E> returnType, String... arguments) {
         try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
-            if (cachedRowSet.size() > 1)
-                throw new RuntimeException("Only 1 result should be returned when asking for a single value");
-            return cachedRowSet.next() && cachedRowSet.getBoolean(1);
+            assert (cachedRowSet.getMetaData().getColumnCount() == 1);
+
+            switch (cachedRowSet.size()) {
+                case 0: throw new IllegalArgumentException("0 results");
+                case 1: cachedRowSet.next(); return returnType.cast(cachedRowSet.getObject(1));
+                default: throw new RuntimeException("Only 1 result should be returned when asking for a single value");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException();
+            throw new RuntimeException("The SQL Didn't work! " + sql + " args: " + Arrays.toString(arguments));
         }
     }
 }
-
-    //TODO: Wait for project valhalla when we have generics over primitives.
-

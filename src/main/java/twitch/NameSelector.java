@@ -28,7 +28,7 @@ public class NameSelector {
     }
 
     public static void main(String[] args) {
-        GBUtility.prettyPrintCachedRowSet(BobsDatabase.getCachedRowSetFromSQL("SELECT * FROM TwitchChatUsers ORDER BY chatLines DESC"), 200);
+        //GBUtility.prettyPrintCachedRowSet(BobsDatabase.getCachedRowSetFromSQL("SELECT * FROM TwitchChatUsers ORDER BY chatLines DESC"), 200);
     }
 
     public static void enableNameSelector() {

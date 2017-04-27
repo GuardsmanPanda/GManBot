@@ -53,11 +53,18 @@ public class GameRatings extends ListenerAdapter {
         double rating = BobsDatabase.getDoubleFromSQL("SELECT AVG(CAST(gameRating AS DOUBLE)) AS avgRating FROM GameRatings WHERE gameName = ?", gameTitle);
         int votes = BobsDatabase.getIntFromSQL("SELECT COUNT(gameName) AS gameCount FROM GameRatings WHERE gameName = ?", gameTitle);
 
+        int x = 1220; int y = 75;
+        switch (gameTitle) {
+            case "Creative": y = 10;
+        }
+
         ObjectNode root = nodeFactory.objectNode();
         root.set("type", nodeFactory.textNode("gameRatingUpdate"));
         root.set("gameName", nodeFactory.textNode(gameTitle));
         root.set("gameRating", nodeFactory.textNode(String.format("%.2f", rating)));
         root.set("gameVotes", nodeFactory.numberNode(votes));
+        root.set("x", nodeFactory.numberNode(x));
+        root.set("y", nodeFactory.numberNode(y));
 
         System.out.println("Updating overlay --> " + root.toString());
         StreamWebOverlay.sendJsonToOverlay(root);

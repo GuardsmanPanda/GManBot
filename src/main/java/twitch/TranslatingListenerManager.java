@@ -53,6 +53,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!removesongreminder", "!removeratereminder");
 
         commandTranslationMap.put("!rate", "!rate");
+        commandTranslationMap.put("!ratr", "!rate");
         commandTranslationMap.put("!songrate", "!rate");
         commandTranslationMap.put("!ratesong", "!rate");
         commandTranslationMap.put("!rate1", "!rate 1");
@@ -76,5 +77,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!followage","!followage");
         commandTranslationMap.put("!folloage","!followage");
+
+        commandTranslationMap.put("!setflag", "!setflag");
     }
 }

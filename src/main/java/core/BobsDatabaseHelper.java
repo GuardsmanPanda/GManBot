@@ -11,40 +11,28 @@ import java.util.HashMap;
 public class BobsDatabaseHelper {
     private static final HashMap<String, String> cachedUserIDs = new HashMap<>();
 
-    public static String getDisplayName(String twitchUserID) {
-        createUserIfNotExists(twitchUserID);
-        return (cachedUserIDs.getOrDefault(twitchUserID, ""));
-    }
-    public static String getTwitchUserID(String twitchDisplayName) {
-        return BobsDatabase.getStringFromSQL("SELECT twitchUserID FROM TwitchChatUsers WHERE twitchLowerCaseName = ?", twitchDisplayName.toLowerCase());
-    }
-
-    public static String getWelcomeMessage(String twitchDisplayName) {
-        String returnString = "none";
-        try {
-            CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT welcomeMessage FROM TwitchChatUsers WHERE twitchLowerCaseName = ?", twitchDisplayName.toLowerCase());
-            if (cachedRowSet.next()) returnString = cachedRowSet.getString("welcomeMessage");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return returnString;
-    }
     public static void setWelcomeMessage(String twitchUserID, String twitchDisplayName, String welcomeMessage) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
         if (welcomeMessage.isEmpty()) welcomeMessage = "none";
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET welcomeMessage = ? WHERE twitchUserID = ?", welcomeMessage, twitchUserID);
     }
+    public static void setFlag(String twitchUserID, String twitchDisplayName, String flagName) {
+        createUserIfNotExists(twitchUserID, twitchDisplayName);
+        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET flag = ? WHERE twitchUserID = ?", flagName, twitchUserID);
+    }
     public static void setHasSubscribed(String twitchUserID, String twitchDisplayName) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET hasSubscribed = true WHERE twitchUserID = ?", twitchUserID);
-    }
-    public static boolean getHasSubscribed(String twitchUserID) {
-        return BobsDatabase.getBooleanFromSQL("SELECT hasSubscribed FROM TwitchChatUsers WHERE twitchUserID = ?", twitchUserID);
     }
     public static void setSongRatingReminder(String twitchUserID, String twitchDisplayName, boolean reminderValue) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET songRatingReminder = " + reminderValue + " WHERE twitchUserID = ?", twitchUserID);
     }
+    public static void setSubscriberMonths(String twitchUserID, int numberOfMonths) {
+        createUserIfNotExists(twitchUserID);
+        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET subscriberMonths = " +numberOfMonths + " WHERE twitchUserID = ?", twitchUserID);
+    }
+
     public static void addChatLine(String twitchUserID, String twitchDisplayName) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET chatLines = chatLines + 1 WHERE twitchUserID = ?", twitchUserID);
@@ -55,13 +43,20 @@ public class BobsDatabaseHelper {
     public static void addIdleHour(String twitchUserID) {
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET idleHours = idleHours + 1 WHERE twitchUserID = ?", twitchUserID);
     }
-    public static void addbobCoins(String twitchUserID, int bobCoinsToAdd) {
+    public static void addBobCoins(String twitchUserID, int bobCoinsToAdd) {
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET bobCoins = bobCoins + "+bobCoinsToAdd+" WHERE twitchUserID = ?", twitchUserID);
     }
 
-    public static void setSubscriberMonths(String twitchUserID, int numberOfMonths) {
+
+    public static String getDisplayName(String twitchUserID) {
         createUserIfNotExists(twitchUserID);
-        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET subscriberMonths = " +numberOfMonths + " WHERE twitchUserID = ?", twitchUserID);
+        return (cachedUserIDs.getOrDefault(twitchUserID, ""));
+    }
+    public static String getTwitchUserID(String twitchDisplayName) {
+        return BobsDatabase.getStringFromSQL("SELECT twitchUserID FROM TwitchChatUsers WHERE twitchLowerCaseName = ?", twitchDisplayName.toLowerCase());
+    }
+    public static boolean getHasSubscribed(String twitchUserID) {
+        return BobsDatabase.getBooleanFromSQL("SELECT hasSubscribed FROM TwitchChatUsers WHERE twitchUserID = ?", twitchUserID);
     }
 
     public static Triple<String, String, Boolean> getDisplayNameWelcomeMessageAndHasSubbedStatus(String twitchName) {
@@ -79,12 +74,12 @@ public class BobsDatabaseHelper {
         return returnTriple;
     }
 
+
     private static void createUserIfNotExists(String twitchUserID) {
         if (cachedUserIDs.containsKey(twitchUserID)) return;
         createUserIfNotExists(twitchUserID, Twitchv5.getDisplayName(twitchUserID));
     }
-
-    public static void createUserIfNotExists(String twitchUserID, String twitchDisplayName) {
+    private static void createUserIfNotExists(String twitchUserID, String twitchDisplayName) {
         if (cachedUserIDs.containsKey(twitchUserID)) return;
 
         synchronized (BobsDatabaseHelper.class) {
