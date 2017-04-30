@@ -23,4 +23,5 @@ module gmanbot.main {
     exports core;
     exports twitch;
     exports ui;
+    exports utility;
 }

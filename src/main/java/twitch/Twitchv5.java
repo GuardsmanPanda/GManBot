@@ -10,28 +10,24 @@ import jdk.incubator.http.HttpResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class Twitchv5 {
+    public static final String GMANBOTUSERID = "39837384";
     private static final HttpClient httpClient = HttpClient.newHttpClient();
-    private static final String CHANNELID = "30084132";
-    private static String twitchApiKey = "";
+    private static final String BOBSCHANNELID = "30084132";
     private static String twitchAccessToken = "";
+    private static String twitchApiKey = "";
 
     static {
-        Path apiKeyPath = Paths.get("Data/twitchapikey.txt");
         try {
-            twitchApiKey = Files.readAllLines(apiKeyPath).get(0);
+            twitchApiKey = Files.readAllLines(Paths.get("Data/twitchapikey.txt")).get(0);
             twitchAccessToken = Files.readAllLines(Paths.get("Data/twitchoauthtoken.txt")).get(0);
         } catch (IOException e) {
-            System.out.println("Expecting api key as first line in file: " + apiKeyPath.toString());
+            System.out.println("Expecting api key");
             e.printStackTrace();
         }
     }
@@ -41,12 +37,11 @@ public class Twitchv5 {
     }
 
     public static String getGameTitle() {
-        return getGameTitle(CHANNELID);
+        return getGameTitle(BOBSCHANNELID);
     }
     public static String getGameTitle(String channelID) {
         JsonNode rootNode = executeHttpGet("https://api.twitch.tv/kraken/channels/" + channelID);
         if (rootNode != null && rootNode.has("game")) return rootNode.get("game").asText();
-
         else {
             System.out.println("Could not find game for channel + " + channelID);
             return "";

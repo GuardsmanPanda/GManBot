@@ -1,11 +1,12 @@
 package core;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.CharMatcher;
 
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
 import java.sql.*;
 import java.util.Arrays;
+import java.util.function.Function;
 
 
 /**
@@ -55,10 +56,9 @@ public class BobsDatabase {
      * @return the number of rows which were updated.
      */
     public static int executePreparedSQL(String sql, String... arguments) {
-        if (StringUtils.countMatches(sql, "?") != arguments.length) throw new RuntimeException("Your SQL sucks! " + sql + " <> arguments: " + Arrays.toString(arguments));
+        if (CharMatcher.is('?').countIn(sql) != arguments.length) throw new RuntimeException("Your SQL sucks! " + sql + " <> arguments: " + Arrays.toString(arguments));
 
         int rowsUpdated = 0;
-
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             for (int i = 0; i < arguments.length; i++) statement.setString(i + 1, arguments[i]);
             rowsUpdated = statement.executeUpdate();
@@ -69,7 +69,7 @@ public class BobsDatabase {
     }
 
     public static CachedRowSet getCachedRowSetFromSQL(String sql, String... arguments) {
-        if (StringUtils.countMatches(sql, "?") != arguments.length) throw new RuntimeException("Your SQL sucks! " + sql);
+        if (CharMatcher.is('?').countIn(sql) != arguments.length) throw new RuntimeException("Your SQL sucks! " + sql + " <> arguments: " + Arrays.toString(arguments));
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             for (int i = 0; i < arguments.length; i++) statement.setString(i + 1, arguments[i]);
@@ -84,33 +84,33 @@ public class BobsDatabase {
         }
     }
 
+
     public static String getStringFromSQL(String sql, String... arguments) {
         try { return getValueFromSQL(sql, String.class, arguments);
         } catch (IllegalArgumentException e) {
             return "";
         }
     }
-
     public static int getIntFromSQL(String sql, String... arguments) {
         try { return getValueFromSQL(sql, Integer.class, arguments);
         } catch (IllegalArgumentException e) {
             return 0;
         }
     }
-
     public static double getDoubleFromSQL(String sql, String... arguments) {
         try { return getValueFromSQL(sql, Double.class, arguments);
         } catch (IllegalArgumentException e) {
             return 0.0;
         }
     }
-
     public static boolean getBooleanFromSQL(String sql, String... arguments) {
         try { return getValueFromSQL(sql, Boolean.class, arguments);
         } catch (IllegalArgumentException e) {
             return false;
         }
     }
+
+
 
     public static <E> E getValueFromSQL(String sql, Class<E> returnType, String... arguments) {
         try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {

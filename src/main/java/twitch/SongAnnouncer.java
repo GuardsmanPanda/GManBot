@@ -1,5 +1,6 @@
 package twitch;
 
+import com.google.common.base.Strings;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -35,7 +36,6 @@ public class SongAnnouncer extends ListenerAdapter {
     public SongAnnouncer(Path songFilePath) {
         startSongAnnouncer();
         watchSongFile(songFilePath);
-
         //Load the rating reminders
         try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE songRatingReminder = true")) {
             while (cachedRowSet.next()) ratingReminderMap.put(cachedRowSet.getString("twitchUserID"), cachedRowSet.getString("twitchDisplayName"));

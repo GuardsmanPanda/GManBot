@@ -1,8 +1,7 @@
 package core;
 
-import org.apache.commons.lang3.tuple.MutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import twitch.Twitchv5;
+import utility.FinalTriple;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -10,6 +9,11 @@ import java.util.HashMap;
 
 public class BobsDatabaseHelper {
     private static final HashMap<String, String> cachedUserIDs = new HashMap<>();
+
+    public static void migrateData(String twitchUserID, String twitchDisplayName, int idleHours, int activeHours, int chatLines, String flagName, int bobCoins, boolean rawrsBob) {
+        createUserIfNotExists(twitchUserID, twitchDisplayName);
+        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET flag = ?, idleHours = "+idleHours+", activeHours = "+activeHours+", bobCoins = "+bobCoins+", heartsBob = "+rawrsBob+", chatLines = "+chatLines+" WHERE twitchUserID = ?", flagName, twitchUserID);
+    }
 
     public static void setWelcomeMessage(String twitchUserID, String twitchDisplayName, String welcomeMessage) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
@@ -59,19 +63,21 @@ public class BobsDatabaseHelper {
         return BobsDatabase.getBooleanFromSQL("SELECT hasSubscribed FROM TwitchChatUsers WHERE twitchUserID = ?", twitchUserID);
     }
 
-    public static Triple<String, String, Boolean> getDisplayNameWelcomeMessageAndHasSubbedStatus(String twitchName) {
-        MutableTriple<String, String, Boolean> returnTriple = new MutableTriple<>("", "", false);
+    public static FinalTriple<String, String, Boolean> getDisplayNameWelcomeMessageAndHasSubbedStatus(String twitchName) {
+        String first = "";
+        String second = "";
+        Boolean third = false;
         try {
             CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("Select twitchDisplayName, welcomeMessage, hasSubscribed FROM TwitchChatUsers WHERE twitchLowerCaseName = ?", twitchName.toLowerCase());
             if (cachedRowSet.next()) {
-                returnTriple.setLeft(cachedRowSet.getString("twitchDisplayName"));
-                returnTriple.setMiddle(cachedRowSet.getString("welcomeMessage"));
-                returnTriple.setRight(cachedRowSet.getBoolean("hasSubscribed"));
+                first = cachedRowSet.getString("twitchDisplayName");
+                second = cachedRowSet.getString("welcomeMessage");
+                third = cachedRowSet.getBoolean("hasSubscribed");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return returnTriple;
+        return new FinalTriple<>(first, second, third);
     }
 
 

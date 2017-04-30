@@ -3,22 +3,17 @@ package core;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
-import com.google.common.io.CharStreams;
-import org.apache.commons.lang3.StringUtils;
-import org.pircbotx.hooks.events.MessageEvent;
 
 import javax.sql.rowset.CachedRowSet;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.io.*;
-import java.nio.file.Path;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.stream.StreamSupport;
 
 /**
  *
@@ -28,12 +23,6 @@ public class GBUtility {
 
     static {
         try { robot = new Robot(); } catch (AWTException e) { e.printStackTrace(); }
-    }
-
-    public static void main(String[] args) {
-        System.out.println(strictFill("javaisthebestever", 12) + " 9");
-        System.out.println(strictFill("somethingsho", 12) + " 7");
-        System.out.println(strictFill("hello", 12) + " 5");
     }
 
     public static <E> E getElementWithHighestCount(Multiset<E> multiSet) {
@@ -52,17 +41,14 @@ public class GBUtility {
         return returnText;
     }
 
-    public static String strictFill(String text, int maximumLength) { return strictFill(text, " ", maximumLength); }
-    public static String strictFill(String text, String fill, int maximumLength) {
+    public static String strictFill(String text, int maximumLength) { return strictFill(text, ' ', maximumLength); }
+    public static String strictFill(String text, char fill, int maximumLength) {
         if (text.length() <= maximumLength)
-            return stringFill(text, fill, maximumLength);
+            return Strings.padEnd(text, maximumLength, fill);
         else
             return text.substring(0, maximumLength - 2) + "..";
     }
-    public static String stringFill(String text, int minimumLength) { return  stringFill(text, " ", minimumLength); }
-    public static String stringFill(String text, String fill, int minimumLength) {
-        return text + StringUtils.repeat(fill, minimumLength - text.length());
-    }
+
 
     /**
      * Writes the string as if the user typed it on his keyboard.

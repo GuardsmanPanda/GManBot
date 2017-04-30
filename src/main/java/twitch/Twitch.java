@@ -1,18 +1,23 @@
 package twitch;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import core.GBUtility;
 import org.apache.hc.client5.http.impl.sync.HttpClientBuilder;
 import org.apache.hc.client5.http.methods.HttpGet;
 import org.apache.hc.client5.http.sync.HttpClient;
+import utility.FinalPair;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
@@ -22,7 +27,7 @@ public class Twitch {
     private static final HttpClient client = HttpClientBuilder.create().build();
 
     public static void main(String[] args) {
-        System.out.println(getTwitchUserID("dark050"));
+        getTwitchUserIDAndDisplayNames(List.of("korgothor", "Lucho_hs", "mindlesszombiehs"));
     }
 
     public static boolean isStreamOnline(String twitchName, boolean defaultAssumption) {
@@ -55,18 +60,42 @@ public class Twitch {
                 .forEach(node -> returnSet.add(node.get("regex").asText()));
         return returnSet;
     }
+
+    public static Map<String, String> getTwitchUserIDAndDisplayNames(List<String> names) {
+        String nameString = names.stream().collect(Collectors.joining(","));
+        System.out.println(nameString);
+        GBUtility.prettyPrintJSonNode(executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/channels?channel=" + nameString)));
+        Map<String, String> returnMap = new HashMap<>();
+
+
+        return returnMap;
+    }
+
+    public static FinalPair<String, String> getTwitchUserIDAndDisplayName(String twitchName) {
+        JsonNode rootNode = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/users/" + twitchName));
+        if (rootNode.has("_id")) {
+            if (rootNode.has("display_name")) {
+                String displayname = rootNode.get("display_name").asText();
+                if (displayname.isEmpty()) {
+                    System.out.println("Found empty display name for user " + twitchName);
+                    GBUtility.prettyPrintJSonNode(rootNode);
+                    return new FinalPair<>(rootNode.get("_id").asText(), twitchName);
+                } else {
+                    return new FinalPair<>(rootNode.get("_id").asText(), displayname);
+                }
+            } else {
+                System.out.println("Found no display name for user " + twitchName);
+                GBUtility.prettyPrintJSonNode(rootNode);
+                return new FinalPair<>(rootNode.get("_id").asText(), twitchName);
+            }
+
+        } else return new FinalPair<>("", twitchName);
+    }
+
     public static String getTwitchUserID(String twitchName) {
         JsonNode rootNode = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/users/" + twitchName));
         if (rootNode.has("_id")) return rootNode.get("_id").asText();
         else return "";
-    }
-    public static String getCurrentGame(String twitchName) {
-        JsonNode rootNode = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/channels/" + twitchName));
-        return rootNode.get("game").asText();
-    }
-    public static String getCurrentTitle(String twitchName) {
-        JsonNode rootNode = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/channels/" + twitchName));
-        return rootNode.get("status").asText();
     }
     /**
      * Returns the follower count of the given channel, returns 0 if the channel does not exist.
@@ -87,72 +116,7 @@ public class Twitch {
             return 0;
         }
     }
-    /**
-     * Gets top games on twitch starting from offset (exclusive)
-     * @param numberOfGames value between 1 and 100
-     * @param offset value starting from 0
-     * @return
-     */
-    public static Map<String, Integer> getTopGamesAndNumberOfChannels(int numberOfGames, int offset) {
-        HashMap<String, Integer> returnMap = new HashMap<>();
-        JsonNode rootNode = executeHttpGet(new HttpGet("https://api.twitch.tv/kraken/games/top?limit=" + numberOfGames + "&offset=" + offset));
-        StreamSupport.stream(rootNode.get("top").spliterator(), false)
-                .forEach(gameNode -> {
-                    returnMap.put(gameNode.get("game").get("name").asText(), gameNode.get("channels").asInt());
-                    //System.out.println(gameNode.get("channels").asInt() + " people streaming and " + gameNode.get("viewers") + " people watching " + gameNode.get("game").get("name").asText());
-                });
-        return returnMap;
-    }
-    /**
-     * Search for streams with a given quarry
-     */
-    public static List<String> searchStreams(String searchQuarry, int limit, int offset) {
-        try {
-            String searchString = "https://api.twitch.tv/kraken/search/streams?q=" + URLEncoder.encode(searchQuarry, "UTF-8") + "&limit=" + limit + "&offset=" + offset;
-            System.out.println(searchString);
-            JsonNode rootNode = executeHttpGet(new HttpGet(searchString));
-            List<String> returnList = new ArrayList<>();
-            StreamSupport.stream(rootNode.get("streams").spliterator(), false)
-                    .forEach(stream -> {
-                        returnList.add(stream.get("channel").get("name").asText());
-                    });
-            if (returnList.isEmpty()) System.out.println("No streams found for game search: " + searchQuarry);
-            return returnList;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            throw new RuntimeException("God damn it java");
-        }
-    }
-    public static List<String> getListOfStreamsForGame(String game, int limit, int offset) {
-        try {
-            String searchString = "https://api.twitch.tv/kraken/streams?game=" + URLEncoder.encode(game, "UTF-8") + "&limit=" + limit + "&offset=" + offset;
-            System.out.println(searchString);
-            JsonNode rootNode = executeHttpGet(new HttpGet(searchString));
-            List<String> returnList = new ArrayList<>();
-            StreamSupport.stream(rootNode.get("streams").spliterator(), false)
-                    .forEach(stream -> {
-                        returnList.add(stream.get("channel").get("name").asText());
-                    });
-            if (returnList.isEmpty()) System.out.println("No streams found for game: " + game);
-            return returnList;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            throw new RuntimeException("God damn it java");
-        }
-    }
 
-
-    public static void setStreamTitle() {
-
-    }
-
-    public static void setHost() {
-
-    }
-
-    public static void removeHost() {
-
-    }
 
     private synchronized static JsonNode executeHttpGet(HttpGet get) {
         get.addHeader("Client-ID", "affm09r2tf22mjgm3pw46wvjhgf9bkz");
@@ -167,6 +131,10 @@ public class Twitch {
             }
             */
             return rootNode;
+        } catch (JsonParseException jpe) {
+            jpe.printStackTrace();
+            System.out.println("****** JSON perse exception on " + get.toString());
+            return JsonNodeFactory.instance.objectNode();
         } catch (IOException e) {
             //TODO: in case of IO error we really should return an empty node with a simple error entry instead
             e.printStackTrace();

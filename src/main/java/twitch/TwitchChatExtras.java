@@ -2,15 +2,14 @@ package twitch;
 
 import core.BobsDatabaseHelper;
 import core.GBUtility;
-import org.apache.commons.lang3.tuple.Triple;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.MessageEvent;
+import utility.FinalTriple;
 
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,6 +26,7 @@ public class TwitchChatExtras extends ListenerAdapter {
         fillFlagTranslationMap(flagTranslationMap);
     }
 
+
     @Override
     public void onMessage(MessageEvent event)  {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
@@ -41,10 +41,10 @@ public class TwitchChatExtras extends ListenerAdapter {
         //ignore join events for the first 3 minutes of a restart to avoid mass channel spam.
         if (startTime.plusMinutes(3).isAfter(LocalDateTime.now())) return;
 
-        Triple<String, String, Boolean> welcomeTriple = BobsDatabaseHelper.getDisplayNameWelcomeMessageAndHasSubbedStatus(event.getUserHostmask().getNick());
-        String displayName = welcomeTriple.getLeft();
-        String welcomeMessage = welcomeTriple.getMiddle();
-        Boolean hasSubscribed = welcomeTriple.getRight();
+        FinalTriple<String, String, Boolean> welcomeTriple = BobsDatabaseHelper.getDisplayNameWelcomeMessageAndHasSubbedStatus(event.getUserHostmask().getNick());
+        String displayName = welcomeTriple.first;
+        String welcomeMessage = welcomeTriple.second;
+        Boolean hasSubscribed = welcomeTriple.third;
 
         if (hasSubscribed && !welcomeMessage.equalsIgnoreCase("none")) {
             if (welcomeMessage.startsWith("/") && !welcomeMessage.toLowerCase().startsWith("/me ")) return;

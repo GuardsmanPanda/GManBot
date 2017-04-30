@@ -39,7 +39,6 @@ public class GameRatings extends ListenerAdapter {
                 if (tcm.getMessageContent().contains(" ")) gameQuote = tcm.getMessageContent().substring(tcm.getMessageContent().indexOf(" ")).trim();
                 addGameRatingToDatabase(tcm.userID, Twitchv5.getGameTitle(), rating, gameQuote);
                 updateOverlay();
-                //TODO: display game rating on stream
             } catch (NumberFormatException nfe) {
                 // Silently kill number format exceptions
             }

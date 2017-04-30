@@ -2,56 +2,51 @@ package utility;
 
 import core.BobsDatabase;
 import core.BobsDatabaseHelper;
-import twitch.SongDatabase;
+import core.GBUtility;
 import twitch.Twitch;
 
 import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.RowSetProvider;
 import java.sql.*;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 
 public class DataMigration {
-    private static HashMap<String, String> twitchNameToIDMap = new HashMap<>();
+    private static HashMap<String, FinalPair<String, String>> lowerCaseNameToIDAndDisplayName = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
-
+        GBUtility.prettyPrintCachedRowSet(BobsDatabase.getCachedRowSetFromSQL("SELECT * FROM TwitchChatUsers ORDER BY idleHours DESC FETCH FIRST 200 ROWS ONLY"), 200, 20);
     }
 
-    public static void importSongRatings() throws Exception {
-        HashMap<String, String> twitchNameChangeMap = new HashMap<>();
-        twitchNameChangeMap.put("quadias", "Insidious_void_");
-        twitchNameChangeMap.put("shadowbourne2929", "scourgiman2381");
-
+    public static void importtwitchUserData() throws Exception {
         Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
         Connection databaseConnection = DriverManager.getConnection("jdbc:derby:gmanbotdb");
 
-        ResultSet songRatingSet = databaseConnection.createStatement().executeQuery("SELECT * FROM SongRatings");
-        CachedRowSet cachedSongRatingSet = RowSetProvider.newFactory().createCachedRowSet();
-        cachedSongRatingSet.populate(songRatingSet);
+        //load old names
+        CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT twitchUserID, twitchDisplayName FROM twitchChatUsers");
+        System.out.println("Loaded: " + cachedRowSet.size() + " Entries");
+        while (cachedRowSet.next()) lowerCaseNameToIDAndDisplayName.put(cachedRowSet.getString("twitchDisplayName").toLowerCase(), new FinalPair<>(cachedRowSet.getString("twitchUserID"), cachedRowSet.getString("twitchDisplayName")));
+        System.out.println("Loaded Known Twitch Names, getting twitch names from old DB");
+        cachedRowSet.close();
 
-        System.out.println("Found " + cachedSongRatingSet.size() + " song ratings!");
-        int entryNumber = 1;
-        while (cachedSongRatingSet.next()) {
-            String twitchName = cachedSongRatingSet.getString("ratedBy");
-            if (twitchNameChangeMap.containsKey(twitchName)) twitchName = twitchNameChangeMap.get(twitchName);
-            String songName = cachedSongRatingSet.getString("songName");
-            String songQuote = cachedSongRatingSet.getString("ratingQuote");
-            int songRating = cachedSongRatingSet.getInt("rating");
-            final int currentEntryNumber = entryNumber;
 
-            String twitchID = twitchNameToIDMap.computeIfAbsent(twitchName, sameTwitchName -> {
-                System.out.println("Looking up ID for " + sameTwitchName + ", " + (cachedSongRatingSet.size() - currentEntryNumber) + " song entries left.");
-                try { Thread.sleep(350); } catch (InterruptedException e) { e.printStackTrace(); }
-                String twitchIDForName = Twitch.getTwitchUserID(sameTwitchName);
-                if (twitchIDForName.isEmpty()) System.out.println("Could not find ID for " + sameTwitchName);
-                return twitchIDForName;
-            });
+        ResultSet resultSet = databaseConnection.createStatement().executeQuery("SELECT * FROM Chat");
+        while(resultSet.next()) {
+            String twitchName = resultSet.getString("twitchname").toLowerCase();
+            FinalPair<String, String> idNamePair;
 
-            if (!twitchID.isEmpty()) {
-                SongDatabase.addSongRating(twitchID, twitchName, songName, songRating, songQuote);
+            if (lowerCaseNameToIDAndDisplayName.containsKey(twitchName)) {
+                idNamePair = lowerCaseNameToIDAndDisplayName.get(twitchName);
+                System.out.println("Found twitch name in cache: " + twitchName);
+            } else {
+                idNamePair = Twitch.getTwitchUserIDAndDisplayName(twitchName);
             }
-            System.out.println("Migrated " + entryNumber + "entries to the new song rating database!");
-            entryNumber++;
+
+            if (!idNamePair.first.isEmpty())  {
+                BobsDatabaseHelper.migrateData(idNamePair.first, idNamePair.second, resultSet.getInt("idlehoursinchat"), resultSet.getInt("activehoursinchat"), resultSet.getInt("linesinchat"), resultSet.getString("flagname"), resultSet.getInt("currentbobcoins"), resultSet.getBoolean("rawrsbob"));
+            } else {
+                System.out.println("Could not find user ID for >> " + resultSet.getString("twitchname"));
+            }
         }
     }
+
 }
