@@ -1,18 +1,13 @@
 package twitch;
 
-import core.BobsDatabase;
-import core.BobsDatabaseHelper;
-import core.GBUtility;
+import database.BobsDatabaseHelper;
+import utility.GBUtility;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
-import org.pircbotx.hooks.ListenerAdapter;
-import org.pircbotx.hooks.events.MessageEvent;
-import org.pircbotx.hooks.events.ModeEvent;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.LogManager;

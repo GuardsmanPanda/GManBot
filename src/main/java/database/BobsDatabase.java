@@ -1,4 +1,4 @@
-package core;
+package database;
 
 import com.google.common.base.CharMatcher;
 

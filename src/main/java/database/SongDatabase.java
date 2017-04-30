@@ -1,12 +1,11 @@
-package twitch;
+package database;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import core.BobsDatabase;
-import core.GBUtility;
+import database.BobsDatabase;
+import twitch.TwitchChat;
 
 import javax.sql.rowset.CachedRowSet;
-import java.awt.*;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;

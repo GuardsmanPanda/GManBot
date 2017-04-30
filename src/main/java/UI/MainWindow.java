@@ -1,6 +1,6 @@
 package ui;
 
-import core.GBUtility;
+import utility.GBUtility;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 import twitch.GameRatings;
 import twitch.NameSelector;
 import twitch.TwitchChat;
-import twitch.SongDatabase;
+import database.SongDatabase;
 
 import java.awt.*;
 import java.awt.event.InputEvent;

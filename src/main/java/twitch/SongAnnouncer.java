@@ -1,13 +1,13 @@
 package twitch;
 
-import com.google.common.base.Strings;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
-import core.BobsDatabase;
-import core.BobsDatabaseHelper;
-import core.GBUtility;
+import database.BobsDatabase;
+import database.BobsDatabaseHelper;
+import database.SongDatabase;
+import utility.GBUtility;
 import javafx.util.Pair;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;

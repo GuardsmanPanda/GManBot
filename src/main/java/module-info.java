@@ -7,7 +7,6 @@ module gmanbot.main {
     requires jackson.annotations;
     requires java.desktop;
     requires jnativehook;
-    requires commons.logging;
     requires slf4j.api;
     requires java.logging;
     requires java.sql.rowset;
@@ -17,10 +16,10 @@ module gmanbot.main {
     requires javafx.controls;
     requires twitter4j.core;
     requires jdk.httpserver;
-    requires javax.websocket.api;
     requires javafx.web;
     requires Java.WebSocket;
     exports core;
+    exports database;
     exports twitch;
     exports ui;
     exports utility;

@@ -2,9 +2,8 @@ package utility;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
-import core.BobsDatabase;
-import core.BobsDatabaseHelper;
-import core.GBUtility;
+import database.BobsDatabase;
+import database.BobsDatabaseHelper;
 import twitch.Twitchv5;
 
 import javax.sql.rowset.CachedRowSet;

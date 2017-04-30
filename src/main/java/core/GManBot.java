@@ -19,6 +19,7 @@ public class GManBot extends Application {
 
         //Start everything else
         StreamWebOverlay.startOverlay();
+        TwitchWebChatOverlay.startHttpService();
 
         // Blocking call, do not include code past this point
         launch(args);

@@ -1,7 +1,7 @@
 package twitch;
 
-import core.BobsDatabaseHelper;
-import core.GBUtility;
+import database.BobsDatabaseHelper;
+import utility.GBUtility;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.MessageEvent;

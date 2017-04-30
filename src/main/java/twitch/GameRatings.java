@@ -3,19 +3,15 @@ package twitch;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import core.BobsDatabase;
-import core.GBUtility;
+import database.BobsDatabase;
 import core.StreamWebOverlay;
-import javafx.util.Pair;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 
 import javax.sql.rowset.CachedRowSet;
-import java.awt.*;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class GameRatings extends ListenerAdapter {
     private static final JsonNodeFactory nodeFactory = JsonNodeFactory.instance;

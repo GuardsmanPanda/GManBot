@@ -1,22 +1,16 @@
 package utility;
 
-import core.BobsDatabase;
-import core.BobsDatabaseHelper;
-import core.GBUtility;
-import twitch.Twitch;
-
-import javax.sql.rowset.CachedRowSet;
-import java.sql.*;
-import java.util.ArrayDeque;
 import java.util.HashMap;
 
 public class DataMigration {
     private static HashMap<String, FinalPair<String, String>> lowerCaseNameToIDAndDisplayName = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
-        GBUtility.prettyPrintCachedRowSet(BobsDatabase.getCachedRowSetFromSQL("SELECT * FROM TwitchChatUsers ORDER BY idleHours DESC FETCH FIRST 200 ROWS ONLY"), 200, 20);
+
     }
 
+
+    /*
     public static void importtwitchUserData() throws Exception {
         Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
         Connection databaseConnection = DriverManager.getConnection("jdbc:derby:gmanbotdb");
@@ -47,6 +41,6 @@ public class DataMigration {
                 System.out.println("Could not find user ID for >> " + resultSet.getString("twitchname"));
             }
         }
-    }
+    }*/
 
 }

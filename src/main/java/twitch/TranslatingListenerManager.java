@@ -1,7 +1,6 @@
 package twitch;
 
-import core.GBUtility;
-import org.pircbotx.PircBotX;
+import utility.GBUtility;
 import org.pircbotx.hooks.Event;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.managers.ThreadedListenerManager;

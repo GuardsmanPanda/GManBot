@@ -1,4 +1,4 @@
-package core;
+package database;
 
 import twitch.Twitchv5;
 import utility.FinalTriple;
@@ -10,10 +10,11 @@ import java.util.HashMap;
 public class BobsDatabaseHelper {
     private static final HashMap<String, String> cachedUserIDs = new HashMap<>();
 
+    /*
     public static void migrateData(String twitchUserID, String twitchDisplayName, int idleHours, int activeHours, int chatLines, String flagName, int bobCoins, boolean rawrsBob) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET flag = ?, idleHours = "+idleHours+", activeHours = "+activeHours+", bobCoins = "+bobCoins+", heartsBob = "+rawrsBob+", chatLines = "+chatLines+" WHERE twitchUserID = ?", flagName, twitchUserID);
-    }
+    }*/
 
     public static void setWelcomeMessage(String twitchUserID, String twitchDisplayName, String welcomeMessage) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
@@ -58,6 +59,10 @@ public class BobsDatabaseHelper {
     }
     public static String getTwitchUserID(String twitchDisplayName) {
         return BobsDatabase.getStringFromSQL("SELECT twitchUserID FROM TwitchChatUsers WHERE twitchLowerCaseName = ?", twitchDisplayName.toLowerCase());
+    }
+    public static String getFlagFromTwitchName(String twitchName) {
+        String flagName = BobsDatabase.getStringFromSQL("SELECT flag FROM twitchChatUsers WHERE twitchLowerCaseName = ?", twitchName.toLowerCase());
+        return (flagName.isEmpty()) ? "none" : flagName;
     }
     public static boolean getHasSubscribed(String twitchUserID) {
         return BobsDatabase.getBooleanFromSQL("SELECT hasSubscribed FROM TwitchChatUsers WHERE twitchUserID = ?", twitchUserID);

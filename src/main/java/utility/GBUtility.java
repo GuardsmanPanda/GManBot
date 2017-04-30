@@ -1,4 +1,4 @@
-package core;
+package utility;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
