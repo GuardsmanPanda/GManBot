@@ -1,5 +1,6 @@
 package twitch;
 
+import database.BobsDatabase;
 import database.BobsDatabaseHelper;
 import utility.GBUtility;
 import org.pircbotx.hooks.ListenerAdapter;
@@ -7,10 +8,11 @@ import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.MessageEvent;
 import utility.FinalTriple;
 
-
+import javax.sql.rowset.CachedRowSet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -34,6 +36,7 @@ public class TwitchChatExtras extends ListenerAdapter {
             case "!followage": followAge(chatMessage); break;
             case "!setwelcomemessage": setWelcomeMessage(chatMessage); break;
             case "!setflag": setFlag(chatMessage); break;
+            case "!chatstats": chatStats(chatMessage); break;
         }
     }
 
@@ -84,6 +87,33 @@ public class TwitchChatExtras extends ListenerAdapter {
         TwitchChat.sendMessage(printString);
     }
 
+    private static void chatStats(TwitchChatMessage chatMessage) {
+        StringBuilder statStringBuilder = new StringBuilder(chatMessage.displayName);
+        statStringBuilder.append(" - ");
+
+        try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT chatLines, activeHours, idleHours, bobCoins FROM TwitchChatUsers WHERE twitchUserID = ?", chatMessage.userID)) {
+            if (cachedRowSet.next()) {
+                int chatLines = cachedRowSet.getInt("chatLines");
+                int activeHours = cachedRowSet.getInt("activeHours");
+                int idleHours = cachedRowSet.getInt("idleHours");
+                int bobCoins = cachedRowSet.getInt("bobCoins");
+
+                statStringBuilder.append("ChatLines: " + chatLines);
+                statStringBuilder.append(" [Rank: " + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE chatLines > "+chatLines) + 1) + "]");
+                statStringBuilder.append(", BobCoins: " + bobCoins);
+                statStringBuilder.append(" [" + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE bobCoins > "+bobCoins) + 1) + "]");
+                statStringBuilder.append(", ActiveHours: " + activeHours);
+                statStringBuilder.append(" [" + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE activeHours > "+activeHours) + 1) + "]");
+                statStringBuilder.append(", IdleHours: " + idleHours);
+                statStringBuilder.append(" [" + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE idleHours > "+idleHours) + 1) + "]");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        //TODO append song rating stats
+        TwitchChat.sendMessage(statStringBuilder.toString());
+    }
+
     private static void setWelcomeMessage(TwitchChatMessage chatMessage) {
         if (chatMessage.getMessageContent().equalsIgnoreCase("!setwelcomemessage")) return;
 
@@ -95,7 +125,7 @@ public class TwitchChatExtras extends ListenerAdapter {
         String flagRequest = chatMessage.getMessageContent().replaceAll("\\W", "").toLowerCase().trim();
         if (flagTranslationMap.containsKey(flagRequest)) {
             System.out.println("Found flag for " + chatMessage.displayName + " flag name: " + flagTranslationMap.get(flagRequest) + " flagRequest: " + flagRequest + " Message: " + chatMessage.message);
-            BobsDatabaseHelper.setFlag(chatMessage.userID, chatMessage.displayName, flagRequest);
+            BobsDatabaseHelper.setFlag(chatMessage.userID, chatMessage.displayName, flagTranslationMap.get(flagRequest));
 
         } else if (flagRequest.equals("random") || flagRequest.equals("!setflag")) {
             List<String> flagNames = new ArrayList<>(new HashSet<>(flagTranslationMap.values()));
@@ -104,8 +134,8 @@ public class TwitchChatExtras extends ListenerAdapter {
             BobsDatabaseHelper.setFlag(chatMessage.userID, chatMessage.displayName, randomFlag);
 
         } else {
-            GBUtility.textToBob("could not find flag translation for " + chatMessage.displayName + " FLag translation: " + flagRequest + " Message: " + chatMessage.message);
-            System.out.println("could not find flag translation for " + chatMessage.displayName + " FLag translation: " + flagRequest + " Message: " + chatMessage.message);
+            GBUtility.textToBob("could not find flag translation for " + chatMessage.displayName + " Flag translation: " + flagRequest + " Message: " + chatMessage.message);
+            System.out.println("could not find flag translation for " + chatMessage.displayName + " Flag translation: " + flagRequest + " Message: " + chatMessage.message);
         }
     }
 
@@ -118,10 +148,10 @@ public class TwitchChatExtras extends ListenerAdapter {
                 String trueFlagName = flagArray[0];
                 for (String flagTranslationName : flagArray) {
                     flagTranslationName = flagTranslationName.replaceAll("\\W", "").toLowerCase().trim();
-                    if (flagTranslationMap.containsKey(flagTranslationName)) {
+                    if (translationMap.containsKey(flagTranslationName)) {
                         System.out.println("Double flag entry for " + trueFlagName + " translation name: " + flagTranslationName);
                     } else {
-                        flagTranslationMap.put(flagTranslationName, trueFlagName);
+                        translationMap.put(flagTranslationName, trueFlagName);
                     }
                 }
             }

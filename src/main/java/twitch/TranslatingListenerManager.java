@@ -77,6 +77,20 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!followage","!followage");
         commandTranslationMap.put("!folloage","!followage");
 
-        commandTranslationMap.put("!setflag", "!setflag");
+        commandTranslationMap.put("!setflag","!setflag");
+        commandTranslationMap.put("!setflash","!setflag");
+        commandTranslationMap.put("!flag", "!setflag");
+        commandTranslationMap.put("!steflag", "!setflag");
+        commandTranslationMap.put("!addflag", "!setflag");
+        commandTranslationMap.put("!setcountry", "!setflag");
+        commandTranslationMap.put("!removeflag","!setflag none");
+
+        commandTranslationMap.put("!chatstats", "!chatstats");
+        commandTranslationMap.put("!chatstast", "!chatstats");
+        commandTranslationMap.put("!chatstatus", "!chatstats");
+        commandTranslationMap.put("!chatstas", "!chatstats");
+        commandTranslationMap.put("!chatstaterino", "!chatstats");
+        commandTranslationMap.put("!chatsta", "!chatstats");
+        commandTranslationMap.put("!chatsts", "!chatstats");
     }
 }
