@@ -1,19 +1,24 @@
 package database;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import database.BobsDatabase;
 import twitch.TwitchChat;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SongDatabase {
-
+    private static Instant nextSongStatUpdate = Instant.now();
+    private static final Multiset<String> songsQuoted = HashMultiset.create();
+    private static final Multiset<String> songsRated = HashMultiset.create();
+    private static final List<String> songsQuotedRank = new ArrayList<>();
+    private static final List<String> songsRatedRank = new ArrayList<>();
 
     public static void addSongRating(String twitchUserID, String twitchDisplayName, String songName, int songRating, String songQuote) {
         try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT * FROM SongRatings WHERE twitchUserID = ? AND songName = ?", twitchUserID, songName)) {
@@ -65,5 +70,36 @@ public class SongDatabase {
                 .collect(Collectors.toMap(
                         songName -> songName,
                         songName -> ((double)songRatings.get(songName).stream().mapToInt(i->i).sum()) / songRatings.get(songName).size()));
+    }
+
+    public static synchronized String getSongRatingStatString(String twitchUserID) {
+        if (nextSongStatUpdate.isBefore(Instant.now())) {
+            nextSongStatUpdate = Instant.now().plus(Duration.ofMinutes(30));
+            updateSongRatingStatistics();
+        }
+        String returnString = "";
+        if (songsRated.count(twitchUserID) > 0) returnString += " - SongsRated: " + songsRated.count(twitchUserID) + " [" + songsRatedRank.indexOf(twitchUserID) + "]";
+        if (songsQuoted.count(twitchUserID) > 0) returnString += ", SongsQuoted: " + songsQuoted.count(twitchUserID) + " [" + songsQuotedRank.indexOf(twitchUserID) + "]";
+        return returnString;
+    }
+
+    private static void updateSongRatingStatistics() {
+        System.out.println("Updating Song Rating Stats");
+        songsQuoted.clear(); songsRated.clear(); songsQuotedRank.clear(); songsRatedRank.clear();
+
+        try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT twitchUserID, songQuote FROM SongRatings")) {
+            while (cachedRowSet.next()) {
+                songsRated.add(cachedRowSet.getString("twitchUserID"));
+                if (!cachedRowSet.getString("songQuote").equalsIgnoreCase("none")) {
+                    songsQuoted.add(cachedRowSet.getString("twitchUserID"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        songsRatedRank.addAll(Multisets.copyHighestCountFirst(songsRated).elementSet());
+        songsQuotedRank.addAll(Multisets.copyHighestCountFirst(songsQuoted).elementSet());
+
+        System.out.println("Updated Song Rating Stats");
     }
 }

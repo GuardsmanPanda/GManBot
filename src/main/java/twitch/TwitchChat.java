@@ -79,9 +79,6 @@ public class TwitchChat {
         bot.send().message(channel, message);
     }
 
-    public static synchronized void sendWhisper(String twitchName, String message) {
-        bot.send().message(twitchName, message);
-    }
 
     public static void addListener(ListenerAdapter listener) {
         bot.getConfiguration().getListenerManager().addListener(listener);

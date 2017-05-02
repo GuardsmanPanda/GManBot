@@ -7,6 +7,7 @@ import database.BobsDatabase;
 import core.StreamWebOverlay;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
+import webapi.Twitchv5;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;

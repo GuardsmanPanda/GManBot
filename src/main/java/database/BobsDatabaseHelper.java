@@ -1,6 +1,6 @@
 package database;
 
-import twitch.Twitchv5;
+import webapi.Twitchv5;
 import utility.FinalTriple;
 
 import javax.sql.rowset.CachedRowSet;

@@ -1,7 +1,10 @@
-package twitch;
+package webapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
 import utility.GBUtility;
 import jdk.incubator.http.HttpClient;
 import jdk.incubator.http.HttpRequest;
@@ -13,11 +16,14 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class Twitchv5 {
+    public static final String BOBSCHANNELID = "30084132";
     public static final String GMANBOTUSERID = "39837384";
     private static final HttpClient httpClient = HttpClient.newHttpClient();
-    private static final String BOBSCHANNELID = "30084132";
     private static String twitchAccessToken = "";
     private static String twitchApiKey = "";
 
@@ -32,7 +38,7 @@ public class Twitchv5 {
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
-        System.out.println(getGameTitle());
+        System.out.println(getBobsEmoticonSet());
     }
 
     public static String getGameTitle() {
@@ -45,6 +51,17 @@ public class Twitchv5 {
             System.out.println("Could not find game for channel + " + channelID);
             return "";
         }
+    }
+
+    public static List<String> getBobsEmoticonSet() { return getEmoticonSet("581"); }
+    public static List<String> getEmoticonSet(String emoteSet) {
+        JsonNode root = executeHttpGet("https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=" + emoteSet);
+        if (root.has("emoticon_sets") && root.get("emoticon_sets").has(emoteSet)) {
+            return StreamSupport.stream(root.get("emoticon_sets").get(emoteSet).spliterator(), false)
+                    .map(node -> node.get("code").asText())
+                    .collect(Collectors.toList());
+        }
+        return List.of();
     }
 
     public static String getDisplayName(String twitchUserID) {

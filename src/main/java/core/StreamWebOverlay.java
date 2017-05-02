@@ -8,7 +8,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
-import twitch.Twitchv5;
+import webapi.Twitchv5;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,13 +22,7 @@ public class StreamWebOverlay {
     private static final BobsWebSocketServer socketServer = new BobsWebSocketServer(new InetSocketAddress(9102));
 
     public static void main(String[] args) throws InterruptedException {
-        startOverlay();
-        Thread.sleep(10000);
-        JsonNodeFactory factory = JsonNodeFactory.instance;
-        ObjectNode root = factory.objectNode();
-        root.set("type", factory.textNode("gameRating"));
-        root.set("gameName", factory.textNode(Twitchv5.getGameTitle()));
-        sendJsonToOverlay(root);
+
     }
 
     public static void startOverlay() {

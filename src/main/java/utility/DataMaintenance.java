@@ -4,7 +4,7 @@ package utility;
 import com.fasterxml.jackson.databind.JsonNode;
 import database.BobsDatabase;
 import database.BobsDatabaseHelper;
-import twitch.Twitchv5;
+import webapi.Twitchv5;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;

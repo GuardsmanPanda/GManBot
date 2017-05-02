@@ -2,11 +2,15 @@ package twitch;
 
 import database.BobsDatabase;
 import database.BobsDatabaseHelper;
+import database.SongDatabase;
 import utility.GBUtility;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.MessageEvent;
 import utility.FinalTriple;
+import utility.PrettyPrinter;
+import webapi.SpaceLaunch;
+import webapi.Twitchv5;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.IOException;
@@ -28,7 +32,6 @@ public class TwitchChatExtras extends ListenerAdapter {
         fillFlagTranslationMap(flagTranslationMap);
     }
 
-
     @Override
     public void onMessage(MessageEvent event)  {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
@@ -37,6 +40,7 @@ public class TwitchChatExtras extends ListenerAdapter {
             case "!setwelcomemessage": setWelcomeMessage(chatMessage); break;
             case "!setflag": setFlag(chatMessage); break;
             case "!chatstats": chatStats(chatMessage); break;
+            case "!spacelaunch": SpaceLaunch.nextSpaceLaunchRequest(); break;
         }
     }
 
@@ -77,13 +81,7 @@ public class TwitchChatExtras extends ListenerAdapter {
             return;
         }
 
-        String followPeriodString = followDate.until(LocalDate.now()).toString();
-
-        followPeriodString = followPeriodString.replace("P", "").replace("Y", " Years, ").replace("M", " Months, ").replace("D", " Days,").trim();
-        followPeriodString = followPeriodString.replace("1 Years", "1 Year").replace(" 1 Months", " 1 Month").replace(" 1 Days", " 1 Day");
-        followPeriodString = followPeriodString.substring(0, followPeriodString.length() - 1);
-
-        String printString = chatMessage.displayName + ": Followed for " + followPeriodString + "!";
+        String printString = chatMessage.displayName + ": Followed for " + PrettyPrinter.timeStringFromPeriod(followDate.until(LocalDate.now())) + "!";
         TwitchChat.sendMessage(printString);
     }
 
@@ -106,6 +104,7 @@ public class TwitchChatExtras extends ListenerAdapter {
                 statStringBuilder.append(" [" + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE activeHours > "+activeHours) + 1) + "]");
                 statStringBuilder.append(", IdleHours: " + idleHours);
                 statStringBuilder.append(" [" + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE idleHours > "+idleHours) + 1) + "]");
+                statStringBuilder.append(SongDatabase.getSongRatingStatString(chatMessage.userID));
             }
         } catch (SQLException e) {
             e.printStackTrace();
