@@ -18,12 +18,14 @@ public class BobsDatabaseHelper {
 
     public static void setWelcomeMessage(String twitchUserID, String twitchDisplayName, String welcomeMessage) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
+        cachedUserIDs.put(twitchUserID, twitchDisplayName);
         if (welcomeMessage.isEmpty()) welcomeMessage = "none";
-        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET welcomeMessage = ? WHERE twitchUserID = ?", welcomeMessage, twitchUserID);
+        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET welcomeMessage = ?, twitchDisplayName = ? WHERE twitchUserID = ?", welcomeMessage, twitchDisplayName, twitchUserID);
     }
     public static void setFlag(String twitchUserID, String twitchDisplayName, String flagName) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
-        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET flag = ? WHERE twitchUserID = ?", flagName, twitchUserID);
+        cachedUserIDs.put(twitchUserID, twitchDisplayName);
+        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET flag = ?, twitchDisplayName = ? WHERE twitchUserID = ?", flagName, twitchDisplayName, twitchUserID);
     }
     public static void setHasSubscribed(String twitchUserID, String twitchDisplayName) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);

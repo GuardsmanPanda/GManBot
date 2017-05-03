@@ -17,10 +17,11 @@ public class WebClient {
     private static final HttpClient client = HttpClient.newHttpClient();
 
 
-    public static JsonNode getJSonNodeFromRequest(HttpRequest request) {
+    public synchronized static JsonNode getJSonNodeFromRequest(HttpRequest request) {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandler.asString());
             return new ObjectMapper().readTree(response.body());
+
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return JsonNodeFactory.instance.objectNode().put("status", "error");

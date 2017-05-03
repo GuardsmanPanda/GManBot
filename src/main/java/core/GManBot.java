@@ -3,6 +3,7 @@ package core;
 import javafx.stage.Stage;
 import javafx.application.Application;
 import twitch.*;
+import webapi.SpaceLaunch;
 
 import java.nio.file.Paths;
 
@@ -20,6 +21,7 @@ public class GManBot extends Application {
         //Start everything else
         StreamWebOverlay.startOverlay();
         TwitchWebChatOverlay.startHttpService();
+        SpaceLaunch.startLaunchChecker();
 
         // Blocking call, do not include code past this point
         launch(args);
