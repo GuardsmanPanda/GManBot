@@ -2,9 +2,6 @@ package webapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
 import utility.GBUtility;
 import jdk.incubator.http.HttpClient;
 import jdk.incubator.http.HttpRequest;
@@ -16,7 +13,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -38,12 +35,13 @@ public class Twitchv5 {
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
-        System.out.println(getBobsEmoticonSet());
+        System.out.println(getGlobalTwitchEmoteSet());
     }
 
     public static String getGameTitle() {
         return getGameTitle(BOBSCHANNELID);
     }
+
     public static String getGameTitle(String channelID) {
         JsonNode rootNode = executeHttpGet("https://api.twitch.tv/kraken/channels/" + channelID);
         if (rootNode != null && rootNode.has("game")) return rootNode.get("game").asText();
@@ -53,16 +51,27 @@ public class Twitchv5 {
         }
     }
 
-    public static List<String> getBobsEmoticonSet() { return getEmoticonSet("581"); }
-    public static List<String> getEmoticonSet(String emoteSet) {
+    //TODO throw exception if set empty
+    public static Set<String> getBobsEmoticonSet() {
+        return getEmoticonSet("581");
+    }
+    public static Set<String> getGlobalTwitchEmoteSet() {
+        Set<String> emotes = getEmoticonSet("0");
+        emotes.removeIf(emote -> emote.contains("\\"));
+        return emotes;
+    }
+
+    public static Set<String> getEmoticonSet(String emoteSet) {
         JsonNode root = executeHttpGet("https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=" + emoteSet);
         if (root.has("emoticon_sets") && root.get("emoticon_sets").has(emoteSet)) {
             return StreamSupport.stream(root.get("emoticon_sets").get(emoteSet).spliterator(), false)
                     .map(node -> node.get("code").asText())
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toSet());
         }
-        return List.of();
+        return Set.of();
     }
+
+
 
     public static String getDisplayName(String twitchUserID) {
         JsonNode rootNode = executeHttpGet("https://api.twitch.tv/kraken/users/" + twitchUserID);
@@ -74,6 +83,7 @@ public class Twitchv5 {
             return "";
         }
     }
+
     public static LocalDate getFollowDate(String twitchUserID) {
         JsonNode rootNode = executeHttpGet("https://api.twitch.tv/kraken/users/" + twitchUserID + "/follows/channels/30084132");
         if (rootNode.has("created_at")) {
@@ -90,7 +100,7 @@ public class Twitchv5 {
 
     public synchronized static JsonNode executeHttpGet(String requestURIString) {
         try {
-            URI requestURI  = new URI(requestURIString);
+            URI requestURI = new URI(requestURIString);
             HttpRequest getRequest = HttpRequest.newBuilder(requestURI)
                     .header("Accept", "application/vnd.twitchtv.v5+json")
                     .header("Client-ID", twitchApiKey)

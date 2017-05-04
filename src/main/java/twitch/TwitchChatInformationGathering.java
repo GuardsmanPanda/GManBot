@@ -1,7 +1,5 @@
 package twitch;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import database.BobsDatabaseHelper;
 import database.EmoteDatabase;
 import org.pircbotx.hooks.ListenerAdapter;
@@ -10,16 +8,16 @@ import webapi.Twitchv5;
 
 import java.time.Duration;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class TwitchChatInformationGathering extends ListenerAdapter {
-    private static List<String> bobEmotes = List.of();
+    private static final Set<String> bobEmoteSet = new HashSet<>();
 
     static {
-        bobEmotes = Twitchv5.getBobsEmoticonSet();
+        bobEmoteSet.addAll(Twitchv5.getBobsEmoticonSet());
+        bobEmoteSet.addAll(Twitchv5.getGlobalTwitchEmoteSet());
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> hourlyUpdate(), 1, 1, TimeUnit.HOURS);
     }
 
@@ -28,8 +26,8 @@ public class TwitchChatInformationGathering extends ListenerAdapter {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
 
         BobsDatabaseHelper.addChatLine(chatMessage.userID, chatMessage.displayName);
-        bobEmotes.stream()
-                .filter(emote -> chatMessage.message.matches(emote))
+        bobEmoteSet.stream()
+                .filter(emote -> chatMessage.message.contains(emote))
                 .forEach(emote -> EmoteDatabase.addEmoteUsage(chatMessage.userID, emote));
     }
 

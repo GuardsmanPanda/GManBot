@@ -6,6 +6,8 @@ import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
 import java.sql.*;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 
@@ -57,7 +59,8 @@ public class BobsDatabase {
      * @return the number of rows which were updated.
      */
     public static int executePreparedSQL(String sql, String... arguments) {
-        if (CharMatcher.is('?').countIn(sql) != arguments.length) throw new RuntimeException("Your SQL sucks! " + sql + " <> arguments: " + Arrays.toString(arguments));
+        if (CharMatcher.is('?').countIn(sql) != arguments.length)
+            throw new RuntimeException("Your SQL sucks! " + sql + " <> arguments: " + Arrays.toString(arguments));
 
         int rowsUpdated = 0;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -70,7 +73,8 @@ public class BobsDatabase {
     }
 
     public static CachedRowSet getCachedRowSetFromSQL(String sql, String... arguments) {
-        if (CharMatcher.is('?').countIn(sql) != arguments.length) throw new RuntimeException("Your SQL sucks! " + sql + " <> arguments: " + Arrays.toString(arguments));
+        if (CharMatcher.is('?').countIn(sql) != arguments.length)
+            throw new RuntimeException("Your SQL sucks! " + sql + " <> arguments: " + Arrays.toString(arguments));
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             for (int i = 0; i < arguments.length; i++) statement.setString(i + 1, arguments[i]);
@@ -87,44 +91,66 @@ public class BobsDatabase {
 
 
     public static String getStringFromSQL(String sql, String... arguments) {
-        try { return getValueFromSQL(sql, String.class, arguments);
+        try {
+            return getValueFromSQL(sql, String.class, arguments);
         } catch (IllegalArgumentException e) {
             return "";
         }
     }
     public static int getIntFromSQL(String sql, String... arguments) {
-        try { return getValueFromSQL(sql, Integer.class, arguments);
+        try {
+            return getValueFromSQL(sql, Integer.class, arguments);
         } catch (IllegalArgumentException e) {
             return 0;
         }
     }
     public static double getDoubleFromSQL(String sql, String... arguments) {
-        try { return getValueFromSQL(sql, Double.class, arguments);
+        try {
+            return getValueFromSQL(sql, Double.class, arguments);
         } catch (IllegalArgumentException e) {
             return 0.0;
         }
     }
     public static boolean getBooleanFromSQL(String sql, String... arguments) {
-        try { return getValueFromSQL(sql, Boolean.class, arguments);
+        try {
+            return getValueFromSQL(sql, Boolean.class, arguments);
         } catch (IllegalArgumentException e) {
             return false;
         }
     }
-
-
 
     public static <E> E getValueFromSQL(String sql, Class<E> returnType, String... arguments) {
         try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
             assert (cachedRowSet.getMetaData().getColumnCount() == 1);
 
             switch (cachedRowSet.size()) {
-                case 0: throw new IllegalArgumentException("0 results");
-                case 1: cachedRowSet.next(); return returnType.cast(cachedRowSet.getObject(1));
-                default: throw new RuntimeException("Only 1 result should be returned when asking for a single value");
+                case 0:
+                    throw new IllegalArgumentException("0 results");
+                case 1:
+                    cachedRowSet.next();
+                    return returnType.cast(cachedRowSet.getObject(1));
+                default:
+                    throw new RuntimeException("Only 1 result should be returned when asking for a single value");
             }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("The SQL Didn't work! " + sql + " args: " + Arrays.toString(arguments));
         }
+    }
+
+    //TODO Consider using a guava typetoken to cause class cast exception fail before returning an invalid map.
+    public static <K, V> Map<K, V> getMapFromSQL(String sql, Map<K, V> mapType, String... arguments) {
+        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
+            assert (cachedRowSet.getMetaData().getColumnCount() == 2);
+
+            Map<Object, Object> returnMap = new HashMap<>();
+            while (cachedRowSet.next()) {
+                returnMap.put(cachedRowSet.getObject(1), cachedRowSet.getObject(2));
+            }
+            return mapType.getClass().cast(returnMap);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Map.of();
     }
 }

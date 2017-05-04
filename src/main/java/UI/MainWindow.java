@@ -1,5 +1,6 @@
 package ui;
 
+import database.BobsDatabase;
 import utility.GBUtility;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -114,11 +115,21 @@ public class MainWindow {
             }
         });
 
+        TextField sqlInput = new TextField(); sqlInput.setPromptText("sql..");
+        Button printSQLButton = new Button("Print SQL");
+        printSQLButton.setOnAction(event -> new Thread(() -> GBUtility.prettyPrintCachedRowSet(BobsDatabase.getCachedRowSetFromSQL(sqlInput.getText()), 200)).start());
+        sqlInput.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) printSQLButton.fire();
+        });
+
+
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.CENTER_LEFT);
 
         gridPane.add(showGameRatingButton, 0, 0);
-        gridPane.add(toggleNameSelectorButton, 0, 1);
+        gridPane.add(toggleNameSelectorButton, 1, 0);
+        gridPane.add(sqlInput, 0, 1);
+        gridPane.add(printSQLButton, 1, 1);
 
         tab.setContent(gridPane);
         return tab;

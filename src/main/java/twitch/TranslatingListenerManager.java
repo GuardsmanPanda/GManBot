@@ -94,5 +94,14 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!chatsts", "!chatstats");
 
         commandTranslationMap.put("!spacelaunch", "!spacelaunch");
+
+        commandTranslationMap.put("!emotestats", "!emotestats");
+        commandTranslationMap.put("!bobemotestats", "!emotestats");
+
+        commandTranslationMap.put("!allemotestats", "!allemotestats");
+        commandTranslationMap.put("!topemotestats", "!allemotestats");
+
+        commandTranslationMap.put("!myemotestats", "!myemotestats");
+        commandTranslationMap.put("!selfemotestats", "!myemotestats");
     }
 }

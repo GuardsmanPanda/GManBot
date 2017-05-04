@@ -148,7 +148,7 @@ public class SongAnnouncer extends ListenerAdapter {
                 String remindString = ratingReminderMap.keySet().stream()
                         .filter(peopleInChat::contains)
                         .filter(twitchID -> getIndividualSongRating(twitchID, newSongName) == 0)
-                        .limit(10)
+                        .limit(20)
                         .map(ratingReminderMap::get)
                         .collect(Collectors.joining(", "));
                 if (!remindString.isEmpty()) TwitchChat.sendMessage("Rate The Song! -> " + remindString);

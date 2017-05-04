@@ -64,9 +64,11 @@ public class SpaceLaunch {
         JsonNode missionNode = launchNode.get("missions");
         if (missionNode.has(0))  chatString += " \uD83D\uDE80 Mission Type: " + missionNode.get(0).get("typeName").asText();
 
+        if (launchNode.get("status").asInt() == 1) chatString += " \uD83D\uDE80 Launch Is GO!";
+
         TwitchChat.sendMessage(chatString);
 
-        if (durationToLaunch.toHours() < 2) {
+        if (durationToLaunch.toHours() < 1) {
             StreamSupport.stream(launchNode.get("vidURLs").spliterator(), false)
                     .limit(2)
                     .map(JsonNode::asText)
@@ -85,7 +87,7 @@ public class SpaceLaunch {
     private static JsonNode getNextLaunchNode(String agency) {
         HttpRequest request = HttpRequest.newBuilder(URI.create("https://launchlibrary.net/1.2/launch/next/1"))
                 .header("User-Agent","Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0")
-                .header("Keep-Alive", "timeout=60")
+                .header("Keep-Alive", "timeout=30")
                 .GET().build();
         JsonNode rootNode = WebClient.getJSonNodeFromRequest(request);
         if (rootNode.has("launches")) {

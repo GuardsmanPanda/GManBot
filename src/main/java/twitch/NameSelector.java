@@ -1,14 +1,17 @@
 package twitch;
 
 import database.BobsDatabaseHelper;
+import javafx.scene.input.KeyCode;
 import utility.GBUtility;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
+import java.awt.*;
 import java.time.Duration;
 import java.util.*;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.stream.Collectors;
@@ -20,10 +23,6 @@ public class NameSelector {
     static {
         //ADD GManBot userID so that it wont get picked.
         selectedUserIDs.add("39837384");
-    }
-
-    public static void main(String[] args) {
-        //GBUtility.prettyPrintCachedRowSet(BobsDatabase.getCachedRowSetFromSQL("SELECT * FROM TwitchChatUsers ORDER BY chatLines DESC"), 200);
     }
 
     public static void enableNameSelector() {
@@ -67,6 +66,7 @@ public class NameSelector {
         @Override
         public void nativeKeyReleased(NativeKeyEvent nativeKeyEvent) {
             if (nativeKeyEvent.getKeyCode() == 57420) selectAndPrintTwitchName();
+            if (nativeKeyEvent.getKeyCode() == KeyCode.NUMPAD9.getCode()) System.out.println(MouseInfo.getPointerInfo().getLocation().toString());
         }
 
         @Override

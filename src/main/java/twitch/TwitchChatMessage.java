@@ -5,21 +5,20 @@ import org.pircbotx.hooks.events.MessageEvent;
 import java.util.Map;
 
 public class TwitchChatMessage {
-    public Boolean isSubOrPrime = false;
-    public boolean isMod = false;
-    public String displayName = "";
-    public String message = "";
-    public String userID = "";
-    public String color = "";
+    public final Boolean isSubOrPrime;
+    public final boolean isMod;
+    public final String displayName;
+    public final String message;
+    public final String userID;
+    public final String color;
 
 
     public TwitchChatMessage(MessageEvent e) {
         Map<String, String> tags = e.getTags();
-        if (tags.get("subscriber").equalsIgnoreCase("1") || tags.get("badges").contains("premium")) isSubOrPrime = true;
-        if (tags.get("mod").equalsIgnoreCase("1")) isMod = true;
+        isSubOrPrime = tags.get("subscriber").equalsIgnoreCase("1") || tags.get("badges").contains("premium");
+        isMod = tags.get("mod").equalsIgnoreCase("1");
 
-        displayName = tags.get("display-name");
-        if (displayName.isEmpty()) displayName = e.getUser().getNick();
+        displayName = (tags.get("display-name").isEmpty()) ? e.getUser().getNick() : tags.get("display-name");
 
         message = e.getMessage();
         userID = tags.get("user-id");

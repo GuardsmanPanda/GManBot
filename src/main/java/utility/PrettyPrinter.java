@@ -1,14 +1,15 @@
 package utility;
 
+import java.lang.reflect.Array;
 import java.time.Duration;
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Dons on 02-05-2017.
  */
 public class PrettyPrinter {
+
 
     public static String timeStringFromPeriod(Period period) {
         List<String> timeStrings = new ArrayList<>();

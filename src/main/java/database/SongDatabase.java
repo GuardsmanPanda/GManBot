@@ -78,8 +78,8 @@ public class SongDatabase {
             updateSongRatingStatistics();
         }
         String returnString = "";
-        if (songsRated.count(twitchUserID) > 0) returnString += " - SongsRated: " + songsRated.count(twitchUserID) + " [" + songsRatedRank.indexOf(twitchUserID) + "]";
-        if (songsQuoted.count(twitchUserID) > 0) returnString += ", SongsQuoted: " + songsQuoted.count(twitchUserID) + " [" + songsQuotedRank.indexOf(twitchUserID) + "]";
+        if (songsRated.count(twitchUserID) > 0) returnString += " - SongsRated: " + songsRated.count(twitchUserID) + " [" + (songsRatedRank.indexOf(twitchUserID) + 1) + "]";
+        if (songsQuoted.count(twitchUserID) > 0) returnString += ", SongsQuoted: " + songsQuoted.count(twitchUserID) + " [" + (songsQuotedRank.indexOf(twitchUserID) + 1) + "]";
         return returnString;
     }
 

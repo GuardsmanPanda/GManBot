@@ -35,7 +35,7 @@ public class TwitchChat {
     // Configure bot
     static {
         Configuration config = new Configuration.Builder()
-                .setName("BotManG").setMessageDelay(1900)
+                .setName("GManBot").setMessageDelay(1900)
                 .setListenerManager(new TranslatingListenerManager())
                 .setOnJoinWhoEnabled(false)
                 .setAutoNickChange(false)

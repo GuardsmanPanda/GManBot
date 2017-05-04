@@ -6,7 +6,7 @@ public class DataMigration {
     private static HashMap<String, FinalPair<String, String>> lowerCaseNameToIDAndDisplayName = new HashMap<>();
 
 
-    //TODO: merge stats from people who changed name .. mkrh88 -> Eremiter .. (insidious void)
+    //TODO: merge stats from people who changed name .. mkrh88 -> Eremiter .. (insidious void) ... immaanime -> em2be
     public static void main(String[] args) throws Exception {
 
     }
