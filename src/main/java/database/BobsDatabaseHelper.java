@@ -10,11 +10,11 @@ import java.util.HashMap;
 public class BobsDatabaseHelper {
     private static final HashMap<String, String> cachedUserIDs = new HashMap<>();
 
-    /*
-    public static void migrateData(String twitchUserID, String twitchDisplayName, int idleHours, int activeHours, int chatLines, String flagName, int bobCoins, boolean rawrsBob) {
-        createUserIfNotExists(twitchUserID, twitchDisplayName);
-        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET flag = ?, idleHours = "+idleHours+", activeHours = "+activeHours+", bobCoins = "+bobCoins+", heartsBob = "+rawrsBob+", chatLines = "+chatLines+" WHERE twitchUserID = ?", flagName, twitchUserID);
-    }*/
+
+    public static void mergeOldData(String newTwitchUserID, int idleHours, int activeHours, int chatLines, int bobCoins, boolean rawrsBob) {
+        createUserIfNotExists(newTwitchUserID);
+        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET idleHours = idleHours + "+idleHours+", activeHours = activeHours +"+activeHours+", bobCoins = bobCoins +"+bobCoins+", heartsBob = "+rawrsBob+", chatLines = chatLines +"+chatLines+" WHERE twitchUserID = ?",  newTwitchUserID);
+    }
 
     public static void setWelcomeMessage(String twitchUserID, String twitchDisplayName, String welcomeMessage) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);

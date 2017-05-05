@@ -40,10 +40,13 @@ public class TwitchChatExtras extends ListenerAdapter {
             case "!setwelcomemessage": setWelcomeMessage(chatMessage); break;
             case "!setflag": setFlag(chatMessage); break;
             case "!chatstats": chatStats(chatMessage); break;
-            case "!spacelaunch": SpaceLaunch.nextSpaceLaunchRequest(); break;
+            case "!spacelaunch": SpaceLaunch.spaceLaunchRequest(); break;
+            case "!nextspacelaunch": SpaceLaunch.nextSpaceLaunchRequest(); break;
         }
     }
 
+
+    @Override
     public void onJoin(JoinEvent event) {
         //ignore join events for the first 3 minutes of a restart to avoid mass channel spam.
         if (startTime.plusMinutes(3).isAfter(LocalDateTime.now())) return;

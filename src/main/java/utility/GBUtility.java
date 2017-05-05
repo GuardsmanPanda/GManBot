@@ -49,7 +49,6 @@ public class GBUtility {
             return text.substring(0, maximumLength - 2) + "..";
     }
 
-
     /**
      * Writes the string as if the user typed it on his keyboard.
      * @param stringToPaste
@@ -61,34 +60,6 @@ public class GBUtility {
         robot.keyPress(KeyEvent.VK_V);
         robot.keyRelease(KeyEvent.VK_CONTROL);
         robot.keyRelease(KeyEvent.VK_V);
-    }
-    public static void prettyPrintJSonNode(JsonNode node) {
-        try {
-            System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(node));
-        } catch (JsonProcessingException e) {
-            System.out.println("Error printing JsonNode");
-            e.printStackTrace();
-        }
-    }
-    public static void prettyPrintCachedRowSet(CachedRowSet cachedRowSet, int rowsToPrint) {
-        prettyPrintCachedRowSet(cachedRowSet, rowsToPrint, 20);
-    }
-    public static void prettyPrintCachedRowSet(CachedRowSet cachedRowSet, int rowsToPrint, int rowLength) {
-        try {
-            ResultSetMetaData metaData = cachedRowSet.getMetaData();
-            String columnNames = "";
-            for (int i = 1; i <= metaData.getColumnCount(); i++) columnNames += strictFill(metaData.getColumnLabel(i), rowLength) + " ";
-            System.out.println(columnNames.trim());
-
-            while (cachedRowSet.next()) {
-                String rowString = "";
-                for (int i = 1; i <= metaData.getColumnCount(); i++) rowString += strictFill(cachedRowSet.getString(i), rowLength) + " ";
-                System.out.println(rowString.trim());
-                if (cachedRowSet.getRow() >= rowsToPrint) break;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void writeTextToFile(String text, String filePath, boolean append) {

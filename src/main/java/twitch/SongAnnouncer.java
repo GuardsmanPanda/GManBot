@@ -197,11 +197,10 @@ public class SongAnnouncer extends ListenerAdapter {
                     break;
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }} ).start();
+        }
+        } ).start();
     }
 
 

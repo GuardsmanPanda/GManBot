@@ -15,7 +15,7 @@ public class DataMaintenance {
 
     public static void main(String[] args) throws SQLException {
 
-        //addAllCurrentSubsAndPrimeSubstoDB();
+        addAllCurrentSubsAndPrimeSubstoDB();
     }
 
     //TODO, version 1 removes songs not rated by gmanbot, version 2 should remove songs not rated by gmanbot since date x

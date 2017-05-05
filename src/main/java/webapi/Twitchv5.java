@@ -2,10 +2,10 @@ package webapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import utility.GBUtility;
 import jdk.incubator.http.HttpClient;
 import jdk.incubator.http.HttpRequest;
 import jdk.incubator.http.HttpResponse;
+import utility.PrettyPrinter;
 
 import java.io.IOException;
 import java.net.URI;
@@ -79,7 +79,7 @@ public class Twitchv5 {
             return rootNode.get("display_name").asText();
         } else {
             System.out.println("Error requesting user ID " + twitchUserID);
-            GBUtility.prettyPrintJSonNode(rootNode);
+            PrettyPrinter.prettyPrintJSonNode(rootNode);
             return "";
         }
     }
@@ -93,7 +93,7 @@ public class Twitchv5 {
             return null;
         } else {
             System.out.println("Something went wrong getting followDateTime for " + twitchUserID);
-            GBUtility.prettyPrintJSonNode(rootNode);
+            PrettyPrinter.prettyPrintJSonNode(rootNode);
             return LocalDate.now();
         }
     }

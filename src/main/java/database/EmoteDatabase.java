@@ -6,9 +6,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Dons on 03-05-2017.
- */
 public class EmoteDatabase {
 
     public static void main(String[] args) {

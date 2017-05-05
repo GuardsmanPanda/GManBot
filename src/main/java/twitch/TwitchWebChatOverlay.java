@@ -22,17 +22,15 @@ public class TwitchWebChatOverlay {
     private static HashMap<String, byte[]> flagCache = new HashMap<>();
 
     //TODO Consolidate all HTTP servers into one dispatcher.
-    public static boolean startHttpService() {
+    public static void startHttpService() {
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
             server.setExecutor(new ThreadPoolExecutor(5, 10, 100, TimeUnit.SECONDS, new LinkedBlockingDeque<>()));
             server.createContext("/flags", new flagHandler());
             server.createContext("/", new chatOverlay());
             server.start();
-            return true;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
     }
 

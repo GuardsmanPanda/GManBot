@@ -1,6 +1,13 @@
 package utility;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.sql.rowset.CachedRowSet;
 import java.lang.reflect.Array;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Period;
 import java.util.*;
@@ -38,4 +45,32 @@ public class PrettyPrinter {
     }
 
 
+    public static void prettyPrintJSonNode(JsonNode node) {
+        try {
+            System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(node));
+        } catch (JsonProcessingException e) {
+            System.out.println("Error printing JsonNode");
+            e.printStackTrace();
+        }
+    }
+    public static void prettyPrintCachedRowSet(CachedRowSet cachedRowSet, int rowsToPrint) {
+        prettyPrintCachedRowSet(cachedRowSet, rowsToPrint, 20);
+    }
+    public static void prettyPrintCachedRowSet(CachedRowSet cachedRowSet, int rowsToPrint, int rowLength) {
+        try {
+            ResultSetMetaData metaData = cachedRowSet.getMetaData();
+            String columnNames = "";
+            for (int i = 1; i <= metaData.getColumnCount(); i++) columnNames += GBUtility.strictFill(metaData.getColumnLabel(i), rowLength) + " ";
+            System.out.println(columnNames.trim());
+
+            while (cachedRowSet.next()) {
+                String rowString = "";
+                for (int i = 1; i <= metaData.getColumnCount(); i++) rowString += GBUtility.strictFill(cachedRowSet.getString(i), rowLength) + " ";
+                System.out.println(rowString.trim());
+                if (cachedRowSet.getRow() >= rowsToPrint) break;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

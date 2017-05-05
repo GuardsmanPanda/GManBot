@@ -18,6 +18,7 @@ module gmanbot.main {
     requires jdk.httpserver;
     requires javafx.web;
     requires Java.WebSocket;
+    requires derby;
     exports core;
     exports database;
     exports twitch;

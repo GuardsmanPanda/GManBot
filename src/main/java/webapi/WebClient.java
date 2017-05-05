@@ -30,6 +30,16 @@ public class WebClient {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandler.asString());
             return new ObjectMapper().readTree(response.body());
         } catch (IOException | InterruptedException e) {
+            return retryGetJSonNodeFromRequest(request);
+        }
+    }
+
+    public static JsonNode retryGetJSonNodeFromRequest(HttpRequest request) {
+        System.out.println("***Retrying request for " + request.uri());
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandler.asString());
+            return new ObjectMapper().readTree(response.body());
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return JsonNodeFactory.instance.objectNode().put("bobError", "error");
         }
