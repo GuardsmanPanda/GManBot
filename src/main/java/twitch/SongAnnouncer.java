@@ -1,5 +1,7 @@
 package twitch;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -212,17 +214,13 @@ public class SongAnnouncer extends ListenerAdapter {
     private static class songHttpHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            String hexColor = "#0044ff";
-            if      (displayOnStreamSongRating >= 10f) hexColor = "#ff3300";
-            else if (displayOnStreamSongRating >=  9f) hexColor = "#ff9900";
-            else if (displayOnStreamSongRating >=  8f) hexColor = "#CCdd00";
-            else if (displayOnStreamSongRating >=  7f) hexColor = "#33ff66";
-            else if (displayOnStreamSongRating >=  6f) hexColor = "#0099ff";
-            else if (displayOnStreamSongRating < 0.1f) hexColor = "#CCCCCC";
+            ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
+            rootNode.put("songName", displayOnStreamSong);
+            rootNode.put("songRating", String.format("%.2f", displayOnStreamSongRating));
+            rootNode.put("numberOfRatings", displayOnStreamNumberOfRatings);
+            rootNode.put("songQuote", getSongQuote(displayOnStreamSong, true));
 
-            //String response = displayOnStreamSong + " <span style=\"color:" + hexColor + "\">" + String.format("%.2f", displayOnStreamSongRating) + "</span>";
-            String response = parseSongDataToJSON(displayOnStreamSong, String.format("%.2f", displayOnStreamSongRating), displayOnStreamNumberOfRatings, hexColor);
-
+            String response = rootNode.toString();
             exchange.sendResponseHeaders(200, response.getBytes().length);
             exchange.getResponseBody().write(response.getBytes());
             exchange.getResponseBody().close();
@@ -254,7 +252,7 @@ public class SongAnnouncer extends ListenerAdapter {
                     "<script>" +
                     "   var currentSongPlaying = 'Guardsman';" +
                     "   var currentSongRating = '9,50';" +
-                    "   var songRatingColor = '#ff9900';" +
+                    "   var currentSongQuote = 'Guardsman Bob Is Awesome';" +
                     "   var numberOfRatings = 42;" +
                     "   var timeToNextUpdate = 2000;" +
                     "   function runUpdates() {" +
@@ -285,8 +283,8 @@ public class SongAnnouncer extends ListenerAdapter {
                     "           timeToNextUpdate = 8000;" +
                     "           currentSongPlaying = newSongJSON.songName;" +
                     "           currentSongRating = newSongJSON.songRating;" +
+                    "           currentSongQuote = newSongJSON.songQuote;" +
                     "           numberOfRatings = newSongJSON.numberOfRatings;" +
-                    "           songRatingColor = newSongJSON.songRatingColor;" +
                     "           $('.tlt').textillate('out');" +
                     "           $('.tlt2').textillate('out');" +
                     "       }" +
@@ -318,9 +316,6 @@ public class SongAnnouncer extends ListenerAdapter {
         }
     }
 
-    private static String parseSongDataToJSON(String songName, String songRating, int numberOfRatings, String songRatingColor) {
-        return "{ \"songName\":\""+songName+"\", \"songRating\":\""+songRating+"\", \"numberOfRatings\":"+numberOfRatings+", \"songRatingColor\":\""+songRatingColor+"\" }";
-    }
 
     private static String getLetteringJS() {
         return "<script>(function($){function injector(t,splitter,klass,after){var a=t.text().split(splitter),inject='';if(a.length){$(a).each(function(i,item){inject+='<span class=\"'+klass+(i+1)+'\">'+item+'</span>'+after});t.empty().append(inject)}}var methods={init:function(){return this.each(function(){injector($(this),'','char','')})},words:function(){return this.each(function(){injector($(this),' ','word',' ')})},lines:function(){return this.each(function(){var r=\"eefec303079ad17405c889e092e105b0\";injector($(this).children(\"br\").replaceWith(r).end(),r,'line','')})}};$.fn.lettering=function(method){if(method&&methods[method]){return methods[method].apply(this,[].slice.call(arguments,1))}else if(method==='letters'||!method){return methods.init.apply(this,[].slice.call(arguments,0))}$.error('Method '+method+' does not exist on jQuery.lettering');return this}})(jQuery);</script>";

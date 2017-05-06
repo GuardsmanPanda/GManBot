@@ -12,6 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
+
+//TODO: implement !lastspacelaunch to lookup how the last launch went.
 public class SpaceLaunch {
     private static LocalDateTime nextLaunchTime = LocalDateTime.MAX;
     private static Instant nextChatMessageTime = Instant.now().plusSeconds(40);
@@ -31,32 +33,15 @@ public class SpaceLaunch {
 
     //TODO add notification when launch is ~1hour away. .. collapse to 1 method, set agency to 'next' when skipping first node
     public static synchronized void spaceLaunchRequest(String agency) {
-        if (nextChatMessageTime.isAfter(Instant.now())) {
-            System.out.println("Space launch command muffled");
-            return;
-        }
+        if (nextChatMessageTime.isAfter(Instant.now())) return;
         nextChatMessageTime = Instant.now().plusSeconds(120);
 
         if (agency.equalsIgnoreCase("spacex")) {
             printLaunchInformationToTwitchChat(getNextLaunchNode("spacex", 1), "Next SpaceX Launch! -> ");
+        } else if (agency.equalsIgnoreCase("next") && nextLaunchTime.isBefore(LocalDateTime.now())) {
+            printLaunchInformationToTwitchChat(getNextLaunchNode("any", 2), "Space Launch After This! -> ");
         } else {
             updateCurrentLaunchNode();
-            printLaunchInformationToTwitchChat(nextLaunchNode, "Next Space Launch! -> ");
-        }
-    }
-
-    /**
-     * If current launch is in the past (has happened), then print the launch after that, else print the current launch.
-     */
-    public static synchronized void nextSpaceLaunchRequest() {
-        if (nextChatMessageTime.isAfter(Instant.now())) {
-            System.out.println("Space launch command muffled");
-            return;
-        }
-        nextChatMessageTime = Instant.now().plusSeconds(120);
-        if (nextLaunchTime.isBefore(LocalDateTime.now())) {
-            printLaunchInformationToTwitchChat(getNextLaunchNode("any", 2), "Space Launch After! -> ");
-        } else {
             printLaunchInformationToTwitchChat(nextLaunchNode, "Next Space Launch! -> ");
         }
     }

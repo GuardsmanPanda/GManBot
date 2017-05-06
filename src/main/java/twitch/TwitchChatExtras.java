@@ -33,6 +33,7 @@ public class TwitchChatExtras extends ListenerAdapter {
     }
 
     @Override
+    //TODO: make al lthe spaceluanch commands go through !spacelaunch <option/agency>
     public void onMessage(MessageEvent event)  {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
         switch (chatMessage.getMessageCommand()) {
@@ -42,7 +43,7 @@ public class TwitchChatExtras extends ListenerAdapter {
             case "!chatstats": chatStats(chatMessage); break;
             case "!spacelaunch": SpaceLaunch.spaceLaunchRequest("any"); break;
             case "!spacexlaunch": SpaceLaunch.spaceLaunchRequest("spacex"); break;
-            case "!nextspacelaunch": SpaceLaunch.nextSpaceLaunchRequest(); break;
+            case "!nextspacelaunch": SpaceLaunch.spaceLaunchRequest("next"); break;
         }
     }
 
