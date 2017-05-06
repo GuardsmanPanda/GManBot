@@ -21,6 +21,7 @@ import twitch.GameRatings;
 import twitch.NameSelector;
 import twitch.TwitchChat;
 import database.SongDatabase;
+import utility.PrettyPrinter;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
@@ -117,7 +118,7 @@ public class MainWindow {
 
         TextField sqlInput = new TextField(); sqlInput.setPromptText("sql..");
         Button printSQLButton = new Button("Print SQL");
-        printSQLButton.setOnAction(event -> new Thread(() -> GBUtility.prettyPrintCachedRowSet(BobsDatabase.getCachedRowSetFromSQL(sqlInput.getText()), 200)).start());
+        printSQLButton.setOnAction(event -> new Thread(() -> PrettyPrinter.prettyPrintCachedRowSet(BobsDatabase.getCachedRowSetFromSQL(sqlInput.getText()), 200)).start());
         sqlInput.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) printSQLButton.fire();
         });

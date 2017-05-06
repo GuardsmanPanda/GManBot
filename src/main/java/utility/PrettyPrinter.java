@@ -53,6 +53,7 @@ public class PrettyPrinter {
             e.printStackTrace();
         }
     }
+
     public static void prettyPrintCachedRowSet(CachedRowSet cachedRowSet, int rowsToPrint) {
         prettyPrintCachedRowSet(cachedRowSet, rowsToPrint, 20);
     }

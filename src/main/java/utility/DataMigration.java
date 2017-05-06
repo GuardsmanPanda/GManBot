@@ -3,6 +3,8 @@ package utility;
 import database.BobsDatabaseHelper;
 
 import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.RowSetFactory;
+import javax.sql.rowset.RowSetProvider;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -15,7 +17,12 @@ public class DataMigration {
 
     //TODO: merge stats from people who changed name .. mkrh88 -> Eremiter .. (insidious void) ... immaanime -> im2be
     public static void main(String[] args) throws Exception {
+        Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+        Connection databaseConnection = DriverManager.getConnection("jdbc:derby:gmanbotdb");
+        CachedRowSet cachedRowSet = RowSetProvider.newFactory().createCachedRowSet();
 
+        cachedRowSet.populate(databaseConnection.createStatement().executeQuery("SELECT * FROM Chat WHERE twitchName = '" + "chooseneye" + "'"));
+        PrettyPrinter.prettyPrintCachedRowSet(cachedRowSet, 100);
     }
 
     public static void mergeOldChatName(String oldName, String newName) throws SQLException, ClassNotFoundException {

@@ -36,6 +36,7 @@ public class Twitchv5 {
 
     public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
         System.out.println(getGlobalTwitchEmoteSet());
+
     }
 
     public static String getGameTitle() {
@@ -63,13 +64,16 @@ public class Twitchv5 {
 
     public static Set<String> getEmoticonSet(String emoteSet) {
         JsonNode root = executeHttpGet("https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=" + emoteSet);
-        if (root.has("emoticon_sets") && root.get("emoticon_sets").has(emoteSet)) {
+        if (root != null && root.has("emoticon_sets") && root.get("emoticon_sets").has(emoteSet)) {
             return StreamSupport.stream(root.get("emoticon_sets").get(emoteSet).spliterator(), false)
                     .map(node -> node.get("code").asText())
                     .collect(Collectors.toSet());
+        } else {
+            System.out.println("Something went wrong trying to get emoticon set: " + emoteSet);
         }
         return Set.of();
     }
+
 
 
 

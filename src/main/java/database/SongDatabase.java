@@ -19,13 +19,14 @@ public class SongDatabase {
     private static final List<String> songsQuotedRank = new ArrayList<>();
     private static final List<String> songsRatedRank = new ArrayList<>();
 
-    public static void addSongRating(String twitchUserID, String twitchDisplayName, String songName, int songRating, String songQuote) {
+
+    public static void addSongRating(String twitchUserID, String songName, int songRating, String songQuote) {
         try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT * FROM SongRatings WHERE twitchUserID = ? AND songName = ?", twitchUserID, songName)) {
             if (cachedRowSet.next()) {
                 if (songQuote.equalsIgnoreCase("none")) songQuote = cachedRowSet.getString("songQuote");
-                BobsDatabase.executePreparedSQL("UPDATE SongRatings SET twitchDisplayName = ?, songRating = "+songRating+", songQuote = ?, ratingTimestamp = '"+Timestamp.valueOf(LocalDateTime.now())+"' WHERE twitchUserID = ? AND songName = ?", twitchDisplayName, songQuote, twitchUserID, songName);
+                BobsDatabase.executePreparedSQL("UPDATE SongRatings SET songRating = "+songRating+", songQuote = ?, ratingTimestamp = '"+Timestamp.valueOf(LocalDateTime.now())+"' WHERE twitchUserID = ? AND songName = ?", songQuote, twitchUserID, songName);
             } else {
-                BobsDatabase.executePreparedSQL("INSERT INTO SongRatings(twitchUserID, twitchDisplayName, songName, songRating, songQuote) VALUES(?, ?, ?, "+songRating+", ?)", twitchUserID, twitchDisplayName, songName, songQuote);
+                BobsDatabase.executePreparedSQL("INSERT INTO SongRatings(twitchUserID, songName, songRating, songQuote) VALUES(?, ?, "+songRating+", ?)", twitchUserID, songName, songQuote);
             }
         } catch (SQLException e) {
             e.printStackTrace();

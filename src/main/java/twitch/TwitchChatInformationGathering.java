@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TwitchChatInformationGathering extends ListenerAdapter {
     private static final Set<String> bobEmoteSet = new HashSet<>();
+    private static int chatLinesLastHour = 0;
 
     static {
         bobEmoteSet.addAll(Twitchv5.getBobsEmoticonSet());
@@ -26,6 +27,8 @@ public class TwitchChatInformationGathering extends ListenerAdapter {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
 
         BobsDatabaseHelper.addChatLine(chatMessage.userID, chatMessage.displayName);
+        chatLinesLastHour++;
+
         bobEmoteSet.stream()
                 .filter(emote -> chatMessage.message.contains(emote))
                 .forEach(emote -> EmoteDatabase.addEmoteUsage(chatMessage.userID, emote));
@@ -35,6 +38,13 @@ public class TwitchChatInformationGathering extends ListenerAdapter {
     private static void hourlyUpdate() {
         Set<String> activeUserIDs = TwitchChat.getActiveUserIDsInChannel(Duration.ofMinutes(60));
         Set<String> namesInChannel = TwitchChat.getLowerCaseNamesInChannel("#guardsmanbob");
+
+        if (activeUserIDs.size() > 4) {
+            String updateString = "bobBobTiger bobHype bobBobTiger Last Hour: " + activeUserIDs.size()  + " People Talked (" + (namesInChannel.size() - activeUserIDs.size()) + " idle)";
+            updateString += " - Using " + chatLinesLastHour + " lines of text!";
+            TwitchChat.sendMessage(updateString);
+        }
+        chatLinesLastHour = 0;
 
         activeUserIDs.forEach(userID -> {
             BobsDatabaseHelper.addActiveHour(userID);

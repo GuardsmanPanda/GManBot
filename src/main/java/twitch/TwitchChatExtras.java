@@ -40,7 +40,8 @@ public class TwitchChatExtras extends ListenerAdapter {
             case "!setwelcomemessage": setWelcomeMessage(chatMessage); break;
             case "!setflag": setFlag(chatMessage); break;
             case "!chatstats": chatStats(chatMessage); break;
-            case "!spacelaunch": SpaceLaunch.spaceLaunchRequest(); break;
+            case "!spacelaunch": SpaceLaunch.spaceLaunchRequest("any"); break;
+            case "!spacexlaunch": SpaceLaunch.spaceLaunchRequest("spacex"); break;
             case "!nextspacelaunch": SpaceLaunch.nextSpaceLaunchRequest(); break;
         }
     }

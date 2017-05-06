@@ -31,7 +31,7 @@ public class SongAnnouncer extends ListenerAdapter {
     private static String currentSong = "Guardsman Bob";
     private static String displayOnStreamSong = "Guardsman Bob";
     private static float displayOnStreamSongRating = 0f;
-    private static int displayonStreamNumberOfRatings = 0;
+    private static int displayOnStreamNumberOfRatings = 0;
 
     public SongAnnouncer(Path songFilePath) {
         startSongAnnouncer();
@@ -55,7 +55,7 @@ public class SongAnnouncer extends ListenerAdapter {
                 if (rating > 11) rating = 11;
                 if (tcm.getMessageContent().contains(" ")) songQuote = tcm.getMessageContent().substring(tcm.getMessageContent().indexOf(" ")).trim();
 
-                SongDatabase.addSongRating(tcm.userID, tcm.displayName, currentSong, rating, songQuote);
+                SongDatabase.addSongRating(tcm.userID, currentSong, rating, songQuote);
                 Pair<Float, Integer> songRatingPair = getSongRating(displayOnStreamSong);
                 displayOnStreamSongRating = songRatingPair.getKey();
             } catch (NumberFormatException nfe) {
@@ -99,38 +99,39 @@ public class SongAnnouncer extends ListenerAdapter {
     /**
      * Select all song quotes and pick a random one, half the time we want to guarentee that we pick a quote from someone in chat
      * @return a random song quote
-     */ //TODO: select 50% of the quotes form people in chat.
+     */
     private static String getSongQuote(String songName, boolean nameFirst) {
-        Map<String, String> nameToQuoteMap = new HashMap<>();
-        String selectQuoteFrom = "";
+        List<String> quotesFromEveryone = new ArrayList<>();
+        List<String> quotesFromChat = new ArrayList<>();
 
+        Set<String> lowerCasePeopleInChat = TwitchChat.getLowerCaseNamesInChannel("#guardsmanbob");
 
-        CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT twitchDisplayName, songQuote FROM SongRatings WHERE songName = ? AND songQuote <> 'none'", songName);
-        int quoteToPick = 0;
-        if (cachedRowSet.size() > 0) quoteToPick = random.nextInt(cachedRowSet.size()) + 1;
-        try {
+        try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT TwitchChatUsers.twitchDisplayName, songQuote FROM SongRatings INNER JOIN TwitchChatUsers ON TwitchChatUsers.TwitchUserID = SongRatings.twitchUserID WHERE songName = ? AND songQuote <> 'none'", songName)) {
             while (cachedRowSet.next()) {
-                selectQuoteFrom = cachedRowSet.getString("twitchDisplayName");
-                nameToQuoteMap.put(cachedRowSet.getString("twitchDisplayName"), cachedRowSet.getString("songQuote"));
-                //System.out.println("Found Quote " +cachedRowSet.getRow() + " <> " + cachedRowSet.getString("twitchDisplayName") + ": " + cachedRowSet.getString("songQuote"));
+                String quote = cachedRowSet.getString("songQuote");
+                String name = cachedRowSet.getString("twitchDisplayName");
+                String nameQuote = (nameFirst) ? name + ": " + quote : quote + " - " + name;
+                if (lowerCasePeopleInChat.contains(name.toLowerCase())) quotesFromChat.add(nameQuote);
+                else quotesFromEveryone.add(nameQuote);
             }
+            if (quotesFromChat.size() > 0 && random.nextBoolean()) return quotesFromChat.get(random.nextInt(quotesFromChat.size()));
+            if (quotesFromEveryone.size() > 0) return quotesFromEveryone.get(random.nextInt(quotesFromEveryone.size()));
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return nameFirst ? (selectQuoteFrom + ": " + nameToQuoteMap.get(selectQuoteFrom)) : (nameToQuoteMap.get(selectQuoteFrom) + " - " + selectQuoteFrom);
+        return "";
     }
 
     private static void songFileChange(String newSongName) {
         if (newSongName.equalsIgnoreCase("Guardsman Bob")) return;
 
-        String lastSongString = displayOnStreamSong + " ⏩ Rating: " + String.format("%.2f", displayOnStreamSongRating) + " [" + displayonStreamNumberOfRatings + "]";
+        String lastSongString = displayOnStreamSong + " ⏩ Rating: " + String.format("%.2f", displayOnStreamSongRating) + " [" + displayOnStreamNumberOfRatings + "]";
 
         Pair<Float, Integer> songRatingPair = getSongRating(newSongName);
         float newSongRating = songRatingPair.getKey();
         displayOnStreamSong = newSongName;
         displayOnStreamSongRating = newSongRating;
-        displayonStreamNumberOfRatings = songRatingPair.getValue();
+        displayOnStreamNumberOfRatings = songRatingPair.getValue();
         System.out.println("New Song: " + newSongName + " .. Song quote: " + getSongQuote(newSongName, true));
 
         if (newSongRating < 7.7f) GBUtility.textToBob("Do you want to remove the song: " + newSongName + " ⏩ rating: " +newSongRating);
@@ -152,11 +153,15 @@ public class SongAnnouncer extends ListenerAdapter {
                         .map(ratingReminderMap::get)
                         .collect(Collectors.joining(", "));
                 if (!remindString.isEmpty()) TwitchChat.sendMessage("Rate The Song! -> " + remindString);
+
+                //Send out random songquote
+                try { Thread.sleep(10000); } catch (InterruptedException e) { e.printStackTrace(); }
+                TwitchChat.sendMessage(getSongQuote(newSongName, false));
             } else {
                 System.out.println("ignoring " + newSongName + "Another song is already playing");
             }
         }).start();
-        SongDatabase.addSongRating("39837384", "GManBot", newSongName, 11, "none" );
+        SongDatabase.addSongRating("39837384", newSongName, 11, "none" );
     }
 
     private static int getIndividualSongRating(String twitchUserID, String songName) {
@@ -216,7 +221,7 @@ public class SongAnnouncer extends ListenerAdapter {
             else if (displayOnStreamSongRating < 0.1f) hexColor = "#CCCCCC";
 
             //String response = displayOnStreamSong + " <span style=\"color:" + hexColor + "\">" + String.format("%.2f", displayOnStreamSongRating) + "</span>";
-            String response = parseSongDataToJSON(displayOnStreamSong, String.format("%.2f", displayOnStreamSongRating), displayonStreamNumberOfRatings, hexColor);
+            String response = parseSongDataToJSON(displayOnStreamSong, String.format("%.2f", displayOnStreamSongRating), displayOnStreamNumberOfRatings, hexColor);
 
             exchange.sendResponseHeaders(200, response.getBytes().length);
             exchange.getResponseBody().write(response.getBytes());

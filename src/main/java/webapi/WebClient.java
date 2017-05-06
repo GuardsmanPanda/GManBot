@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import jdk.incubator.http.HttpClient;
 import jdk.incubator.http.HttpRequest;
 import jdk.incubator.http.HttpResponse;
+import utility.PrettyPrinter;
 
 import javax.naming.spi.ObjectFactory;
 import java.io.IOException;
@@ -18,6 +19,10 @@ import java.util.function.Function;
 public class WebClient {
     private static final HttpClient client = HttpClient.newHttpClient();
 
+
+    public static void main(String[] args) {
+        PrettyPrinter.prettyPrintJSonNode(getJSonNodeFromRequest(HttpRequest.newBuilder(URI.create("https://api.betterttv.net/2/emotes")).GET().build()));
+    }
 
     public static <E> E getJSonAndMapToType(HttpRequest request, Function<JsonNode, E> mapping) {
         JsonNode rootNode = getJSonNodeFromRequest(request);
