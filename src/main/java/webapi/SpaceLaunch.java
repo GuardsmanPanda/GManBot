@@ -25,7 +25,6 @@ public class SpaceLaunch {
         PrettyPrinter.prettyPrintJSonNode(getNextLaunchNode("any", 2));
     }
 
-    //TODO add !nextspacexlaunch .. !spacelaunch x
     public static void startLaunchChecker() {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(SpaceLaunch::checkNotify, 5, 40, TimeUnit.MINUTES);
     }
