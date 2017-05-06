@@ -25,8 +25,10 @@ public class TwitchChatStats extends ListenerAdapter {
         }
     }
 
+
+
     private void sendPersonalEmoteStats(TwitchChatMessage chatMessage) {
-        String outputString = chatMessage.displayName + " emote usage";
+        String outputString = chatMessage.displayName + " emotes";
         int days = 50000;
         try {
             days = Integer.parseInt(chatMessage.getMessageContent());
@@ -40,7 +42,6 @@ public class TwitchChatStats extends ListenerAdapter {
                 .collect(Collectors.joining(" ▪️ "));
         TwitchChat.sendMessage(outputString);
     }
-
     private synchronized void sendEmoteStats(TwitchChatMessage chatMessage, boolean allEmotes) {
         if (nextEmoteStatTime.isAfter(Instant.now())) return;
         nextEmoteStatTime = Instant.now().plusSeconds(60);

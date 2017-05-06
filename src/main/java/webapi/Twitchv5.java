@@ -35,7 +35,7 @@ public class Twitchv5 {
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
-        System.out.println(getGlobalTwitchEmoteSet());
+        System.out.println(getBTTVEmoteSet());
 
     }
 
@@ -61,7 +61,6 @@ public class Twitchv5 {
         emotes.removeIf(emote -> emote.contains("\\"));
         return emotes;
     }
-
     public static Set<String> getEmoticonSet(String emoteSet) {
         JsonNode root = executeHttpGet("https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=" + emoteSet);
         if (root != null && root.has("emoticon_sets") && root.get("emoticon_sets").has(emoteSet)) {
@@ -71,6 +70,21 @@ public class Twitchv5 {
         } else {
             System.out.println("Something went wrong trying to get emoticon set: " + emoteSet);
         }
+        return Set.of();
+    }
+
+    /**
+     * Gets the emoticon set for BTTV, please not that this is not a call to the official twitch APi
+     * @return
+     */
+    public static Set<String> getBTTVEmoteSet() {
+        JsonNode root = WebClient.getJSonNodeFromRequest(HttpRequest.newBuilder(URI.create("https://api.betterttv.net/2/emotes")).GET().build());
+        if (root.has("emotes")) {
+            return StreamSupport.stream(root.get("emotes").spliterator(), false)
+                    .map(node -> node.get("code").asText())
+                    .collect(Collectors.toSet());
+        }
+        System.out.println("Something went wrong trying to get BTTV emoticon set");
         return Set.of();
     }
 

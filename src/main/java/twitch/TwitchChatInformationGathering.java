@@ -13,12 +13,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class TwitchChatInformationGathering extends ListenerAdapter {
-    private static final Set<String> bobEmoteSet = new HashSet<>();
+    private static final Set<String> emoteSet = new HashSet<>();
     private static int chatLinesLastHour = 0;
 
     static {
-        bobEmoteSet.addAll(Twitchv5.getBobsEmoticonSet());
-        bobEmoteSet.addAll(Twitchv5.getGlobalTwitchEmoteSet());
+        emoteSet.addAll(Twitchv5.getBobsEmoticonSet());
+        emoteSet.addAll(Twitchv5.getGlobalTwitchEmoteSet());
+        emoteSet.addAll(Twitchv5.getBTTVEmoteSet());
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> hourlyUpdate(), 1, 1, TimeUnit.HOURS);
     }
 
@@ -29,7 +30,7 @@ public class TwitchChatInformationGathering extends ListenerAdapter {
         BobsDatabaseHelper.addChatLine(chatMessage.userID, chatMessage.displayName);
         chatLinesLastHour++;
 
-        bobEmoteSet.stream()
+        emoteSet.stream()
                 .filter(emote -> chatMessage.message.contains(emote))
                 .forEach(emote -> EmoteDatabase.addEmoteUsage(chatMessage.userID, emote));
     }
