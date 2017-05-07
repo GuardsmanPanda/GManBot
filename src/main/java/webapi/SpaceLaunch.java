@@ -22,7 +22,8 @@ public class SpaceLaunch {
     }
 
     public static void main(String[] args) {
-        PrettyPrinter.prettyPrintJSonNode(getNextLaunchNode("any", 2));
+        printNodeSuccess(getPreviousLaunchNode());
+        //PrettyPrinter.prettyPrintJSonNode(getNextLaunchNode("any", 2));
     }
 
     public static void startLaunchChecker() {
@@ -141,5 +142,57 @@ public class SpaceLaunch {
         System.out.println("Something weird with root node");
         PrettyPrinter.prettyPrintJSonNode(rootNode);
         return null;
+    }
+
+    /**
+     * Gets previous launch node
+     * @return JsonNode of previous launch
+     */
+    private static JsonNode getPreviousLaunchNode() {
+        LocalDate thisDate = LocalDate.now();
+        LocalDate lastDate = thisDate.minusYears(1);
+
+        HttpRequest request = HttpRequest.newBuilder(URI.create("https://launchlibrary.net/1.2/launch/"
+                + lastDate.toString() + "/" + thisDate.toString() //From year back to this date
+                + "?limit=1"        // How many to return, in this case 1
+                + "&sort=desc"))    //In descending order largest (latest) date first
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0")
+                .header("Keep-Alive", "timeout=60")
+                .GET().build();
+
+        return WebClient.getJSonNodeFromRequest(request);
+    }
+
+    /**
+     * Prints information about nodes success
+     * @param node JsonNode which information gets printed
+     */
+    private static void printNodeSuccess(JsonNode node) {
+        PrettyPrinter.prettyPrintJSonNode(node);
+        if(node.has("launches")) {
+
+            JsonNode launch = node.get("launches").get(0);
+            String launchName = launch.get("name").toString().substring(1, launch.get("name").toString().length() - 1);
+            String launchLocation = launch.get("location").get("name").toString().substring(1, launch.get("location").get("name").toString().length() - 1);
+            String launchDate = launch.get("net").toString().substring(1, launch.get("net").toString().length() - 1);
+
+            // .substring(1,launch.get("location").get("name").toString().length() - 1) removes first and last characters of the string ("")
+
+            if(launch.get("failreason").isNull()) {
+                // Launch succeeded
+                System.out.println("Last space launch: " + launchName + " from " + launchLocation + " on "  +  launchDate + " was a success!");
+
+            } else {
+                // Launch failed
+                String failReason = launch.get("failreason").toString().substring(1, launch.get("failreason").toString().length() - 1);
+                System.out.println("Last space launch: " + launchName + " from " + launchLocation + " on "  +  launchDate + " failed because of " + failReason + ".");
+
+            }
+
+        } else {
+            System.out.println("The node don't have a launch!");
+        }
+
+
     }
 }
