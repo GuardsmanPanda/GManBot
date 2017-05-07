@@ -24,7 +24,7 @@ public class SpaceLaunch {
     }
 
     public static void main(String[] args) {
-        printNodeSuccess(getPreviousLaunchNode());
+        printLaunchSuccess(getPreviousLaunch());
         //PrettyPrinter.prettyPrintJSonNode(getNextLaunchNode("any", 2));
     }
 
@@ -133,7 +133,7 @@ public class SpaceLaunch {
      * Gets previous launch node
      * @return JsonNode of previous launch
      */
-    private static JsonNode getPreviousLaunchNode() {
+    private static JsonNode getPreviousLaunch() {
         LocalDate thisDate = LocalDate.now();
         LocalDate lastDate = thisDate.minusYears(50);
 
@@ -152,7 +152,7 @@ public class SpaceLaunch {
      * Prints information about nodes success
      * @param node JsonNode which information gets printed
      */
-    private static void printNodeSuccess(JsonNode node) {
+    private static void printLaunchSuccess(JsonNode node) {
         if(node.has("launches")) {
 
             JsonNode launch = node.get("launches").get(0);
