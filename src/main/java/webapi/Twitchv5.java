@@ -21,13 +21,13 @@ public class Twitchv5 {
     public static final String BOBSCHANNELID = "30084132";
     public static final String GMANBOTUSERID = "39837384";
     private static final HttpClient httpClient = HttpClient.newHttpClient();
-    private static String twitchAccessToken = "";
+    private static String AuthTokenForBobsChannel = "";
     private static String twitchApiKey = "";
 
     static {
         try {
             twitchApiKey = Files.readAllLines(Paths.get("Data/twitchapikey.txt")).get(0);
-            twitchAccessToken = Files.readAllLines(Paths.get("Data/twitchoauthtoken.txt")).get(0);
+            AuthTokenForBobsChannel = Files.readAllLines(Paths.get("Data/twitchoauthtoken.txt")).get(0);
         } catch (IOException e) {
             System.out.println("Expecting api key");
             e.printStackTrace();
@@ -116,13 +116,16 @@ public class Twitchv5 {
         }
     }
 
+
+    public static String getAuthTokenForBobsChannel() { return AuthTokenForBobsChannel; }
+
     public synchronized static JsonNode executeHttpGet(String requestURIString) {
         try {
             URI requestURI = new URI(requestURIString);
             HttpRequest getRequest = HttpRequest.newBuilder(requestURI)
                     .header("Accept", "application/vnd.twitchtv.v5+json")
                     .header("Client-ID", twitchApiKey)
-                    .header("Authorization", "OAuth " + twitchAccessToken)
+                    .header("Authorization", "OAuth " + AuthTokenForBobsChannel)
                     //.timeout(Duration.ofSeconds(5))
                     .GET().build();
             HttpResponse<String> response = httpClient.send(getRequest, HttpResponse.BodyHandler.asString());

@@ -24,7 +24,6 @@ import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//TODO: Account for stream delay of ~16seconds
 public class SongAnnouncer extends ListenerAdapter {
     private static final HashMap<String, String> ratingReminderMap = new HashMap<>();
     private static final HashMap<String, String> quoteReminderMap = new HashMap<>();
@@ -134,7 +133,6 @@ public class SongAnnouncer extends ListenerAdapter {
         displayOnStreamSong = newSongName;
         displayOnStreamSongRating = newSongRating;
         displayOnStreamNumberOfRatings = songRatingPair.getValue();
-        System.out.println("New Song: " + newSongName + " .. Song quote: " + getSongQuote(newSongName, true));
 
         if (newSongRating < 7.7f) GBUtility.textToBob("Do you want to remove the song: " + newSongName + " ⏩ rating: " +newSongRating);
 

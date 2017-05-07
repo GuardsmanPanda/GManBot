@@ -15,7 +15,7 @@ public class DataMigration {
     private static HashMap<String, FinalPair<String, String>> lowerCaseNameToIDAndDisplayName = new HashMap<>();
 
 
-    //TODO: merge stats from people who changed name .. mkrh88 -> Eremiter .. (insidious void) ... immaanime -> im2be
+    //TODO: merge stats from people who changed name .. mkrh88 -> Eremiter .. (insidious void) ... immaanime -> im2be .. a
     public static void main(String[] args) throws Exception {
         Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
         Connection databaseConnection = DriverManager.getConnection("jdbc:derby:gmanbotdb");
