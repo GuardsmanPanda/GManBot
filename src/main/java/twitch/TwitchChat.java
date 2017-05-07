@@ -30,7 +30,6 @@ public class TwitchChat {
     private static final String channel = "#guardsmanbob";
     private static final PircBotX bot;
 
-    private static boolean connected = false;
 
     // Configure bot
     static {
@@ -125,7 +124,6 @@ public class TwitchChat {
 
         @Override
         public void onConnect(ConnectEvent event) {
-            connected = true;
             System.out.println("Connected to Twitch Chat Server");
         }
 
@@ -140,7 +138,6 @@ public class TwitchChat {
 
         @Override
         public void onMessage(MessageEvent event) {
-            //TODO: this really should be a true caching map
             lastUserActivityTime.put(event.getTags().get("user-id"), Instant.now());
 
             /*
@@ -166,7 +163,6 @@ public class TwitchChat {
             System.out.println(message);
             */
         }
-
 
         @Override
         public void onPrivateMessage(PrivateMessageEvent event) {

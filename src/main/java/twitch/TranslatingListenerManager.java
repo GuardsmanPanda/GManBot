@@ -95,6 +95,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!spacelaunch", "!spacelaunch");
         commandTranslationMap.put("!spacexlaunch", "!spacexlaunch");
+        commandTranslationMap.put("!nextspacexlaunch", "!spacexlaunch");
         commandTranslationMap.put("!nextspacelaunch", "!nextspacelaunch");
 
         commandTranslationMap.put("!emotestats", "!emotestats");
