@@ -11,6 +11,8 @@ import webapi.Twitchv5;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class TwitchPubSub {
     private static WebSocket connection = null;
@@ -24,12 +26,14 @@ public class TwitchPubSub {
         try {
             connection = new WebSocketFactory().createSocket("wss://pubsub-edge.twitch.tv")
                     .addListener(new TwitchPubSubListener())
-                    .setPingPayloadGenerator("{ \"type\": \"PING\" }"::getBytes)
-                    .setPingInterval(300000)
                     .connect();
         } catch (IOException | WebSocketException e) {
             e.printStackTrace();
         }
+
+        // twitch pubsub does not use the build in ping methods, instead requires an explicit ping message every 5 minutes
+        // for now we just try to send a ping every 5 minutes, this should be cleaned up later
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> connection.sendText("{ \"type\": \"PING\" }"), 5, 5, TimeUnit.MINUTES);
     }
 
 
@@ -37,6 +41,7 @@ public class TwitchPubSub {
         @Override
         public void onConnected(WebSocket websocket, Map<String, List<String>> headers) {
             System.out.println("Connected To Twitch PubSub");
+            //Listen for subs and resubs
             ObjectNode dataNode = JsonNodeFactory.instance.objectNode();
             dataNode.putArray("topics").add("channel-subscribe-events-v1." + Twitchv5.BOBSCHANNELID);
             dataNode.put("auth_token", Twitchv5.getAuthTokenForBobsChannel());
@@ -48,7 +53,7 @@ public class TwitchPubSub {
         }
 
         @Override
-        public void onTextMessage(WebSocket websocket, String text)  {
+        public void onTextMessage(WebSocket websocket, String text) {
             try {
                 System.out.println("PubSub Message: " + text);
                 JsonNode root = new ObjectMapper().readTree(text);
@@ -57,7 +62,8 @@ public class TwitchPubSub {
                     if (topic.equalsIgnoreCase("channel-subscribe-events-v1." + Twitchv5.BOBSCHANNELID)) {
                         System.out.println("RESUB");
                         PrettyPrinter.prettyPrintJSonNode(root);
-                        JsonNode messageNode = root.get("data").get("message");
+                        JsonNode messageNode = new ObjectMapper().readTree(root.get("data").get("message").asText());
+                        PrettyPrinter.prettyPrintJSonNode(messageNode);
                         System.out.println("SubEvent -> UserID: " + messageNode.get("user_id").asText() + ", DisplayName: " + messageNode.get("display_name").asText() + ", Months: " + messageNode.get("months").asInt());
                     }
                 }
@@ -73,7 +79,16 @@ public class TwitchPubSub {
 
         @Override
         public void onFrame(WebSocket websocket, WebSocketFrame frame) {
-            System.out.println("PubSub Frame: " + frame.getPayloadText());
+            if (frame.getPayloadText().equalsIgnoreCase("{ \"type\": \"PONG\" }")) {
+                //Ignore pong responses for now, correct behavior would be to time the ping/pong difference and reconnect if no pong response 10 seconds after ping.
+            } else {
+                System.out.println("PubSub Frame: " + frame.getPayloadText());
+            }
+        }
+
+        @Override
+        public void onPingFrame(WebSocket websocket, WebSocketFrame frame) {
+            System.out.println("PubSub Ping Frame" + frame);
         }
 
         @Override

@@ -33,9 +33,17 @@ public class SongDatabase {
         }
     }
 
+    public static void addSongPlay(String songName) {
+        int rowsUpdated = BobsDatabase.executePreparedSQL("UPDATE Songs SET lastDatePlayed = CURRENT_DATE, timesPlayed = timesPlayed + 1 WHERE songName = ?", songName);
+        if (rowsUpdated == 0) {
+            System.out.println("New Song Entry -> " + songName);
+            BobsDatabase.executePreparedSQL("INSERT INTO Songs(songName) VALUES(?)", songName);
+        }
+    }
+
     /**
      * Get the top numberOfSongs as rated by the people currently in the chat, ignore songs which have been played after the end date.
-     * TODO: there must be a better way but this works for now.
+     * TODO: there must be a better way but this works for now. ... MORE TODO: work with the new songs table to lookup last play time
      * @param endDateTime do not get any songs that have been played later than this date.
      */
     public static Map<String, Double> getTopRatedSongsByPeopleInChat(int minRatingAmount, LocalDateTime endDateTime, boolean everyone) {

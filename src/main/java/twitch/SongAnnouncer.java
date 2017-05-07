@@ -141,6 +141,7 @@ public class SongAnnouncer extends ListenerAdapter {
             //Check if the song to be announced in chat is actually still playing
             if (displayOnStreamSong.equalsIgnoreCase(newSongName)) {
                 currentSong = newSongName;
+                SongDatabase.addSongPlay(newSongName);
                 TwitchChat.sendMessage("\uD83C\uDFB8\uD83C\uDFBB Now Playing: " + newSongName + " \uD83D\uDD37\uD83D\uDD37 Last Song: " + lastSongString);
 
                 //Add long delay before song rating reminder, so allow for people to rate the song and not be reminded.
