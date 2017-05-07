@@ -150,12 +150,12 @@ public class SpaceLaunch {
      */
     private static JsonNode getPreviousLaunchNode() {
         LocalDate thisDate = LocalDate.now();
-        LocalDate lastDate = thisDate.minusYears(1);
+        LocalDate lastDate = thisDate.minusYears(50);
 
         HttpRequest request = HttpRequest.newBuilder(URI.create("https://launchlibrary.net/1.2/launch/"
                 + lastDate.toString() + "/" + thisDate.toString() //From year back to this date
                 + "?limit=1"        // How many to return, in this case 1
-                + "&sort=desc"))    //In descending order largest (latest) date first
+                + "&sort=desc")) // In descending order largest (latest) date first
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0")
                 .header("Keep-Alive", "timeout=60")
                 .GET().build();
@@ -168,7 +168,6 @@ public class SpaceLaunch {
      * @param node JsonNode which information gets printed
      */
     private static void printNodeSuccess(JsonNode node) {
-        PrettyPrinter.prettyPrintJSonNode(node);
         if(node.has("launches")) {
 
             JsonNode launch = node.get("launches").get(0);
@@ -178,19 +177,23 @@ public class SpaceLaunch {
 
             // .substring(1,launch.get("location").get("name").toString().length() - 1) removes first and last characters of the string ("")
 
-            if(launch.get("failreason").isNull()) {
+            if(launch.get("status").asInt() == 3) {
                 // Launch succeeded
                 System.out.println("Last space launch: " + launchName + " from " + launchLocation + " on "  +  launchDate + " was a success!");
 
-            } else {
+            } else if(launch.get("status").asInt() == 4){
                 // Launch failed
                 String failReason = launch.get("failreason").toString().substring(1, launch.get("failreason").toString().length() - 1);
-                System.out.println("Last space launch: " + launchName + " from " + launchLocation + " on "  +  launchDate + " failed because of " + failReason + ".");
+                System.out.println("Last space launch: " + launchName + " from " + launchLocation + " on "  +  launchDate + " " + "failed.");
+                // Could add "because of " + failReason"
+                // But I'm not sure what kind of failreasons there are and if they are needed.
 
+            } else {
+                System.out.println("No launch status information.");
             }
 
         } else {
-            System.out.println("The node don't have a launch!");
+            System.out.println("The node doesn't have a launch!");
         }
 
 
