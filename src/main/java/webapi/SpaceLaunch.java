@@ -135,12 +135,12 @@ public class SpaceLaunch {
      */
     private static JsonNode getPreviousLaunch() {
         LocalDate thisDate = LocalDate.now();
-        LocalDate lastDate = thisDate.minusYears(50);
+        LocalDate lastDate = thisDate.minusYears(1);
 
         HttpRequest request = HttpRequest.newBuilder(URI.create("https://launchlibrary.net/1.2/launch/"
                 + lastDate.toString() + "/" + thisDate.toString() //From year back to this date
                 + "?limit=1"        // How many to return, in this case 1
-                + "&sort=desc")) // In descending order largest (latest) date first
+                + "&sort=desc"))    // In descending order largest (latest) date first
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0")
                 .header("Keep-Alive", "timeout=60")
                 .GET().build();
@@ -178,7 +178,7 @@ public class SpaceLaunch {
             }
 
         } else {
-            System.out.println("The node doesn't have a launch!");
+            System.out.println("No launches during the past year!");
         }
 
 
