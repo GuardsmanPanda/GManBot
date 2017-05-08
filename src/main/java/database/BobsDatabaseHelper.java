@@ -37,7 +37,10 @@ public class BobsDatabaseHelper {
     }
     public static void setSubscriberMonths(String twitchUserID, int numberOfMonths) {
         createUserIfNotExists(twitchUserID);
-        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET subscriberMonths = " +numberOfMonths + " WHERE twitchUserID = ?", twitchUserID);
+        int previousSubMonths = BobsDatabase.getIntFromSQL("SELECT subscriberMonths FROM twitchChatUsers WHERE twitchUserID = ?", twitchUserID);
+        if (numberOfMonths > previousSubMonths) {
+            BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET subscriberMonths = " +numberOfMonths + " WHERE twitchUserID = ?", twitchUserID);
+        }
     }
 
     public static void addChatLine(String twitchUserID, String twitchDisplayName) {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.neovisionaries.ws.client.*;
+import database.BobsDatabaseHelper;
 import utility.PrettyPrinter;
 import webapi.Twitchv5;
 
@@ -22,7 +23,7 @@ public class TwitchPubSub {
         Thread.sleep(10000);
     }
 
-    public static void connect() throws InterruptedException {
+    public static void connect() {
         try {
             connection = new WebSocketFactory().createSocket("wss://pubsub-edge.twitch.tv")
                     .addListener(new TwitchPubSubListener())
@@ -55,16 +56,14 @@ public class TwitchPubSub {
         @Override
         public void onTextMessage(WebSocket websocket, String text) {
             try {
-                System.out.println("PubSub Message: " + text);
                 JsonNode root = new ObjectMapper().readTree(text);
                 if (root.get("type").asText().equalsIgnoreCase("MESSAGE")) {
                     String topic = root.get("data").get("topic").asText();
                     if (topic.equalsIgnoreCase("channel-subscribe-events-v1." + Twitchv5.BOBSCHANNELID)) {
-                        System.out.println("RESUB");
-                        PrettyPrinter.prettyPrintJSonNode(root);
                         JsonNode messageNode = new ObjectMapper().readTree(root.get("data").get("message").asText());
                         PrettyPrinter.prettyPrintJSonNode(messageNode);
                         System.out.println("SubEvent -> UserID: " + messageNode.get("user_id").asText() + ", DisplayName: " + messageNode.get("display_name").asText() + ", Months: " + messageNode.get("months").asInt());
+                        BobsDatabaseHelper.setSubscriberMonths(messageNode.get("user_id").asText(), messageNode.get("months").asInt());
                     }
                 }
             } catch (IOException e) {
@@ -79,7 +78,7 @@ public class TwitchPubSub {
 
         @Override
         public void onFrame(WebSocket websocket, WebSocketFrame frame) {
-            if (frame.getPayloadText().equalsIgnoreCase("{ \"type\": \"PONG\" }")) {
+            if (frame.getPayloadText().contains("\"type\": \"PONG\"")) {
                 //Ignore pong responses for now, correct behavior would be to time the ping/pong difference and reconnect if no pong response 10 seconds after ping.
             } else {
                 System.out.println("PubSub Frame: " + frame.getPayloadText());

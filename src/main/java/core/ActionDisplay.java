@@ -12,9 +12,6 @@ import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
-/**
- * Created by Dons on 07-06-2016.
- */
 public class ActionDisplay implements NativeMouseListener, NativeKeyListener {
     private HashSet<Long> actions = new HashSet<>();
     private boolean printAPMFlag = true;

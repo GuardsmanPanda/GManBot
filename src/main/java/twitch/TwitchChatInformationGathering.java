@@ -38,10 +38,10 @@ public class TwitchChatInformationGathering extends ListenerAdapter {
     //TODO make hourly update print in chat
     private static void hourlyUpdate() {
         Set<String> activeUserIDs = TwitchChat.getActiveUserIDsInChannel(Duration.ofMinutes(60));
-        Set<String> namesInChannel = TwitchChat.getLowerCaseNamesInChannel("#guardsmanbob");
+        Set<String> userIDsInChannel = TwitchChat.getUserIDsInChannel();
 
         if (activeUserIDs.size() > 4) {
-            String updateString = "bobBobTiger bobHype bobBobTiger Last Hour: " + activeUserIDs.size()  + " People Talked (" + (namesInChannel.size() - activeUserIDs.size()) + " idle)";
+            String updateString = "bobBobTiger bobHype bobBobTiger Last Hour: " + activeUserIDs.size()  + " People Talked (" + (userIDsInChannel.size() - activeUserIDs.size()) + " idle)";
             updateString += " - Using " + chatLinesLastHour + " lines of text!";
             TwitchChat.sendMessage(updateString);
         }
@@ -54,9 +54,8 @@ public class TwitchChatInformationGathering extends ListenerAdapter {
             BobsDatabaseHelper.addBobCoins(userID, coins);
         });
 
-        namesInChannel.stream()
-                .map(BobsDatabaseHelper::getTwitchUserID)
-                .filter(userID -> !userID.isEmpty() && !activeUserIDs.contains(userID))
+        userIDsInChannel.stream()
+                .filter(userID -> !activeUserIDs.contains(userID))
                 .forEach(userID -> {
                     BobsDatabaseHelper.addIdleHour(userID);
                     BobsDatabaseHelper.addBobCoins(userID, 4);

@@ -25,10 +25,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SongAnnouncer extends ListenerAdapter {
-    private static final HashMap<String, String> ratingReminderMap = new HashMap<>();
-    private static final HashMap<String, String> quoteReminderMap = new HashMap<>();
+    private static final Map<String, String> ratingReminderMap = new HashMap<>();
+    private static final Map<String, String> quoteReminderMap = new HashMap<>();
     private static final int STREAMDELAYINSECONDS = 10;
-    private static final Random random = new Random();
     private static String currentSong = "Guardsman Bob";
     private static String displayOnStreamSong = "Guardsman Bob";
     private static float displayOnStreamSongRating = 0f;
@@ -38,13 +37,10 @@ public class SongAnnouncer extends ListenerAdapter {
         startSongAnnouncer();
         watchSongFile(songFilePath);
         //Load the rating reminders
-        try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE songRatingReminder = true")) {
-            while (cachedRowSet.next()) ratingReminderMap.put(cachedRowSet.getString("twitchUserID"), cachedRowSet.getString("twitchDisplayName"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        ratingReminderMap.putAll(BobsDatabase.getMapFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE songRatingReminder = true", String.class, String.class));
     }
 
+    //TODO: consider implementing a !randomsongsuggestion on a long cooldown to suggest youtube link to a song you have previously rated 11 (or havent rated)
     @Override
     public void onMessage(MessageEvent event) {
         TwitchChatMessage tcm = new TwitchChatMessage(event);
@@ -57,7 +53,7 @@ public class SongAnnouncer extends ListenerAdapter {
                 if (tcm.getMessageContent().contains(" ")) songQuote = tcm.getMessageContent().substring(tcm.getMessageContent().indexOf(" ")).trim();
 
                 SongDatabase.addSongRating(tcm.userID, currentSong, rating, songQuote);
-                Pair<Float, Integer> songRatingPair = getSongRating(displayOnStreamSong);
+                Pair<Float, Integer> songRatingPair = SongDatabase.getSongRating(displayOnStreamSong);
                 displayOnStreamSongRating = songRatingPair.getKey();
             } catch (NumberFormatException nfe) {
                 // Silently kill number format exceptions
@@ -81,54 +77,13 @@ public class SongAnnouncer extends ListenerAdapter {
         }
     }
 
-    public static Pair<Float, Integer> getSongRating(String songName) {
-        CachedRowSet songRatingSet = BobsDatabase.getCachedRowSetFromSQL("SELECT songRating FROM SongRatings WHERE songName = ?", songName);
-        int numberOfRatings = 0;
-        int totalRating = 0;
-        try {
-            while (songRatingSet.next()) {
-                totalRating += songRatingSet.getInt("songRating");
-                numberOfRatings++;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        if (numberOfRatings == 0) return new Pair<>(0f, 0);
-        return new Pair<>((float) totalRating/numberOfRatings, numberOfRatings);
-    }
-
-    /**
-     * Select all song quotes and pick a random one, half the time we want to guarentee that we pick a quote from someone in chat
-     * @return a random song quote
-     */
-    private static String getSongQuote(String songName, boolean nameFirst) {
-        List<String> quotesFromEveryone = new ArrayList<>();
-        List<String> quotesFromChat = new ArrayList<>();
-
-        Set<String> lowerCasePeopleInChat = TwitchChat.getLowerCaseNamesInChannel("#guardsmanbob");
-
-        try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT TwitchChatUsers.twitchDisplayName, songQuote FROM SongRatings INNER JOIN TwitchChatUsers ON TwitchChatUsers.TwitchUserID = SongRatings.twitchUserID WHERE songName = ? AND songQuote <> 'none'", songName)) {
-            while (cachedRowSet.next()) {
-                String quote = cachedRowSet.getString("songQuote");
-                String name = cachedRowSet.getString("twitchDisplayName");
-                String nameQuote = (nameFirst) ? name + ": " + quote : quote + " - " + name;
-                if (lowerCasePeopleInChat.contains(name.toLowerCase())) quotesFromChat.add(nameQuote);
-                else quotesFromEveryone.add(nameQuote);
-            }
-            if (quotesFromChat.size() > 0 && random.nextBoolean()) return quotesFromChat.get(random.nextInt(quotesFromChat.size()));
-            if (quotesFromEveryone.size() > 0) return quotesFromEveryone.get(random.nextInt(quotesFromEveryone.size()));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
 
     private static void songFileChange(String newSongName) {
         if (newSongName.equalsIgnoreCase("Guardsman Bob")) return;
 
         String lastSongString = displayOnStreamSong + " ⏩ Rating: " + String.format("%.2f", displayOnStreamSongRating) + " [" + displayOnStreamNumberOfRatings + "]";
 
-        Pair<Float, Integer> songRatingPair = getSongRating(newSongName);
+        Pair<Float, Integer> songRatingPair = SongDatabase.getSongRating(newSongName);
         float newSongRating = songRatingPair.getKey();
         displayOnStreamSong = newSongName;
         displayOnStreamSongRating = newSongRating;
@@ -157,7 +112,7 @@ public class SongAnnouncer extends ListenerAdapter {
 
                 //Send out random songquote
                 try { Thread.sleep(10000); } catch (InterruptedException e) { e.printStackTrace(); }
-                TwitchChat.sendMessage(getSongQuote(newSongName, false));
+                TwitchChat.sendMessage(SongDatabase.getSongQuote(newSongName, false));
             } else {
                 System.out.println("ignoring " + newSongName + "Another song is already playing");
             }
@@ -217,7 +172,7 @@ public class SongAnnouncer extends ListenerAdapter {
             rootNode.put("songName", displayOnStreamSong);
             rootNode.put("songRating", String.format("%.2f", displayOnStreamSongRating));
             rootNode.put("numberOfRatings", displayOnStreamNumberOfRatings);
-            rootNode.put("songQuote", getSongQuote(displayOnStreamSong, true));
+            rootNode.put("songQuote", SongDatabase.getSongQuote(displayOnStreamSong, true));
 
             String response = rootNode.toString();
             exchange.sendResponseHeaders(200, response.getBytes().length);

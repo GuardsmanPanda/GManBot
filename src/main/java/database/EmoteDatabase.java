@@ -16,10 +16,10 @@ public class EmoteDatabase {
     }
 
     public static Map<String, Integer> getEmoteUsageFromUserID(String twitchUserID, Duration timeSpan) {
-        return BobsDatabase.getMapFromSQL("SELECT emoteName, Count(*) FROM EmoteUsage WHERE twitchUserID = ? AND timestamp > '" + Timestamp.from(Instant.now().minus(timeSpan)) + "' GROUP BY emoteName", new HashMap<>(), twitchUserID);
+        return BobsDatabase.getMapFromSQL("SELECT emoteName, Count(*) FROM EmoteUsage WHERE twitchUserID = ? AND timestamp > '" + Timestamp.from(Instant.now().minus(timeSpan)) + "' GROUP BY emoteName", String.class, Integer.class, twitchUserID);
     }
 
     public static Map<String, Integer> getEmoteUsageByEmoteName(Duration timeSpan) {
-        return BobsDatabase.getMapFromSQL("SELECT emoteName, Count(*) FROM EmoteUsage WHERE timestamp > '" + Timestamp.from(Instant.now().minus(timeSpan)) + "'GROUP BY emoteName", new HashMap<>());
+        return BobsDatabase.getMapFromSQL("SELECT emoteName, Count(*) FROM EmoteUsage WHERE timestamp > '" + Timestamp.from(Instant.now().minus(timeSpan)) + "'GROUP BY emoteName", String.class, Integer.class);
     }
 }

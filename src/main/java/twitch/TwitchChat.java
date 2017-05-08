@@ -1,6 +1,8 @@
 package twitch;
 
 import com.google.common.io.Files;
+import database.BobsDatabase;
+import database.BobsDatabaseHelper;
 import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
@@ -65,11 +67,13 @@ public class TwitchChat {
     /**
      * Sends an action to the chat channel.
      * This method can silently fail for any reason.
+     *
      * @param action The action to send
      */
     public static synchronized void sendAction(String action) {
         bot.send().action(channel, action);
     }
+
     /**
      * Sends a message to the chat channel on twitch.
      * This method can silently fail for any reason.
@@ -93,6 +97,17 @@ public class TwitchChat {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * WARNING: some people n the channel may not have a userID
+     * @return the UserID's for the people in the channel that we have  a userId for
+     */
+    public static Set<String> getUserIDsInChannel() {
+        return getLowerCaseNamesInChannel(channel).stream()
+                .map(BobsDatabaseHelper::getTwitchUserID) //consider looking up the userID for unknown names.
+                .filter(userID -> !userID.isEmpty())
+                .collect(Collectors.toSet());
+    }
+
     public static Set<String> getActiveUserIDsInChannel(Duration timeSpan) {
         return lastUserActivityTime.entrySet().stream()
                 .filter(entry -> Instant.now().minus(timeSpan).isBefore(entry.getValue()))
@@ -103,6 +118,7 @@ public class TwitchChat {
 
     /**
      * Loads the twitchChat Oauth token from Data/twitchchatpassword.txt
+     *
      * @return the twitchChat OAuth token
      */
     private static String getPassword() {

@@ -26,6 +26,7 @@ import utility.PrettyPrinter;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Map;
@@ -188,7 +189,7 @@ public class MainWindow {
         songButton.setOnAction(event -> {
             int minNumberOfRatings = Integer.parseInt(minRatingsText.getCharacters().toString());
             int notPlayedDays = Integer.parseInt(notPlayedText.getCharacters().toString());
-            fillSongListBox(SongDatabase.getTopRatedSongsByPeopleInChat(minNumberOfRatings, LocalDateTime.now().minusDays(notPlayedDays), everyoneBox.isSelected()), songListBox);
+            fillSongListBox(SongDatabase.getSongRatingMap(minNumberOfRatings, LocalDate.now().minusDays(notPlayedDays), everyoneBox.isSelected()), songListBox);
         });
 
         VBox vBox = new VBox();

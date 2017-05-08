@@ -1,13 +1,13 @@
 package database;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
 
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
 import java.sql.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 
 
 /**
@@ -26,7 +26,6 @@ public class BobsDatabase {
         }
 
         try {
-            //song
             connection.createStatement().execute("CREATE TABLE Songs (songName VARCHAR(100) PRIMARY KEY NOT NULL, LastDatePlayed DATE NOT NULL DEFAULT CURRENT_DATE, timesPlayed INTEGER NOT NULL DEFAULT 1)");
             connection.createStatement().execute("CREATE TABLE EmoteUsage (twitchUserID VARCHAR(50) NOT NULL, emoteName VARCHAR(30) NOT NULL, timeStamp TIMESTAMP NOT NULL PRIMARY KEY)");
             connection.createStatement().execute("CREATE TABLE GameRatings (twitchUserID VARCHAR(50) NOT NULL, gameName VARCHAR(255) NOT NULL, gameRating INTEGER NOT NULL, gameQuote VARCHAR (255) NOT NULL DEFAULT 'none', ratingDateTime DATE NOT NULL DEFAULT CURRENT DATE, PRIMARY KEY (twitchUserID, gameName))");
@@ -120,6 +119,7 @@ public class BobsDatabase {
         }
     }
 
+
     public static <E> E getValueFromSQL(String sql, Class<E> returnType, String... arguments) {
         try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
             assert (cachedRowSet.getMetaData().getColumnCount() == 1);
@@ -139,19 +139,32 @@ public class BobsDatabase {
         }
     }
 
-    //TODO Consider using a guava typetoken to cause class cast exception fail before returning an invalid map.
-    public static <K, V> Map<K, V> getMapFromSQL(String sql, Map<K, V> mapType, String... arguments) {
+    /**
+     * Gets a list of values from SQL, throws class cast exception of listType doesn't equal the type from the SQL
+     * Also note that this will have negative performance impact from boxing of primitive types, array methods should be considered.
+     */
+    public static <E> List<E> getListFromSQL(String sql, Class<E> listType, String... arguments) {
+        List<E> returnList = new ArrayList<>();
         try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
-            assert (cachedRowSet.getMetaData().getColumnCount() == 2);
-
-            Map<Object, Object> returnMap = new HashMap<>();
-            while (cachedRowSet.next()) {
-                returnMap.put(cachedRowSet.getObject(1), cachedRowSet.getObject(2));
-            }
-            return mapType.getClass().cast(returnMap);
+            assert (cachedRowSet.getMetaData().getColumnCount() == 1);
+            while (cachedRowSet.next()) returnList.add(listType.cast(cachedRowSet.getObject(1)));
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return Map.of();
+        return returnList;
+    }
+
+    //TODO Consider using a guava typetoken to cause class cast exception fail before returning an invalid map.
+    public static <K, V> Map<K, V> getMapFromSQL(String sql, Class<K> keyType, Class<V> valueType, String... arguments) {
+        Map<K, V> returnMap = new HashMap<>();
+        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
+            assert (cachedRowSet.getMetaData().getColumnCount() == 2);
+            while (cachedRowSet.next()) {
+                returnMap.put(keyType.cast(cachedRowSet.getObject(1)), valueType.cast(cachedRowSet.getObject(2)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return returnMap;
     }
 }
