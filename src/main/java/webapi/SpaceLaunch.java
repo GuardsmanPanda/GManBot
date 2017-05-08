@@ -32,7 +32,6 @@ public class SpaceLaunch {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(SpaceLaunch::checkNotify, 5, 40, TimeUnit.MINUTES);
     }
 
-    //TODO add notification when launch is ~1hour away. .. collapse to 1 method, set agency to 'next' when skipping first node
     public static synchronized void spaceLaunchRequest(String agency) {
         if (nextChatMessageTime.isAfter(Instant.now())) return;
         nextChatMessageTime = Instant.now().plusSeconds(120);
@@ -80,6 +79,7 @@ public class SpaceLaunch {
         if (launchNode.get("status").asInt() == 1) chatString += " \uD83D\uDE80 Launch Is GO!";
 
         TwitchChat.sendMessage(chatString);
+
 
         if (durationToLaunch.toHours() < 1) {
             StreamSupport.stream(launchNode.get("vidURLs").spliterator(), false)

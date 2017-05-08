@@ -24,7 +24,6 @@ import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//TODO: Account for stream delay of ~16seconds
 public class SongAnnouncer extends ListenerAdapter {
     private static final HashMap<String, String> ratingReminderMap = new HashMap<>();
     private static final HashMap<String, String> quoteReminderMap = new HashMap<>();
@@ -134,7 +133,6 @@ public class SongAnnouncer extends ListenerAdapter {
         displayOnStreamSong = newSongName;
         displayOnStreamSongRating = newSongRating;
         displayOnStreamNumberOfRatings = songRatingPair.getValue();
-        System.out.println("New Song: " + newSongName + " .. Song quote: " + getSongQuote(newSongName, true));
 
         if (newSongRating < 7.7f) GBUtility.textToBob("Do you want to remove the song: " + newSongName + " ⏩ rating: " +newSongRating);
 
@@ -143,6 +141,7 @@ public class SongAnnouncer extends ListenerAdapter {
             //Check if the song to be announced in chat is actually still playing
             if (displayOnStreamSong.equalsIgnoreCase(newSongName)) {
                 currentSong = newSongName;
+                SongDatabase.addSongPlay(newSongName);
                 TwitchChat.sendMessage("\uD83C\uDFB8\uD83C\uDFBB Now Playing: " + newSongName + " \uD83D\uDD37\uD83D\uDD37 Last Song: " + lastSongString);
 
                 //Add long delay before song rating reminder, so allow for people to rate the song and not be reminded.

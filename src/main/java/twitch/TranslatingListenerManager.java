@@ -41,15 +41,15 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
     private void fillTranslationMap() {
         commandTranslationMap.put("!ratereminder", "!ratereminder");
-        commandTranslationMap.put("!ratingreminder", "!ratereminder");
         commandTranslationMap.put("!songreminder", "!ratereminder");
+        commandTranslationMap.put("!ratingreminder", "!ratereminder");
         commandTranslationMap.put("!addratereminder", "!ratereminder");
         commandTranslationMap.put("!addsongreminder", "!ratereminder");
         commandTranslationMap.put("!addratingreminder", "!ratereminder");
 
         commandTranslationMap.put("!removeratereminder", "!removeratereminder");
-        commandTranslationMap.put("!removeratingreminder", "!removeratereminder");
         commandTranslationMap.put("!removesongreminder", "!removeratereminder");
+        commandTranslationMap.put("!removeratingreminder", "!removeratereminder");
 
         commandTranslationMap.put("!rate", "!rate");
         commandTranslationMap.put("!ratr", "!rate");
@@ -78,33 +78,41 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!folloage","!followage");
 
         commandTranslationMap.put("!setflag","!setflag");
-        commandTranslationMap.put("!setflash","!setflag");
         commandTranslationMap.put("!flag", "!setflag");
+        commandTranslationMap.put("!setflash","!setflag");
         commandTranslationMap.put("!steflag", "!setflag");
         commandTranslationMap.put("!addflag", "!setflag");
         commandTranslationMap.put("!setcountry", "!setflag");
         commandTranslationMap.put("!removeflag","!setflag none");
 
         commandTranslationMap.put("!chatstats", "!chatstats");
-        commandTranslationMap.put("!chatstast", "!chatstats");
-        commandTranslationMap.put("!chatstatus", "!chatstats");
-        commandTranslationMap.put("!chatstas", "!chatstats");
-        commandTranslationMap.put("!chatstaterino", "!chatstats");
         commandTranslationMap.put("!chatsta", "!chatstats");
         commandTranslationMap.put("!chatsts", "!chatstats");
+        commandTranslationMap.put("!chatstas", "!chatstats");
+        commandTranslationMap.put("!chatstaty", "!chatstats");
+        commandTranslationMap.put("!chatstast", "!chatstats");
+        commandTranslationMap.put("!chatstatus", "!chatstats");
+        commandTranslationMap.put("!chatstaterino", "!chatstats");
 
         commandTranslationMap.put("!spacelaunch", "!spacelaunch");
+
         commandTranslationMap.put("!spacexlaunch", "!spacexlaunch");
         commandTranslationMap.put("!nextspacexlaunch", "!spacexlaunch");
+
         commandTranslationMap.put("!nextspacelaunch", "!nextspacelaunch");
 
         commandTranslationMap.put("!emotestats", "!emotestats");
+        commandTranslationMap.put("!emotes", "!emotestats");
+        commandTranslationMap.put("!bobemotes", "!emotestats");
         commandTranslationMap.put("!bobemotestats", "!emotestats");
 
         commandTranslationMap.put("!allemotestats", "!allemotestats");
+        commandTranslationMap.put("!allemotes", "!allemotestats");
+        commandTranslationMap.put("!topemotes", "!allemotestats");
         commandTranslationMap.put("!topemotestats", "!allemotestats");
 
         commandTranslationMap.put("!myemotestats", "!myemotestats");
+        commandTranslationMap.put("!myemotes", "!myemotestats");
         commandTranslationMap.put("!selfemotestats", "!myemotestats");
     }
 }
