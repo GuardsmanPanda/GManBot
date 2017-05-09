@@ -7,10 +7,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class EmoteDatabase {
-
-    public static void main(String[] args) {
-        System.out.println(Instant.now());
-    }
     public static void addEmoteUsage(String twitchUserID, String emoteName) {
         BobsDatabase.executePreparedSQL("INSERT INTO EmoteUsage(twitchUserID, emoteName, timestamp) VALUES(?, ?, '" + Timestamp.from(Instant.now())+"')", twitchUserID, emoteName);
     }

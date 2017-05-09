@@ -169,4 +169,14 @@ public class BobsDatabase {
         }
         return returnMap;
     }
+/*
+    public static <E, F, G> FinalTriple<E, F, G>[] getFinalTripleArrayFromSQL(String sql, String... arguments) {
+        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
+            assert (cachedRowSet.getMetaData().getColumnCount() == 3);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new FinalTriple[0];
+    }*/
 }

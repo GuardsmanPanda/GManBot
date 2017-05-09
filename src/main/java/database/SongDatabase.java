@@ -56,13 +56,13 @@ public class SongDatabase {
             }
         } catch (SQLException e) { e.printStackTrace(); }
 
-        List<String> songsPlayed = BobsDatabase.getListFromSQL("SELECT songName FROM Songs WHERE lastDatePlayed <= '"+notPlayedSinceDate.toString()+"'", String.class);
+        List<String> songsPlayed = BobsDatabase.getListFromSQL("SELECT songName FROM Songs WHERE lastDatePlayed >= '"+notPlayedSinceDate.toString()+"'", String.class);
         System.out.println("Found " + songRatings.keySet().size() + " songs and " + songRatings.size() + " ratings, and " + songsPlayed.size() + " recently played songs");
         songsPlayed.forEach(songRatings::removeAll);
         System.out.println("After removal there are now " + songRatings.keySet().size() + " songs and " + songRatings.size() + " ratings");
 
         return songRatings.keySet().stream()
-                .filter(songName -> songRatings.get(songName).size() >= minNumberRatings + 1)
+                .filter(songName -> songRatings.get(songName).size() >= minNumberRatings)
                 .collect(Collectors.toMap(songName -> songName, songName -> ((double) songRatings.get(songName).stream().mapToInt(i -> i).sum()) / songRatings.get(songName).size()));
     }
 
@@ -116,6 +116,6 @@ public class SongDatabase {
 
         songsRatedRank.addAll(Multisets.copyHighestCountFirst(songsRated).elementSet());
         songsQuotedRank.addAll(Multisets.copyHighestCountFirst(songsQuoted).elementSet());
-        System.out.println("Updated Song Rating Stats" + songsRated.elementSet().size() + " rated, " + songsQuoted.size() + " quoted");
+        System.out.println("Updated Song Rating Stats" + songsRated.size() + " ratings, " + songsQuoted.size() + " quotes");
     }
 }

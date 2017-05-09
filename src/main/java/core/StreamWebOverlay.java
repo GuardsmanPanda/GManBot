@@ -18,10 +18,6 @@ public class StreamWebOverlay {
     private static final Path OVERLAYFILEPATH = new File("Data/OBS/HTMLStreamOverlay.html").toPath();
     private static final BobsWebSocketServer socketServer = new BobsWebSocketServer(new InetSocketAddress(9102));
 
-    public static void main(String[] args) throws InterruptedException {
-
-    }
-
     public static void startOverlay() {
         try {
             HttpServer httpServer = HttpServer.create(new InetSocketAddress(9101), 0);

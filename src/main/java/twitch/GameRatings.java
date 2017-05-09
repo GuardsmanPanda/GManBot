@@ -17,11 +17,6 @@ public class GameRatings extends ListenerAdapter {
     private static Instant nextOverlayUpdate = Instant.now();
     //TODO cache the current game playing in case twitch api derps
 
-    public static void main(String[] args) throws InterruptedException {
-        //Thread.sleep(4000);
-        //System.out.println(MouseInfo.getPointerInfo().getLocation().toString());
-    }
-
 
     @Override
     public void onMessage(MessageEvent event) {

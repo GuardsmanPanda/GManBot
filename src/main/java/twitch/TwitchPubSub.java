@@ -18,11 +18,6 @@ import java.util.concurrent.TimeUnit;
 public class TwitchPubSub {
     private static WebSocket connection = null;
 
-    public static void main(String[] args) throws InterruptedException {
-        connect();
-        Thread.sleep(10000);
-    }
-
     public static void connect() {
         try {
             connection = new WebSocketFactory().createSocket("wss://pubsub-edge.twitch.tv")

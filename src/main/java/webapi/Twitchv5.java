@@ -34,11 +34,6 @@ public class Twitchv5 {
         }
     }
 
-    public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
-        System.out.println(getBTTVEmoteSet());
-
-    }
-
     public static String getGameTitle() {
         return getGameTitle(BOBSCHANNELID);
     }

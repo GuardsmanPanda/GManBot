@@ -5,23 +5,23 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-
 import database.BobsDatabase;
 import database.BobsDatabaseHelper;
 import database.SongDatabase;
-import utility.GBUtility;
 import javafx.util.Pair;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
+import utility.GBUtility;
 
-import javax.sql.rowset.CachedRowSet;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.file.*;
-import java.sql.SQLException;
 import java.time.Duration;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SongAnnouncer extends ListenerAdapter {
@@ -118,7 +118,6 @@ public class SongAnnouncer extends ListenerAdapter {
                 System.out.println("ignoring " + newSongName + "Another song is already playing");
             }
         }).start();
-        SongDatabase.addSongRating("39837384", newSongName, 11, "none" );
     }
 
     private static int getIndividualSongRating(String twitchUserID, String songName) {
