@@ -14,29 +14,13 @@ import java.util.stream.StreamSupport;
 public class DataMaintenance {
 
     public static void main(String[] args) throws SQLException {
-
         addAllCurrentSubsAndPrimeSubstoDB();
     }
 
-    //TODO, version 1 removes songs not rated by gmanbot, version 2 should remove songs not rated by gmanbot since date x
+    //TODO, use Songs table to clear songs not palyed since a certain date.
     public static void cleanSongRatingDB() throws SQLException {
-        HashSet<String> songsRatedByGmanbot = new HashSet<>();
-        HashSet<String> songsToRemove = new HashSet<>();
-        CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SElECT DISTINCT songName FROM SongRatings WHERE twitchUserID = ?", "39837384");
-        while (cachedRowSet.next()) songsRatedByGmanbot.add(cachedRowSet.getString("songName"));
 
-        System.out.println("GManBot rated " + cachedRowSet.size() + " songs");
-
-        CachedRowSet allSongNamesRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT DISTINCT songName FROM songRatings");
-        System.out.println("Total songs in the database: " +allSongNamesRowSet.size());
-            while (allSongNamesRowSet.next()) {
-            String songName = allSongNamesRowSet.getString("songName");
-            if (!songsRatedByGmanbot.contains(songName)) songsToRemove.add(songName);
-        }
-        System.out.println("Found " + songsToRemove.size() + " song names to remove from the database");
-        songsToRemove.forEach(songName -> BobsDatabase.executePreparedSQL("DELETE FROM songRatings WHERE songName = ?", songName));
     }
-
 
     public static void addAllCurrentSubsAndPrimeSubstoDB() {
         int total = 1000;

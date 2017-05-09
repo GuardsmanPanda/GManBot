@@ -122,7 +122,6 @@ public class BobsDatabase {
         }
     }
 
-
     public static <E> E getValueFromSQL(String sql, Class<E> returnType, String... arguments) {
         try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
             assert (cachedRowSet.getMetaData().getColumnCount() == 1);

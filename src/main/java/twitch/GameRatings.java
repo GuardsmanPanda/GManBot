@@ -71,17 +71,12 @@ public class GameRatings extends ListenerAdapter {
 
     private static void addGameRatingToDatabase(String twitchID, String gameName, int gameRating, String gameQuote) {
         System.out.println("game rating from " + twitchID + " " + gameName + " " + gameRating + " " + gameQuote);
-        try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT * FROM GameRatings WHERE twitchUserID = ? AND gameName = ?", twitchID, gameName)) {
-            if (cachedRowSet.next()) {
-                if (gameQuote.equalsIgnoreCase("none")) gameQuote = cachedRowSet.getString("gameQuote");
-                //TODO Also update game date.
-                BobsDatabase.executePreparedSQL("UPDATE GameRatings SET gameRating = "+gameRating+", gameQuote = ?, ratingDateTime = '"+ LocalDate.now().toString() + "' WHERE twitchUserID = ? AND gameName = ?", gameQuote, twitchID, gameName);
-            } else {
-                // found no game rating for the given userID
-                BobsDatabase.executePreparedSQL("INSERT INTO GameRatings(twitchUserID, gameName, gameRating, gameQuote) VALUES (?, ?, "+gameRating+", ?)", twitchID, gameName, gameQuote);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        String oldQuote = BobsDatabase.getStringFromSQL("SELECT gameQuote FROM GameRatings WHERE twitchUserID = ? AND gameName = ?", twitchID, gameName);
+        if (oldQuote.isEmpty()) {
+            BobsDatabase.executePreparedSQL("INSERT INTO GameRatings(twitchUserID, gameName, gameRating, gameQuote) VALUES (?, ?, "+gameRating+", ?)", twitchID, gameName, gameQuote);
+        } else {
+            if (gameQuote.equalsIgnoreCase("none")) gameQuote = oldQuote;
+            BobsDatabase.executePreparedSQL("UPDATE GameRatings SET gameRating = "+gameRating+", gameQuote = ?, ratingDateTime = '"+ LocalDate.now().toString() + "' WHERE twitchUserID = ? AND gameName = ?", gameQuote, twitchID, gameName);
         }
     }
 }

@@ -122,15 +122,7 @@ public class SongAnnouncer extends ListenerAdapter {
     }
 
     private static int getIndividualSongRating(String twitchUserID, String songName) {
-        int returnRating = 0;
-
-        try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT songRating FROM SongRatings WHERE twitchUserID = ? AND songName = ?", twitchUserID, songName)) {
-            while (cachedRowSet.next()) returnRating = cachedRowSet.getInt("songRating");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return returnRating;
+        return BobsDatabase.getIntFromSQL("SELECT songRating FROM SongRatings WHERE twitchUserID = ? AND songName = ?", twitchUserID, songName);
     }
 
     private static void watchSongFile(Path songFileLocation) {
