@@ -3,14 +3,12 @@ package twitch;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import database.BobsDatabase;
 import core.StreamWebOverlay;
+import database.BobsDatabase;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import webapi.Twitchv5;
 
-import javax.sql.rowset.CachedRowSet;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
 

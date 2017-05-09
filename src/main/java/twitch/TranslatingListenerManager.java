@@ -1,23 +1,17 @@
 package twitch;
 
-import utility.GBUtility;
 import org.pircbotx.hooks.Event;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.managers.ThreadedListenerManager;
+import utility.GBUtility;
 
 import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
 
 
 public class TranslatingListenerManager extends ThreadedListenerManager {
     private final HashMap<String, String> commandTranslationMap = new HashMap<>();
 
     public TranslatingListenerManager() {
-        fillTranslationMap();
-    }
-
-    public TranslatingListenerManager(ExecutorService pool) {
-        super(pool);
         fillTranslationMap();
     }
 

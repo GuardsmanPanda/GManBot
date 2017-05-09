@@ -1,14 +1,11 @@
 package core;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
-import webapi.Twitchv5;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +35,6 @@ public class StreamWebOverlay {
 
     /**
      * This will silently fail if the overlay has not established a connection.
-     * @param node
      */
     public synchronized static void sendJsonToOverlay(JsonNode node) {
         socketServer.sendMessage(node.toString());
