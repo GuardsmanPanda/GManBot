@@ -1,12 +1,9 @@
 package twitch;
 
 import com.google.common.io.Files;
-import database.BobsDatabase;
 import database.BobsDatabaseHelper;
-import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
-import org.pircbotx.UserHostmask;
 import org.pircbotx.cap.EnableCapHandler;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.ListenerAdapter;
@@ -20,11 +17,10 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collector;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 //TODO Code a spam filter that prevents sending the same message to tchat withint x minutes
 public class TwitchChat {
@@ -182,7 +178,7 @@ public class TwitchChat {
 
         @Override
         public void onPrivateMessage(PrivateMessageEvent event) {
-            System.out.println("PM from:" + event.getUser().getNick() + " - " + event.getMessage());
+            System.out.println("PM: " + event.toString());
         }
     }
 }
