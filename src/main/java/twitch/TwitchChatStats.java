@@ -35,7 +35,7 @@ public class TwitchChatStats extends ListenerAdapter {
             outputString += "for the past " + days + " days";
         } catch (NumberFormatException nfe) { /*empty on purpose*/ }
         outputString += "! ";
-        outputString += EmoteDatabase.getEmoteUsageFromUserID(chatMessage.userID, Duration.ofDays(days)).entrySet().stream()
+        outputString += EmoteDatabase.getEmoteUsageFromUserID(chatMessage.userID, Duration.ofDays(days))
                 .sorted(Comparator.comparingInt(Map.Entry<String, Integer>::getValue).reversed())
                 .limit(10)
                 .map(entry -> entry.getKey() + " " + entry.getValue())
@@ -50,7 +50,7 @@ public class TwitchChatStats extends ListenerAdapter {
         try { days = Integer.parseInt(chatMessage.getMessageContent()); } catch (NumberFormatException nfe) { /*empty on purpose*/ }
 
         String printString = "Emote usage for the past " + days + " days: ";
-        printString += EmoteDatabase.getEmoteUsageByEmoteName(Duration.ofDays(days)).entrySet().stream()
+        printString += EmoteDatabase.getEmoteUsageByEmoteName(Duration.ofDays(days))
                 .filter(entry -> (allEmotes || entry.getKey().startsWith("bob")))
                 .sorted(Comparator.comparingInt(Map.Entry<String, Integer>::getValue).reversed())
                 .limit(20)

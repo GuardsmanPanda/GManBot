@@ -37,7 +37,8 @@ public class SongAnnouncer extends ListenerAdapter {
         startSongAnnouncer();
         watchSongFile(songFilePath);
         //Load the rating reminders
-        ratingReminderMap.putAll(BobsDatabase.getMapFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE songRatingReminder = true", String.class, String.class));
+        BobsDatabase.getMultiMapFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE songRatingReminder = true", String.class, String.class)
+                .forEach(ratingReminderMap::put);
     }
 
     //TODO: consider implementing a !randomsongsuggestion on a long cooldown to suggest youtube link to a song you have previously rated 11 (or havent rated)

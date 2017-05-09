@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class EmoteDatabase {
 
@@ -15,11 +16,11 @@ public class EmoteDatabase {
         BobsDatabase.executePreparedSQL("INSERT INTO EmoteUsage(twitchUserID, emoteName, timestamp) VALUES(?, ?, '" + Timestamp.from(Instant.now())+"')", twitchUserID, emoteName);
     }
 
-    public static Map<String, Integer> getEmoteUsageFromUserID(String twitchUserID, Duration timeSpan) {
-        return BobsDatabase.getMapFromSQL("SELECT emoteName, Count(*) FROM EmoteUsage WHERE twitchUserID = ? AND timestamp > '" + Timestamp.from(Instant.now().minus(timeSpan)) + "' GROUP BY emoteName", String.class, Integer.class, twitchUserID);
+    public static Stream<Map.Entry<String, Integer>> getEmoteUsageFromUserID(String twitchUserID, Duration timeSpan) {
+        return BobsDatabase.getMultiMapFromSQL("SELECT emoteName, Count(*) FROM EmoteUsage WHERE twitchUserID = ? AND timestamp > '" + Timestamp.from(Instant.now().minus(timeSpan)) + "' GROUP BY emoteName", String.class, Integer.class, twitchUserID).entries().stream();
     }
 
-    public static Map<String, Integer> getEmoteUsageByEmoteName(Duration timeSpan) {
-        return BobsDatabase.getMapFromSQL("SELECT emoteName, Count(*) FROM EmoteUsage WHERE timestamp > '" + Timestamp.from(Instant.now().minus(timeSpan)) + "'GROUP BY emoteName", String.class, Integer.class);
+    public static Stream<Map.Entry<String, Integer>> getEmoteUsageByEmoteName(Duration timeSpan) {
+        return BobsDatabase.getMultiMapFromSQL("SELECT emoteName, Count(*) FROM EmoteUsage WHERE timestamp > '" + Timestamp.from(Instant.now().minus(timeSpan)) + "'GROUP BY emoteName", String.class, Integer.class).entries().stream();
     }
 }

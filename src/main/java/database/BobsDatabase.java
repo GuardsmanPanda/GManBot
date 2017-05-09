@@ -2,6 +2,9 @@ package database;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import utility.FinalPair;
 
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
@@ -154,9 +157,9 @@ public class BobsDatabase {
         return returnList;
     }
 
-    //TODO Consider using a guava typetoken to cause class cast exception fail before returning an invalid map.
-    public static <K, V> Map<K, V> getMapFromSQL(String sql, Class<K> keyType, Class<V> valueType, String... arguments) {
-        Map<K, V> returnMap = new HashMap<>();
+    //TODO Consider simply returning and array of final pair/triple etc... this will work well when java gets valuetypes and generic primitives.
+    public static <K, V> ListMultimap<K, V> getMultiMapFromSQL(String sql, Class<K> keyType, Class<V> valueType, String... arguments) {
+        ListMultimap<K, V> returnMap = ArrayListMultimap.create();
         try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
             assert (cachedRowSet.getMetaData().getColumnCount() == 2);
             while (cachedRowSet.next()) {
