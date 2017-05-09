@@ -106,10 +106,8 @@ public class SongDatabase {
 
     private static void updateSongRatingStatistics() {
         System.out.println("Updating Song Rating Stats");
-        songsQuoted.clear();
-        songsRated.clear();
-        songsQuotedRank.clear();
-        songsRatedRank.clear();
+        songsQuoted.clear(); songsRated.clear();
+        songsQuotedRank.clear(); songsRatedRank.clear();
 
         BobsDatabase.getMultiMapFromSQL("SELECT twitchUserID, songQuote FROM SongRatings", String.class, String.class).forEach((key, value) -> {
             songsRated.add(key);
