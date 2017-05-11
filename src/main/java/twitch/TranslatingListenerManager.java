@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 
 public class TranslatingListenerManager extends ThreadedListenerManager {
+    //TODO comtemplate a 'full translationmap' so message such as '!random xkcd' can be translated to '!randomxkcd'
     private final HashMap<String, String> commandTranslationMap = new HashMap<>();
 
     public TranslatingListenerManager() {
@@ -33,6 +34,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         super.onEvent(event);
     }
 
+
     private void fillTranslationMap() {
         commandTranslationMap.put("!ratereminder", "!ratereminder");
         commandTranslationMap.put("!songreminder", "!ratereminder");
@@ -44,6 +46,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!removeratereminder", "!removeratereminder");
         commandTranslationMap.put("!removesongreminder", "!removeratereminder");
         commandTranslationMap.put("!removeratingreminder", "!removeratereminder");
+        commandTranslationMap.put("!stopsongreminder", "!removeratereminder");
 
         commandTranslationMap.put("!rate", "!rate");
         commandTranslationMap.put("!ratr", "!rate");
@@ -86,6 +89,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!chatstaty", "!chatstats");
         commandTranslationMap.put("!chatstast", "!chatstats");
         commandTranslationMap.put("!chatstatus", "!chatstats");
+        commandTranslationMap.put("!chatstates", "!chatstats");
         commandTranslationMap.put("!chatstaterino", "!chatstats");
 
         commandTranslationMap.put("!spacelaunch", "!spacelaunch");
@@ -107,6 +111,10 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!myemotestats", "!myemotestats");
         commandTranslationMap.put("!myemotes", "!myemotestats");
+        commandTranslationMap.put("!myemotesstats", "!myemotestats");
         commandTranslationMap.put("!selfemotestats", "!myemotestats");
+        commandTranslationMap.put("!personalemotestats", "!myemotestats");
+
+        commandTranslationMap.put("!randomxkcd", "!randomxkcd");
     }
 }

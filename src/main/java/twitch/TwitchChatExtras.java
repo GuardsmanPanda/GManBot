@@ -3,13 +3,12 @@ package twitch;
 import database.BobsDatabase;
 import database.BobsDatabaseHelper;
 import database.SongDatabase;
-import utility.GBUtility;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.MessageEvent;
 import utility.FinalTriple;
+import utility.GBUtility;
 import utility.PrettyPrinter;
-import webapi.SpaceLaunch;
 import webapi.Twitchv5;
 
 import javax.sql.rowset.CachedRowSet;
@@ -41,12 +40,8 @@ public class TwitchChatExtras extends ListenerAdapter {
             case "!setwelcomemessage": setWelcomeMessage(chatMessage); break;
             case "!setflag": setFlag(chatMessage); break;
             case "!chatstats": chatStats(chatMessage); break;
-            case "!spacelaunch": SpaceLaunch.spaceLaunchRequest("any"); break;
-            case "!spacexlaunch": SpaceLaunch.spaceLaunchRequest("spacex"); break;
-            case "!nextspacelaunch": SpaceLaunch.spaceLaunchRequest("next"); break;
         }
     }
-
 
     @Override
     public void onJoin(JoinEvent event) {

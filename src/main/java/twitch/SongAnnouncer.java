@@ -127,33 +127,33 @@ public class SongAnnouncer extends ListenerAdapter {
     private static void watchSongFile(Path songFileLocation) {
         new Thread(() -> {
             try {
-            WatchService fileWatcher = FileSystems.getDefault().newWatchService();
-            songFileLocation.getParent().register(fileWatcher, StandardWatchEventKinds.ENTRY_MODIFY);
-            String lastSongNameInFile = "none";
-            while (true) {
-                WatchKey key = fileWatcher.take();
-                for (WatchEvent event : key.pollEvents()) {
-                    Path eventFilePath = (Path) event.context();
-                    if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY && eventFilePath.endsWith(songFileLocation.getFileName())) {
-                        List<String> songFileLineArray = Files.readAllLines(songFileLocation, Charset.forName("windows-1252"));
-                        //if for some reason the file is empty just ignore it.
-                        if (songFileLineArray.size() == 0) break;
-                        String newSongNameInFile = songFileLineArray.get(0);
-                        if (!lastSongNameInFile.equalsIgnoreCase(newSongNameInFile)) {
-                            songFileChange(newSongNameInFile);
-                            lastSongNameInFile = newSongNameInFile;
+                WatchService fileWatcher = FileSystems.getDefault().newWatchService();
+                songFileLocation.getParent().register(fileWatcher, StandardWatchEventKinds.ENTRY_MODIFY);
+                String lastSongNameInFile = "none";
+                while (true) {
+                    WatchKey key = fileWatcher.take();
+                    for (WatchEvent event : key.pollEvents()) {
+                        Path eventFilePath = (Path) event.context();
+                        if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY && eventFilePath.endsWith(songFileLocation.getFileName())) {
+                            List<String> songFileLineArray = Files.readAllLines(songFileLocation, Charset.forName("windows-1252"));
+                            //if for some reason the file is empty just ignore it.
+                            if (songFileLineArray.size() == 0) break;
+                            String newSongNameInFile = songFileLineArray.get(0);
+                            if (!lastSongNameInFile.equalsIgnoreCase(newSongNameInFile)) {
+                                songFileChange(newSongNameInFile);
+                                lastSongNameInFile = newSongNameInFile;
+                            }
                         }
                     }
+                    if (key.reset() == false) {
+                        System.out.println("Song file Watching went horrible wrong!");
+                        break;
+                    }
                 }
-                if (key.reset() == false) {
-                    System.out.println("Song file Watching went horrible wrong!");
-                    break;
-                }
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
             }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        } ).start();
+        }).start();
     }
 
 

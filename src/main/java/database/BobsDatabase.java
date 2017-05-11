@@ -170,13 +170,18 @@ public class BobsDatabase {
         return returnMap;
     }
 /*
-    public static <E, F, G> FinalTriple<E, F, G>[] getFinalTripleArrayFromSQL(String sql, String... arguments) {
+    public static <E, F, G> List<FinalTriple<E, F, G>> getFinalTripleArrayFromSQL(String sql, TypeToken<FinalTriple<E, F, G>> token, String... arguments) {
         try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
             assert (cachedRowSet.getMetaData().getColumnCount() == 3);
+            List<FinalTriple<E, F, G>> returnList = new ArrayList<>();
+            FinalTriple<E, F, G> triple = () new FinalTriple<Object, Object, Object>(cachedRowSet.getObject(1), cachedRowSet.getObject(2), cachedRowSet.getObject(3));
+            returnList.add(token.getRawType().cast()))
 
+            return returnList;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new FinalTriple[0];
-    }*/
+        return List.of();
+    }
+    */
 }

@@ -1,19 +1,13 @@
 package utility;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Multisets;
 
-import javax.sql.rowset.CachedRowSet;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
-import java.io.*;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  *
@@ -23,22 +17,6 @@ public class GBUtility {
 
     static {
         try { robot = new Robot(); } catch (AWTException e) { e.printStackTrace(); }
-    }
-
-    public static <E> E getElementWithHighestCount(Multiset<E> multiSet) {
-        return Multisets.copyHighestCountFirst(multiSet).iterator().next();
-    }
-
-    public static String getMultisetLeaderText(Multiset<String> multiSet, int numberOfLeaders) {
-        String returnText = "";
-        int entryNumber = 1;
-        for (String s : Multisets.copyHighestCountFirst(multiSet).elementSet()) {
-            if (entryNumber != 1) returnText += ", ";
-            returnText += s + " " + multiSet.count(s);
-            if (entryNumber == numberOfLeaders) break;
-            entryNumber++;
-        }
-        return returnText;
     }
 
     public static String strictFill(String text, int maximumLength) { return strictFill(text, ' ', maximumLength); }

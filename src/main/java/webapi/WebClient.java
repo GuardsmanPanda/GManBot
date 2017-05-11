@@ -1,6 +1,5 @@
 package webapi;
 
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -9,13 +8,14 @@ import jdk.incubator.http.HttpRequest;
 import jdk.incubator.http.HttpResponse;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.function.Function;
 
 public class WebClient {
     private static final HttpClient client = HttpClient.newHttpClient();
 
-
-    public static <E> E getJSonAndMapToType(HttpRequest request, Function<JsonNode, E> mapping) {
+    public static <E> E getJSonAndMapToType(String uriGET, Function<JsonNode, E> mapping) {
+        HttpRequest request = HttpRequest.newBuilder(URI.create(uriGET)).GET().build();
         JsonNode rootNode = getJSonNodeFromRequest(request);
         if (rootNode.has("bobError")) throw new RuntimeException("Error getting information: " + request.uri());
         return mapping.apply(rootNode);
