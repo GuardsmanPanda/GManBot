@@ -22,14 +22,21 @@
     <div class="gameVotes" style="display: inline-block; text-align:left; font-size: 20px; color:#cccccc; visibility: hidden;">Test3555557773!</div>
 </div>
 <script>
-    var connection = new WebSocket('ws://localhost:9102');
-    connection.onopen = function(event) {
-        connection.send("Hello socket!");
-    }
-    connection.onmessage = function(event) {
-        var messageJSON = JSON.parse(event.data);
-        console.log('new json ' +messageJSON);
-        if (messageJSON.type === "gameRatingUpdate") gameRatingUpdate(messageJSON);
+    startWebSocket();
+
+    function startWebSocket() {
+        var connection = new WebSocket('ws://localhost:9102');
+        connection.onopen = function(event) {
+            connection.send("Hello socket!");
+        }
+        connection.onmessage = function(event) {
+            var messageJSON = JSON.parse(event.data);
+            console.log('new json ' +messageJSON);
+            if (messageJSON.type === "gameRatingUpdate") gameRatingUpdate(messageJSON);
+        }
+        connection.onclose = function(event) {
+            setTimeout(startWebSocket, 5000);
+        }
     }
 
     function gameRatingUpdate(data) {

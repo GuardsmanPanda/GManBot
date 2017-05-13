@@ -144,7 +144,7 @@ public class TwitchChat {
             if (event.getUser().getNick().equalsIgnoreCase(bot.getNick())) {
                 System.out.println("Joined Channel " + event.getChannel().getName());
                 System.out.println("-------------------------------------------");
-                sendMessage("I Am Alive! bobHype bobHype bobHype");
+                //sendMessage("I Am Alive! bobHype bobHype bobHype");
             }
         }
 

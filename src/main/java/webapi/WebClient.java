@@ -26,6 +26,7 @@ public class WebClient {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandler.asString());
             return new ObjectMapper().readTree(response.body());
         } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
             return retryGetJSonNodeFromRequest(request);
         }
     }
