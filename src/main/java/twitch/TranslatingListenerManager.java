@@ -116,5 +116,32 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!personalemotestats", "!myemotestats");
 
         commandTranslationMap.put("!randomxkcd", "!randomxkcd");
+        commandTranslationMap.put("!randomxkdc", "!randomxkcd");
+        
+        commandTranslationMap.put("!activehours", "!activehours");
+        commandTranslationMap.put("!topactivehours", "!activehours");
+        commandTranslationMap.put("!activehoursinchat", "!activehoursinchat");
+        commandTranslationMap.put("!topactivehoursinchat", "!activehoursinchat");
+
+        commandTranslationMap.put("!idlehours", "!idlehours");
+        commandTranslationMap.put("!topidlehours", "!idlehours");
+        commandTranslationMap.put("!idlehoursinchat", "!idlehoursinchat");
+        commandTranslationMap.put("!topidlehoursinchat", "!idlehoursinchat");
+
+        commandTranslationMap.put("!chatlines", "!chatlines");
+        commandTranslationMap.put("!topchatlines", "!chatlines");
+        commandTranslationMap.put("!chatlinesinchat", "!chatlinesinchat");
+        commandTranslationMap.put("!topchatlinesinchat", "!chatlinesinchat");
+
+        commandTranslationMap.put("!bobcoins", "!bobcoins");
+        commandTranslationMap.put("!topbobcoins", "!bobcoins");
+        commandTranslationMap.put("!bobcoinsinchat", "!bobcoinsinchat");
+        commandTranslationMap.put("!topbobcoinsinchat", "!bobcoinsinchat");
+
+        commandTranslationMap.put("!emoteusage", "!emoteusage");
+        commandTranslationMap.put("!topemoteusage", "!emoteusage");
+        commandTranslationMap.put("!emoteusageinchat", "!emoteusageinchat");
+        commandTranslationMap.put("!topemoteusageinchat", "!emoteusageinchat");
+        
     }
 }

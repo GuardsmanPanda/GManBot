@@ -3,6 +3,7 @@ package core;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import twitch.*;
+import webapi.Earthquakes;
 import webapi.Reddit;
 import webapi.SpaceLaunch;
 import webapi.XKCD;
@@ -32,10 +33,12 @@ public class GManBot extends Application {
         StreamWebOverlay.startOverlay();
         SpaceLaunch.startLaunchChecker();
         TwitchWebChatOverlay.startHttpService();
-        Reddit.watchSubReddit("aww", 100, Reddit.TimeSpan.MONTH);
-        Reddit.watchSubReddit("all", 100, Reddit.TimeSpan.MONTH);
-        Reddit.watchSubReddit("physics", 50, Reddit.TimeSpan.YEAR);
-        Reddit.watchSubReddit("machinelearning", 100, Reddit.TimeSpan.YEAR);
+        Earthquakes.startQuakeWatch(6.5);
+        Reddit.watchSubReddit("aww", 100, Reddit.TimeSpan.MONTH, 70);
+        Reddit.watchSubReddit("all", 100, Reddit.TimeSpan.MONTH, 15);
+        Reddit.watchSubReddit("physics", 50, Reddit.TimeSpan.YEAR, 85);
+        Reddit.watchSubReddit("earthporn", 100, Reddit.TimeSpan.YEAR, 110);
+        Reddit.watchSubReddit("machinelearning", 100, Reddit.TimeSpan.YEAR, 100);
 
         // Blocking call, do not include code past this point
         launch(args);

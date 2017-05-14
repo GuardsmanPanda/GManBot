@@ -23,11 +23,9 @@ public class Reddit {
     public enum TimeSpan {
         HOUR("hour"), DAY("day"), WEEK("week"), MONTH("month"), YEAR("year"), ALL("all");
         private String nameString;
-
         TimeSpan(String name) {
             nameString = name;
         }
-
         @Override
         public String toString() {
             return nameString;
@@ -49,8 +47,8 @@ public class Reddit {
      * @param subReddit     the subreddit to watch
      * @param topPostToBeat the top post to beat
      */
-    public static void watchSubReddit(String subReddit, int topPostToBeat, TimeSpan timeSpan) {
-        watchers.put(subReddit, new SubRedditWatcher(subReddit, getPostScoreFromTopPost(subReddit, topPostToBeat, timeSpan)));
+    public static void watchSubReddit(String subReddit, int topPostToBeat, TimeSpan timeSpan, int updateFreqencyInMinutes) {
+        watchers.put(subReddit, new SubRedditWatcher(subReddit, getPostScoreFromTopPost(subReddit, topPostToBeat, timeSpan), updateFreqencyInMinutes));
     }
 
 
@@ -94,14 +92,14 @@ public class Reddit {
         private int minScoreForPost = 0;
         private String sub = "";
 
-        public SubRedditWatcher(String subReddit, int scoreToBeat) {
-            System.out.println("Starting New SubReddit Watcher for r/" + subReddit + ", Score to Beat: " + scoreToBeat);
+        public SubRedditWatcher(String subReddit, int scoreToBeat, int updateFrequency) {
             minScoreForPost = scoreToBeat;
             sub = subReddit;
             new Thread(() -> {
-                try { Thread.sleep(MoreUtility.nextRandomInt(0, 60000)); } catch (InterruptedException e) { e.printStackTrace(); }
+                try { Thread.sleep(MoreUtility.nextRandomInt(0, 400000)); } catch (InterruptedException e) { e.printStackTrace(); }
+                System.out.println("Starting New SubReddit Watcher for r/" + subReddit + ", Score to Beat: " + scoreToBeat);
                 fillAlreadyPostedSet();
-                Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::checkForPost, 5, 13, TimeUnit.MINUTES);
+                Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::checkForPost, 1, updateFrequency, TimeUnit.MINUTES);
             }).start();
         }
 
@@ -115,7 +113,7 @@ public class Reddit {
             getHotPosts(sub, 10).forEach(post -> {
                 if (post.score > minScoreForPost && !alreadyPostedInChat.contains(post.url)) {
                     alreadyPostedInChat.add(post.url);
-                    TwitchChat.sendMessage("Top Post In r/" + sub + ": " + post.title + " -> " + post.url);
+                    TwitchChat.sendMessage("Top Post In r/" + post.subReddit + ": " + post.title + " -> " + post.getBestUrl(sub.equalsIgnoreCase("all")));
                 }
             });
         }
