@@ -1,6 +1,8 @@
 package core;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -29,10 +31,20 @@ public class StreamWebOverlay {
         }
     }
 
+    //TODO: implement a queue system that waits 30+ seconds between each headline push
+    public synchronized static void sendHeadlineToOverlay(String headline, String htmlData) {
+        ObjectNode root = JsonNodeFactory.instance.objectNode();
+        root.put("type", "headline");
+        root.put("headline", headline);
+        root.put("htmlData", htmlData);
+        socketServer.sendMessage(root.toString());
+    }
+
     /**
      * This will silently fail if the overlay has not established a connection.
      */
     public synchronized static void sendJsonToOverlay(JsonNode node) {
+        System.out.println("* Sending Message to Socket: " + node.toString());
         socketServer.sendMessage(node.toString());
     }
 

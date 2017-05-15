@@ -78,7 +78,7 @@ public class TwitchWebChatOverlay {
             reader.close();
 
             String response = responseBuilder.toString().replaceAll("https://streamlabs.com", "http://127.0.0.1:8000");
-            response = response.replaceAll("\"Chrome\"", "\"bobHype\"");
+            //response = response.replaceAll("\"Chrome\"", "\"bobHype\"");
 
             if (requestURI.contains("/widgets/chat-box/v1/")) {
                 response = response.replace("</body>", iconScript() + "</body>");

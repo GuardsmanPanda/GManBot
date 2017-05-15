@@ -2,6 +2,7 @@ package twitch;
 
 import com.google.common.collect.ListMultimap;
 import database.BobsDatabase;
+import database.BobsDatabaseHelper;
 import database.EmoteDatabase;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
@@ -9,6 +10,7 @@ import org.pircbotx.hooks.events.MessageEvent;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,9 +22,13 @@ public class TwitchChatStats extends ListenerAdapter {
         final String statMessage;
         StatType(String message) { statMessage = message; }
     }
-    Instant nextStatTime = Instant.now();
+    private static final Set<String> statHidingUsers = new HashSet<>();
+    private Instant nextStatTime = Instant.now();
 
-    //TODO: Implment !stathide command to hide from all stats, to prevent highlight spam
+    static {
+       statHidingUsers.addAll(BobsDatabase.getListFromSQL("SELECT twitchLowerCaseName FROM TwitchChatUsers WHERE statHide = TRUE", String.class));
+    }
+
     @Override
     public void onMessage(MessageEvent event) {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
@@ -42,9 +48,18 @@ public class TwitchChatStats extends ListenerAdapter {
             case "!chatlinesinchat": sendTopListStats(StatType.CHATLINES, false); break;
             case "!bobcoinsinchat": sendTopListStats(StatType.BOBCOINS, false); break;
             case "!emoteusageinchat": sendTopListStats(StatType.TOTALEMOTES, false); break;
+
+            case "!stathide": statHide(chatMessage, true);
+            case "!statunhide": statHide(chatMessage, false);
         }
     }
 
+    private void statHide(TwitchChatMessage chatMessage, boolean hide) {
+        if (hide) statHidingUsers.add(chatMessage.displayName.toLowerCase());
+        else statHidingUsers.remove(chatMessage.displayName.toLowerCase());
+
+        BobsDatabaseHelper.setStatHide(chatMessage.userID, chatMessage.displayName, hide);
+    }
 
     private void sendTopListStats(StatType statType, boolean everyone) {
         if (nextStatTime.isAfter(Instant.now())) return;
@@ -65,6 +80,7 @@ public class TwitchChatStats extends ListenerAdapter {
         }
         String statString = names.entries().stream()
                 .filter(entry -> everyone || peopleInChat.contains(entry.getKey().toLowerCase()))
+                .filter(entry -> !statHidingUsers.contains(entry.getKey().toLowerCase()))
                 .sorted(Comparator.comparingInt(Map.Entry<String, Integer>::getValue).reversed())
                 .map(entry -> entry.getKey() + ": " + entry.getValue())
                 .limit(15)
@@ -93,7 +109,7 @@ public class TwitchChatStats extends ListenerAdapter {
         if (nextStatTime.isAfter(Instant.now())) return;
         nextStatTime = Instant.now().plusSeconds(20);
 
-        int days = 14;
+        int days = 30;
         try { days = Integer.parseInt(chatMessage.getMessageContent()); } catch (NumberFormatException nfe) { /*empty on purpose*/ }
 
         String printString = "Emote usage for the past " + days + " days: ";

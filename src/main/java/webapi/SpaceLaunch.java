@@ -1,6 +1,7 @@
 package webapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import core.StreamWebOverlay;
 import jdk.incubator.http.HttpRequest;
 import twitch.TwitchChat;
 import utility.PrettyPrinter;
@@ -29,7 +30,7 @@ public class SpaceLaunch {
     }
 
     public static void startLaunchChecker() {
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(SpaceLaunch::checkNotify, 5, 40, TimeUnit.MINUTES);
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(SpaceLaunch::checkNotify, 5, 30, TimeUnit.MINUTES);
     }
 
     public static synchronized void spaceLaunchRequest(String agency) {
@@ -46,11 +47,16 @@ public class SpaceLaunch {
         }
     }
 
-
     private static void checkNotify() {
         updateCurrentLaunchNode();
-
         Duration timeUntilLaunch = Duration.between(LocalDateTime.now(), nextLaunchTime);
+
+        //If we are under 5 hours to launch send headline to overlay;
+        if (timeUntilLaunch.toHours() < 5) {
+            String launchHeadline = "\uD83D\uDE80 Space Launch In: " + PrettyPrinter.timeStringFromDuration(timeUntilLaunch) + " \uD83D\uDE80";
+            StreamWebOverlay.sendHeadlineToOverlay(launchHeadline, "");
+        }
+
         if (timeUntilLaunch.toHours() < 1) {
             Duration timeSinceLastLaunchRequest = Duration.between(nextChatMessageTime, Instant.now());
             if (timeSinceLastLaunchRequest.toHours() >= 1) {
@@ -180,7 +186,5 @@ public class SpaceLaunch {
         } else {
             System.out.println("No launches during the past year!");
         }
-
-
     }
 }

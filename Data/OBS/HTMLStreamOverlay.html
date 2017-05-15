@@ -21,6 +21,14 @@
     <div class="gameRating" style="display: inline-block; text-align:right; font-size: 20px; width: 50%; visibility: hidden;">Test37773!</div>
     <div class="gameVotes" style="display: inline-block; text-align:left; font-size: 20px; color:#cccccc; visibility: hidden;">Test3555557773!</div>
 </div>
+<div class="streamHeadlines" style="position: absolute; top: 750px; left: 0px; width: 1040px;">
+    <div class="headline" style="text-align:center; font-weight: bold; width: 100%; visibility: hidden;">Test Headline!!</div>
+</div>
+<div class="songs">
+
+</div>
+
+
 <script>
     startWebSocket();
 
@@ -33,6 +41,7 @@
             var messageJSON = JSON.parse(event.data);
             console.log('new json ' +messageJSON);
             if (messageJSON.type === "gameRatingUpdate") gameRatingUpdate(messageJSON);
+            else if (messageJSON.type === "headline") headlineUpdate(messageJSON);
         }
         connection.onclose = function(event) {
             setTimeout(startWebSocket, 5000);
@@ -57,12 +66,21 @@
     }
 
 
+    function headlineUpdate(data) {
+        $('.headline').find('li').html(data.headline);
+        $('.headline').textillate('start');
+        setTimeout(headlineOut, 30000);
+    }
+    function headlineOut() {
+        $('.headline').textillate('out');
+    }
 </script>
 
 <script>
     $('.gameName').textillate({ autoStart: false, in: { effect: 'fadeInDown', sync: true }, out: { effect: 'rollOut', sync: true }, type:'word' });
     $('.gameRating').textillate({ initialDelay: 2000, autoStart: false, in: { effect: 'fadeInLeft', sync: true }, out: { effect: 'fadeOut', sync: true }, type:'word' });
     $('.gameVotes').textillate({ initialDelay: 2000, autoStart: false, in: { effect: 'fadeInRight', sync: true }, out: { effect: 'fadeOut', sync: true }, type:'word' });
+    $('.headline').textillate({  autoStart: false, in: { effect: 'fadeIn', sync: true }, out: { effect: 'flipOutY', sync: true }, type:'word' });
 </script>
 </body>
 </html>

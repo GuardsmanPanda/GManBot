@@ -37,10 +37,6 @@ public class Reddit {
     //private static String accessToken = "55MUphSbl7uANbGUxndo4i4AxrU";
     private static Map<String, SubRedditWatcher> watchers = new HashMap<>();
 
-    public static void main(String[] args) {
-        getHotPosts("all", 10).forEach(post -> System.out.println(post.title));
-    }
-
     /**
      * Watches a subreddit and prints to the twitch channel when a new post breaks into the current top posts
      * //TODO: create a method for removing a subreddit watcher

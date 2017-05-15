@@ -93,6 +93,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!chatstatus", "!chatstats");
         commandTranslationMap.put("!chatstates", "!chatstats");
         commandTranslationMap.put("!chatstaterino", "!chatstats");
+        commandTranslationMap.put("!chatstatszino", "!chatstats");
 
         commandTranslationMap.put("!spacelaunch", "!spacelaunch");
 
@@ -154,5 +155,10 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!mybirthday", "!mystreambirthday");
         commandTranslationMap.put("!mybirthdate", "!mystreambirthday");
 
+        commandTranslationMap.put("!stathide", "!stathide");
+        commandTranslationMap.put("!hidestats", "!stathide");
+        commandTranslationMap.put("!statunhide", "!statunhide");
+        commandTranslationMap.put("!unhidestats", "!statunhide");
+        commandTranslationMap.put("!removestathide", "!statunhide");
     }
 }

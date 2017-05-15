@@ -16,8 +16,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -32,7 +34,6 @@ public class TwitchChatExtras extends ListenerAdapter {
     }
 
     @Override
-    //TODO: make al lthe spaceluanch commands go through !spacelaunch <option/agency>
     public void onMessage(MessageEvent event)  {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
         switch (chatMessage.getMessageCommand()) {
@@ -73,19 +74,25 @@ public class TwitchChatExtras extends ListenerAdapter {
         }
     }
 
-    //fix followage to consider 24h segments instead of dates
     private static void followAge(TwitchChatMessage chatMessage) {
-        LocalDate followDate = Twitchv5.getFollowDateTime(chatMessage.userID).toLocalDate();
-        if (followDate == null) return;
-        if (followDate.isEqual(LocalDate.now())) {
-            TwitchChat.sendMessage(chatMessage.displayName + ", You just followed the stream today! bobHype");
+        LocalDateTime followTime = Twitchv5.getFollowDateTime(chatMessage.userID);
+        if (followTime == null) {
+            TwitchChat.sendMessage(chatMessage.displayName + ": You do not follow the stream bobSigh");
             return;
         }
+        Duration followDuration = Duration.between(followTime, LocalDateTime.now());
 
-        String printString = chatMessage.displayName + ": Followed for " + PrettyPrinter.timeStringFromPeriod(followDate.until(LocalDate.now())) + "!";
-        TwitchChat.sendMessage(printString);
+        if (followDuration.toHours() == 0) {
+            TwitchChat.sendMessage(chatMessage.displayName + ", You Just Followed the Stream! bobHype");
+        } else if (followDuration.toHours() < 24) {
+            TwitchChat.sendMessage(chatMessage.displayName + ", You Followed the Stream for "+PrettyPrinter.timeStringFromDuration(followDuration)+"! bobHype");
+        } else {
+            String printString = chatMessage.displayName + ": Followed for " + PrettyPrinter.timeStringFromPeriod(Period.between(followTime.toLocalDate(), LocalDate.now())) + "!";
+            TwitchChat.sendMessage(printString);
+        }
     }
 
+    //TODO: move chatstats to the chatstat class
     private static void chatStats(TwitchChatMessage chatMessage) {
         StringBuilder statStringBuilder = new StringBuilder(chatMessage.displayName);
         statStringBuilder.append(" - ");

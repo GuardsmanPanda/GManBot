@@ -1,7 +1,7 @@
 package database;
 
-import webapi.Twitchv5;
 import utility.FinalTriple;
+import webapi.Twitchv5;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -34,6 +34,10 @@ public class BobsDatabaseHelper {
     public static void setSongRatingReminder(String twitchUserID, String twitchDisplayName, boolean reminderValue) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET songRatingReminder = " + reminderValue + " WHERE twitchUserID = ?", twitchUserID);
+    }
+    public static void setStatHide(String twitchUserID, String twitchDisplayName, boolean hide) {
+        createUserIfNotExists(twitchUserID, twitchDisplayName);
+        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET statHide = " + hide + " WHERE twitchUserID = ?", twitchUserID);
     }
     public static void setSubscriberMonths(String twitchUserID, int numberOfMonths) {
         createUserIfNotExists(twitchUserID);

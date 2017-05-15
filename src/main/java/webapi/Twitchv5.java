@@ -108,7 +108,6 @@ public class Twitchv5 {
 
     public static LocalDateTime getSubStreakStartDate(String twitchUserID) {
         JsonNode rootNode = executeHttpGet("https://api.twitch.tv/kraken/channels/"+BOBSCHANNELID+"/subscriptions/"+twitchUserID);
-        PrettyPrinter.prettyPrintJSonNode(rootNode);
         if (rootNode != null && rootNode.has("created_at")) {
             return LocalDateTime.ofInstant(Instant.parse(rootNode.get("created_at").asText()), ZoneId.systemDefault());
         } else {

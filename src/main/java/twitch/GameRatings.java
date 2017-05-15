@@ -55,9 +55,7 @@ public class GameRatings extends ListenerAdapter {
         root.set("x", nodeFactory.numberNode(x));
         root.set("y", nodeFactory.numberNode(y));
 
-        System.out.println("Updating overlay --> " + root.toString());
         StreamWebOverlay.sendJsonToOverlay(root);
-
         nextOverlayUpdate = Instant.now().plusSeconds(25);
     }
 
