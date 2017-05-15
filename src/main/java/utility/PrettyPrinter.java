@@ -5,12 +5,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.sql.rowset.CachedRowSet;
-import java.lang.reflect.Array;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Period;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Dons on 02-05-2017.
@@ -30,7 +30,6 @@ public class PrettyPrinter {
 
         return String.join(", ", timeStrings);
     }
-    
     public static String timeStringFromDuration(Duration duration) {
         List<String> timeStrings = new ArrayList<>();
         long days = duration.toDays();
@@ -44,8 +43,7 @@ public class PrettyPrinter {
         return String.join(", ", timeStrings);
     }
 
-
-    public static void prettyPrintJSonNode(JsonNode node) {
+     public static void prettyPrintJSonNode(JsonNode node) {
         try {
             System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(node));
         } catch (JsonProcessingException e) {

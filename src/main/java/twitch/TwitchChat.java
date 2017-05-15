@@ -28,7 +28,6 @@ public class TwitchChat {
     private static final String channel = "#guardsmanbob";
     private static final PircBotX bot;
 
-
     // Configure bot
     static {
         Configuration config = new Configuration.Builder()

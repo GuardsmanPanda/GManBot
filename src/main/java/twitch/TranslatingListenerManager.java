@@ -72,6 +72,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!welcomemessage","!setwelcomemessage");
 
         commandTranslationMap.put("!followage","!followage");
+        commandTranslationMap.put("!followtime","!followage");
         commandTranslationMap.put("!folloage","!followage");
 
         commandTranslationMap.put("!setflag","!setflag");
@@ -85,6 +86,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!chatstats", "!chatstats");
         commandTranslationMap.put("!chatsta", "!chatstats");
         commandTranslationMap.put("!chatsts", "!chatstats");
+        commandTranslationMap.put("!chatstst", "!chatstats");
         commandTranslationMap.put("!chatstas", "!chatstats");
         commandTranslationMap.put("!chatstaty", "!chatstats");
         commandTranslationMap.put("!chatstast", "!chatstats");
@@ -139,9 +141,18 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!topbobcoinsinchat", "!bobcoinsinchat");
 
         commandTranslationMap.put("!emoteusage", "!emoteusage");
+        commandTranslationMap.put("!emoteuseage", "!emoteusage");
         commandTranslationMap.put("!topemoteusage", "!emoteusage");
+        commandTranslationMap.put("!topemoteuseage", "!emoteusage");
         commandTranslationMap.put("!emoteusageinchat", "!emoteusageinchat");
+        commandTranslationMap.put("!emoteuseageinchat", "!emoteusageinchat");
         commandTranslationMap.put("!topemoteusageinchat", "!emoteusageinchat");
-        
+        commandTranslationMap.put("!topemoteuseageinchat", "!emoteusageinchat");
+
+        commandTranslationMap.put("!mystreambirthday", "!mystreambirthday");
+        commandTranslationMap.put("!mystreambirthdate", "!mystreambirthday");
+        commandTranslationMap.put("!mybirthday", "!mystreambirthday");
+        commandTranslationMap.put("!mybirthdate", "!mystreambirthday");
+
     }
 }

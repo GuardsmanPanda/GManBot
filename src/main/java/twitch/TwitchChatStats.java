@@ -20,7 +20,6 @@ public class TwitchChatStats extends ListenerAdapter {
         final String statMessage;
         StatType(String message) { statMessage = message; }
     }
-    Instant nextEmoteStatTime = Instant.now();
     Instant nextStatTime = Instant.now();
 
     //TODO: Implment !stathide command to hide from all stats, to prevent highlight spam
@@ -48,17 +47,17 @@ public class TwitchChatStats extends ListenerAdapter {
 
 
     private void sendTopListStats(StatType statType, boolean everyone) {
-        if (nextEmoteStatTime.isAfter(Instant.now())) return;
-        nextEmoteStatTime = Instant.now().plusSeconds(20);
+        if (nextStatTime.isAfter(Instant.now())) return;
+        nextStatTime = Instant.now().plusSeconds(20);
 
         Set<String> peopleInChat = TwitchChat.getLowerCaseNamesInChannel("#guardsmanbob");
         ListMultimap<String, Integer> names = null;
         switch (statType) {
-            case ACTIVEHOURS: names = BobsDatabase.getMultiMapFromSQL("SELECT twitchDisplayName, activeHours FROM twitchChatUsers ORDER BY activeHours DESC", String.class, Integer.class); break;
-            case IDLEHOURS: names = BobsDatabase.getMultiMapFromSQL("SELECT twitchDisplayName, idleHours FROM twitchChatUsers ORDER BY idleHours DESC", String.class, Integer.class); break;
-            case CHATLINES: names = BobsDatabase.getMultiMapFromSQL("SELECT twitchDisplayName, chatLines FROM twitchChatUsers ORDER BY chatLines DESC", String.class, Integer.class); break;
-            case BOBCOINS: names = BobsDatabase.getMultiMapFromSQL("SELECT twitchDisplayName, bobCoins FROM twitchChatUsers ORDER BY bobCoins DESC", String.class, Integer.class); break;
-            case TOTALEMOTES: names = BobsDatabase.getMultiMapFromSQL("SELECT TwitchChatUsers.twitchDisplayName, COUNT(emoteName) AS emoteCount FROM EmoteUsage INNER JOIN TwitchChatUsers ON twitchChatUsers.TwitchUserID = EmoteUsage.TwitchUserID GROUP BY twitchChatUsers.twitchDisplayName ORDER BY emoteCount DESC", String.class, Integer.class); break;
+            case ACTIVEHOURS: names = BobsDatabase.getMultiMapFromSQL("SELECT twitchDisplayName, activeHours FROM twitchChatUsers", String.class, Integer.class); break;
+            case IDLEHOURS: names = BobsDatabase.getMultiMapFromSQL("SELECT twitchDisplayName, idleHours FROM twitchChatUsers", String.class, Integer.class); break;
+            case CHATLINES: names = BobsDatabase.getMultiMapFromSQL("SELECT twitchDisplayName, chatLines FROM twitchChatUsers", String.class, Integer.class); break;
+            case BOBCOINS: names = BobsDatabase.getMultiMapFromSQL("SELECT twitchDisplayName, bobCoins FROM twitchChatUsers", String.class, Integer.class); break;
+            case TOTALEMOTES: names = BobsDatabase.getMultiMapFromSQL("SELECT TwitchChatUsers.twitchDisplayName, COUNT(emoteName) AS emoteCount FROM EmoteUsage INNER JOIN TwitchChatUsers ON twitchChatUsers.TwitchUserID = EmoteUsage.TwitchUserID GROUP BY twitchChatUsers.twitchDisplayName", String.class, Integer.class); break;
         }
         if (names == null) {
             TwitchChat.sendMessage("Names Is Null");
@@ -69,7 +68,7 @@ public class TwitchChatStats extends ListenerAdapter {
                 .sorted(Comparator.comparingInt(Map.Entry<String, Integer>::getValue).reversed())
                 .map(entry -> entry.getKey() + ": " + entry.getValue())
                 .limit(15)
-                .collect(Collectors.joining(", "));
+                .collect(Collectors.joining(" \uD83D\uDD38 "));
 
         TwitchChat.sendMessage(statType.statMessage + ((everyone) ? "! -> " : " Currently in Chat! -> ") + statString);
     }
@@ -91,8 +90,8 @@ public class TwitchChatStats extends ListenerAdapter {
         TwitchChat.sendMessage(outputString);
     }
     private synchronized void sendEmoteStats(TwitchChatMessage chatMessage, boolean allEmotes) {
-        if (nextEmoteStatTime.isAfter(Instant.now())) return;
-        nextEmoteStatTime = Instant.now().plusSeconds(60);
+        if (nextStatTime.isAfter(Instant.now())) return;
+        nextStatTime = Instant.now().plusSeconds(20);
 
         int days = 14;
         try { days = Integer.parseInt(chatMessage.getMessageContent()); } catch (NumberFormatException nfe) { /*empty on purpose*/ }

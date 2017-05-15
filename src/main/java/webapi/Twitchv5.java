@@ -12,7 +12,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -34,11 +36,11 @@ public class Twitchv5 {
         }
     }
 
-    public static String getGameTitle() {
-        return getGameTitle(BOBSCHANNELID);
+    public static String getGameName() {
+        return getGameName(BOBSCHANNELID);
     }
 
-    public static String getGameTitle(String channelID) {
+    public static String getGameName(String channelID) {
         JsonNode rootNode = executeHttpGet("https://api.twitch.tv/kraken/channels/" + channelID);
         if (rootNode != null && rootNode.has("game")) return rootNode.get("game").asText();
         else {
@@ -83,9 +85,6 @@ public class Twitchv5 {
         return Set.of();
     }
 
-
-
-
     public static String getDisplayName(String twitchUserID) {
         JsonNode rootNode = executeHttpGet("https://api.twitch.tv/kraken/users/" + twitchUserID);
         if (rootNode.has("display_name")) {
@@ -97,17 +96,24 @@ public class Twitchv5 {
         }
     }
 
-    public static LocalDate getFollowDate(String twitchUserID) {
-        JsonNode rootNode = executeHttpGet("https://api.twitch.tv/kraken/users/" + twitchUserID + "/follows/channels/30084132");
-        if (rootNode.has("created_at")) {
-            return LocalDate.parse(rootNode.get("created_at").asText().split("T")[0]);
-        } else if (rootNode.has("error") && rootNode.has("message") && rootNode.get("message").asText().equalsIgnoreCase("follow not found")) {
-            //if the twitchUserID is not a stream follower return null
-            return null;
+    public static LocalDateTime getFollowDateTime(String twitchUserID) {
+        JsonNode rootNode = executeHttpGet("https://api.twitch.tv/kraken/users/" + twitchUserID + "/follows/channels/"+BOBSCHANNELID);
+        if (rootNode != null && rootNode.has("created_at")) {
+            return LocalDateTime.ofInstant(Instant.parse(rootNode.get("created_at").asText()), ZoneId.systemDefault());
         } else {
-            System.out.println("Something went wrong getting followDateTime for " + twitchUserID);
-            PrettyPrinter.prettyPrintJSonNode(rootNode);
-            return LocalDate.now();
+            System.out.println("Error getting follow date: " + rootNode);
+            return null;
+        }
+    }
+
+    public static LocalDateTime getSubStreakStartDate(String twitchUserID) {
+        JsonNode rootNode = executeHttpGet("https://api.twitch.tv/kraken/channels/"+BOBSCHANNELID+"/subscriptions/"+twitchUserID);
+        PrettyPrinter.prettyPrintJSonNode(rootNode);
+        if (rootNode != null && rootNode.has("created_at")) {
+            return LocalDateTime.ofInstant(Instant.parse(rootNode.get("created_at").asText()), ZoneId.systemDefault());
+        } else {
+            System.out.println("Error getting sub streak start: " + rootNode);
+            return null;
         }
     }
 

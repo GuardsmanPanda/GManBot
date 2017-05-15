@@ -33,7 +33,7 @@ public class GManBot extends Application {
         StreamWebOverlay.startOverlay();
         SpaceLaunch.startLaunchChecker();
         TwitchWebChatOverlay.startHttpService();
-        Earthquakes.startQuakeWatch(6.5);
+        Earthquakes.startQuakeWatch(6.1);
         Reddit.watchSubReddit("aww", 100, Reddit.TimeSpan.MONTH, 70);
         Reddit.watchSubReddit("all", 100, Reddit.TimeSpan.MONTH, 15);
         Reddit.watchSubReddit("physics", 50, Reddit.TimeSpan.YEAR, 85);

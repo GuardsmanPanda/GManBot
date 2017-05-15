@@ -27,7 +27,7 @@ public class GameRatings extends ListenerAdapter {
                 if (rating < 1 ) rating = 1;
                 if (rating > 11) rating = 11;
                 if (tcm.getMessageContent().contains(" ")) gameQuote = tcm.getMessageContent().substring(tcm.getMessageContent().indexOf(" ")).trim();
-                addGameRatingToDatabase(tcm.userID, Twitchv5.getGameTitle(), rating, gameQuote);
+                addGameRatingToDatabase(tcm.userID, Twitchv5.getGameName(), rating, gameQuote);
                 updateOverlay();
             } catch (NumberFormatException nfe) {
                 // Silently kill number format exceptions
@@ -38,7 +38,7 @@ public class GameRatings extends ListenerAdapter {
     public static void updateOverlay() {
         if (Instant.now().isBefore(nextOverlayUpdate)) return;
 
-        String gameTitle = Twitchv5.getGameTitle();
+        String gameTitle = Twitchv5.getGameName();
         double rating = BobsDatabase.getDoubleFromSQL("SELECT AVG(CAST(gameRating AS DOUBLE)) AS avgRating FROM GameRatings WHERE gameName = ?", gameTitle);
         int votes = BobsDatabase.getIntFromSQL("SELECT COUNT(gameName) AS gameCount FROM GameRatings WHERE gameName = ?", gameTitle);
 

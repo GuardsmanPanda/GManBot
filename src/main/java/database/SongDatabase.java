@@ -100,7 +100,7 @@ public class SongDatabase {
         if (songsRated.count(twitchUserID) > 0)
             returnString += " - SongsRated: " + songsRated.count(twitchUserID) + " [" + (songsRatedRank.indexOf(twitchUserID) + 1) + "]";
         if (songsQuoted.count(twitchUserID) > 0)
-            returnString += ", SongsQuoted: " + songsQuoted.count(twitchUserID) + " [" + (songsQuotedRank.indexOf(twitchUserID) + 1) + "]";
+            returnString += " \uD83D\uDD38 SongsQuoted: " + songsQuoted.count(twitchUserID) + " [" + (songsQuotedRank.indexOf(twitchUserID) + 1) + "]";
         return returnString;
     }
 

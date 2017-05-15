@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class Reddit {
+    //TODO: watch for live threads on teh front page (possibly in all subs we follow?)
     public enum TimeSpan {
         HOUR("hour"), DAY("day"), WEEK("week"), MONTH("month"), YEAR("year"), ALL("all");
         private String nameString;

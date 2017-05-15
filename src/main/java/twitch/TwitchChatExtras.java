@@ -73,8 +73,9 @@ public class TwitchChatExtras extends ListenerAdapter {
         }
     }
 
+    //fix followage to consider 24h segments instead of dates
     private static void followAge(TwitchChatMessage chatMessage) {
-        LocalDate followDate = Twitchv5.getFollowDate(chatMessage.userID);
+        LocalDate followDate = Twitchv5.getFollowDateTime(chatMessage.userID).toLocalDate();
         if (followDate == null) return;
         if (followDate.isEqual(LocalDate.now())) {
             TwitchChat.sendMessage(chatMessage.displayName + ", You just followed the stream today! bobHype");
@@ -98,11 +99,11 @@ public class TwitchChatExtras extends ListenerAdapter {
 
                 statStringBuilder.append("ChatLines: " + chatLines);
                 statStringBuilder.append(" [Rank: " + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE chatLines > "+chatLines) + 1) + "]");
-                statStringBuilder.append(", BobCoins: " + bobCoins);
+                statStringBuilder.append(" \uD83D\uDD38 BobCoins: " + bobCoins);
                 statStringBuilder.append(" [" + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE bobCoins > "+bobCoins) + 1) + "]");
-                statStringBuilder.append(", ActiveHours: " + activeHours);
+                statStringBuilder.append(" \uD83D\uDD38 ActiveHours: " + activeHours);
                 statStringBuilder.append(" [" + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE activeHours > "+activeHours) + 1) + "]");
-                statStringBuilder.append(", IdleHours: " + idleHours);
+                statStringBuilder.append(" \uD83D\uDD38 IdleHours: " + idleHours);
                 statStringBuilder.append(" [" + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE idleHours > "+idleHours) + 1) + "]");
                 statStringBuilder.append(SongDatabase.getSongRatingStatString(chatMessage.userID));
             }

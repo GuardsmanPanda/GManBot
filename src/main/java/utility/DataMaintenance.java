@@ -2,13 +2,10 @@ package utility;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
-import database.BobsDatabase;
 import database.BobsDatabaseHelper;
 import webapi.Twitchv5;
 
-import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.stream.StreamSupport;
 
 public class DataMaintenance {
@@ -22,6 +19,7 @@ public class DataMaintenance {
 
     }
 
+    //replace with list<id> of subs from twitchv5
     public static void addAllCurrentSubsAndPrimeSubstoDB() {
         int total = 1000;
         for (int offset = 0; offset < total; offset +=99) {
