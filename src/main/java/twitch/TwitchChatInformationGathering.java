@@ -35,7 +35,6 @@ public class TwitchChatInformationGathering extends ListenerAdapter {
                 .forEach(emote -> EmoteDatabase.addEmoteUsage(chatMessage.userID, emote));
     }
 
-    //TODO make hourly update print in chat
     private static void hourlyUpdate() {
         Set<String> activeUserIDs = TwitchChat.getActiveUserIDsInChannel(Duration.ofMinutes(60));
         Set<String> userIDsInChannel = TwitchChat.getUserIDsInChannel();

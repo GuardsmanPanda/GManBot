@@ -86,6 +86,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!chatstats", "!chatstats");
         commandTranslationMap.put("!chatsta", "!chatstats");
         commandTranslationMap.put("!chatsts", "!chatstats");
+        commandTranslationMap.put("!chatstat", "!chatstats");
         commandTranslationMap.put("!chatstst", "!chatstats");
         commandTranslationMap.put("!chatstas", "!chatstats");
         commandTranslationMap.put("!chatstaty", "!chatstats");
@@ -119,7 +120,11 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!personalemotestats", "!myemotestats");
 
         commandTranslationMap.put("!randomxkcd", "!randomxkcd");
+        commandTranslationMap.put("!randomxkck", "!randomxkcd");
+        commandTranslationMap.put("!randomxked", "!randomxkcd");
         commandTranslationMap.put("!randomxkdc", "!randomxkcd");
+        commandTranslationMap.put("!randomkxcd", "!randomxkcd");
+        commandTranslationMap.put("!randommxkcd", "!randomxkcd");
         
         commandTranslationMap.put("!activehours", "!activehours");
         commandTranslationMap.put("!topactivehours", "!activehours");

@@ -117,7 +117,6 @@ public class TwitchChatExtras extends ListenerAdapter {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        //TODO append song rating stats
         TwitchChat.sendMessage(statStringBuilder.toString());
     }
 

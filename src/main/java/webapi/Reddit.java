@@ -39,7 +39,7 @@ public class Reddit {
 
     /**
      * Watches a subreddit and prints to the twitch channel when a new post breaks into the current top posts
-     * //TODO: create a method for removing a subreddit watcher
+     * //TODO: train a model to predict thread rating early, so we can post threads when they are 1-2hours old or even sooner.
      *
      * @param subReddit     the subreddit to watch
      * @param topPostToBeat the top post to beat

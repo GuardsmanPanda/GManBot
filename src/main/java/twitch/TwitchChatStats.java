@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 public class TwitchChatStats extends ListenerAdapter {
     public enum StatType {
         IDLEHOURS("The Sneakiest Lurkers"), ACTIVEHOURS("Biggest Hour Farmers"), TOTALEMOTES("Top Emote Users"), CHATLINES("Top Chatters"), BOBCOINS("One Percenters");

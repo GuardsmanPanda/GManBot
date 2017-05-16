@@ -49,7 +49,6 @@ public class Twitchv5 {
         }
     }
 
-    //TODO throw exception if set empty
     public static Set<String> getBobsEmoticonSet() {
         return getEmoticonSet("581");
     }
@@ -65,9 +64,8 @@ public class Twitchv5 {
                     .map(node -> node.get("code").asText())
                     .collect(Collectors.toSet());
         } else {
-            System.out.println("Something went wrong trying to get emoticon set: " + emoteSet);
+            throw new RuntimeException("Could not rating emote set " + emoteSet);
         }
-        return Set.of();
     }
 
     /**
