@@ -2,9 +2,7 @@ package twitch;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import core.StreamWebOverlay;
 import database.BobsDatabase;
 import database.BobsDatabaseHelper;
 import database.SongDatabase;
@@ -14,7 +12,6 @@ import org.pircbotx.hooks.events.MessageEvent;
 import utility.GBUtility;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.time.Duration;
@@ -30,11 +27,11 @@ public class SongAnnouncer extends ListenerAdapter {
     private static final int STREAMDELAYINSECONDS = 10;
     private static String currentSong = "Guardsman Bob";
     private static String displayOnStreamSong = "Guardsman Bob";
-    private static float displayOnStreamSongRating = 0f;
-    private static int displayOnStreamNumberOfRatings = 0;
+    //private static float displayOnStreamSongRating = 0f;
+    //private static int displayOnStreamNumberOfRatings = 0;
 
     public SongAnnouncer(Path songFilePath) {
-        startSongAnnouncer();
+        //startSongAnnouncer();
         watchSongFile(songFilePath);
         //Load the rating reminders
         BobsDatabase.getMultiMapFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE songRatingReminder = true", String.class, String.class)
@@ -54,8 +51,14 @@ public class SongAnnouncer extends ListenerAdapter {
                 if (tcm.getMessageContent().contains(" ")) songQuote = tcm.getMessageContent().substring(tcm.getMessageContent().indexOf(" ")).trim();
 
                 SongDatabase.addSongRating(tcm.userID, currentSong, rating, songQuote);
+
+                //send new rating to overlay
                 Pair<Float, Integer> songRatingPair = SongDatabase.getSongRating(displayOnStreamSong);
-                displayOnStreamSongRating = songRatingPair.getKey();
+                ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
+                rootNode.put("type", "songRatingUpdate"); rootNode.put("songRating", String.format("%.2f", songRatingPair.getKey()));
+                StreamWebOverlay.sendJsonToOverlay(rootNode);
+
+                //displayOnStreamSongRating = songRatingPair.getKey();
             } catch (NumberFormatException nfe) {
                 // Silently kill number format exceptions
             }
@@ -66,7 +69,7 @@ public class SongAnnouncer extends ListenerAdapter {
             }
         }
     }
-
+/*
     public static void startSongAnnouncer() {
         try {
             HttpServer server = HttpServer.create( new InetSocketAddress(9100), 0);
@@ -77,20 +80,30 @@ public class SongAnnouncer extends ListenerAdapter {
             e.printStackTrace();
         }
     }
-
+*/
 
     private static void songFileChange(String newSongName) {
         if (newSongName.equalsIgnoreCase("Guardsman Bob")) return;
 
-        String lastSongString = displayOnStreamSong + " ⏩ Rating: " + String.format("%.2f", displayOnStreamSongRating) + " [" + displayOnStreamNumberOfRatings + "]";
+        Pair<Float, Integer> lastSongPair = SongDatabase.getSongRating(displayOnStreamSong);
+        String lastSongString = displayOnStreamSong + " ⏩ Rating: " + String.format("%.2f", lastSongPair.getKey()) + " [" + lastSongPair.getValue() + "]";
 
         Pair<Float, Integer> songRatingPair = SongDatabase.getSongRating(newSongName);
         float newSongRating = songRatingPair.getKey();
         displayOnStreamSong = newSongName;
-        displayOnStreamSongRating = newSongRating;
-        displayOnStreamNumberOfRatings = songRatingPair.getValue();
+        //displayOnStreamSongRating = newSongRating;
+        //displayOnStreamNumberOfRatings = songRatingPair.getValue();
 
         if (newSongRating < 7.7f) GBUtility.textToBob("Do you want to remove the song: " + newSongName + " ⏩ rating: " +newSongRating);
+
+        //Create Json and send to overlay
+        ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
+        rootNode.put("type", "songUpdate");
+        rootNode.put("songName", newSongName);
+        rootNode.put("songRating", String.format("%.2f", songRatingPair.getKey()));
+        rootNode.put("songNumRatings", songRatingPair.getValue());
+        rootNode.put("songQuote", SongDatabase.getSongQuote(newSongName, true));
+        StreamWebOverlay.sendJsonToOverlay(rootNode);
 
         new Thread(() -> {
             try { Thread.sleep(1000 * STREAMDELAYINSECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -156,7 +169,7 @@ public class SongAnnouncer extends ListenerAdapter {
         }).start();
     }
 
-
+/*
     private static class songHttpHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -265,5 +278,5 @@ public class SongAnnouncer extends ListenerAdapter {
 
     private static String getLetteringJS() {
         return "<script>(function($){function injector(t,splitter,klass,after){var a=t.text().split(splitter),inject='';if(a.length){$(a).each(function(i,item){inject+='<span class=\"'+klass+(i+1)+'\">'+item+'</span>'+after});t.empty().append(inject)}}var methods={init:function(){return this.each(function(){injector($(this),'','char','')})},words:function(){return this.each(function(){injector($(this),' ','word',' ')})},lines:function(){return this.each(function(){var r=\"eefec303079ad17405c889e092e105b0\";injector($(this).children(\"br\").replaceWith(r).end(),r,'line','')})}};$.fn.lettering=function(method){if(method&&methods[method]){return methods[method].apply(this,[].slice.call(arguments,1))}else if(method==='letters'||!method){return methods.init.apply(this,[].slice.call(arguments,0))}$.error('Method '+method+' does not exist on jQuery.lettering');return this}})(jQuery);</script>";
-    }
+    } */
 }

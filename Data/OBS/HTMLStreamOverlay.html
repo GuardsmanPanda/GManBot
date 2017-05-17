@@ -6,7 +6,7 @@
         body {
             color: white;
             font-family: "Arial";
-            font-size: 32px;
+            font-size: 30px;
             text-shadow: 0px 0px 20px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000;
         }
     </style>
@@ -24,12 +24,20 @@
 <div class="streamHeadlines" style="position: absolute; top: 750px; left: 0px; width: 1040px;">
     <div class="headline" style="text-align:center; font-weight: bold; width: 100%; visibility: hidden;">Test Headline!!</div>
 </div>
-<div class="songs">
-
+<div class="songs" style="position: absolute; top: 990px; left: 10px; width: 1200px;">
+    <div class="songQuote" style="color: #dddddd; font-size: 20px; visibility: hidden;">TestQuote</div>
+    <div class="songName" style="display: inline-block; font-size: 26px; font-weight: bold; visibility: hidden;">Guardsman Bob</div>
+    <div class="songRating" style="display: inline-block; font-size: 26px; font-weight: bold; visibility: hidden;">10,00</div>
+    <div class="songNumRatings" style="display: inline-block; color: #dddddd; font-size: 20px; vertical-align: middle; visibility: hidden;">Number of Ratings: 120</div>
 </div>
 
 
 <script>
+    var songName = "Guardsman Bob";
+    var songRating = "0,00";
+    var songNumRatings = 0;
+    var songQuote = "Read Terry Pratchett";
+
     startWebSocket();
 
     function startWebSocket() {
@@ -42,6 +50,8 @@
             console.log('new json ' +messageJSON);
             if (messageJSON.type === "gameRatingUpdate") gameRatingUpdate(messageJSON);
             else if (messageJSON.type === "headline") headlineUpdate(messageJSON);
+            else if (messageJSON.type === "songUpdate") songUpdate(messageJSON);
+            else if (messageJSON.type === "songRatingUpdate") songRatingUpdate(messageJSON);
         }
         connection.onclose = function(event) {
             setTimeout(startWebSocket, 5000);
@@ -74,6 +84,45 @@
     function headlineOut() {
         $('.headline').textillate('out');
     }
+
+
+    function songUpdate(data) {
+        $('.songName').textillate('out');
+        $('.songRating').textillate('out');
+
+        songName = data.songName;
+        songRating = data.songRating;
+        songQuote = data.songQuote;
+        songNumRatings = data.songNumRatings;
+
+        setTimeout(newSongIn, 1600);
+    }
+    function songRatingUpdate(data) {
+        if (songRating !== data.songRating) {
+            songRating = data.songRating;
+            $('.songRating').textillate('out');
+            setTimeout(songRatingIn, 1600);
+        }
+    }
+
+    function newSongIn() {
+        $('.songName').find('li').html(songName);
+        $('.songNumRatings').find('li').html('Vote Count: ' + songNumRatings);
+        $('.songQuote').find('li').html(songQuote);
+
+        $('.songName').textillate('start');
+        $('.songNumRatings').textillate('start');
+        $('.songQuote').textillate('start');
+
+        setTimeout(function() { $('.songNumRatings').textillate('out'); }, 14000);
+        setTimeout(function() { $('.songQuote').textillate('out'); }, 28000);
+    }
+
+    function songRatingIn() {
+        $('.songRating').find('li').html(songRating);
+        $('.songRating').css('color','hsl('+ ((songRating.replace(',','.') - 1)*24-120) +',100%,50%)');
+        $('.songRating').textillate('start');
+    }
 </script>
 
 <script>
@@ -81,6 +130,10 @@
     $('.gameRating').textillate({ initialDelay: 2000, autoStart: false, in: { effect: 'fadeInLeft', sync: true }, out: { effect: 'fadeOut', sync: true }, type:'word' });
     $('.gameVotes').textillate({ initialDelay: 2000, autoStart: false, in: { effect: 'fadeInRight', sync: true }, out: { effect: 'fadeOut', sync: true }, type:'word' });
     $('.headline').textillate({  autoStart: false, in: { effect: 'fadeIn', sync: true }, out: { effect: 'flipOutY', sync: true }, type:'word' });
+    $('.songName').textillate({initialDelay: 1500, in: { effect: 'fadeInLeft', callback: songRatingIn }, out: { effect: 'bounceOut', sync: true }, type: 'word' });
+    $('.songRating').textillate({ autoStart: false, in: { effect: 'fadeIn' }, out: { effect: 'hinge', sync: true }, type: 'word' });
+    $('.songNumRatings').textillate({ initialDelay: 5000, autoStart: false, in: { effect: 'fadeInRight', sync: true }, out: { effect: 'fadeOut' }, type: 'word' });
+    $('.songQuote').textillate({ initialDelay: 5000, autoStart: false, in: { effect: 'fadeInLeft', sync: true }, out: { effect: 'fadeOut' }, type: 'word' });
 </script>
 </body>
 </html>

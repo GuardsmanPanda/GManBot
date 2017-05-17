@@ -18,7 +18,8 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
     public void onMessage(MessageEvent event) {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
         switch (chatMessage.getMessageCommand()) {
-            case "!randomxkcd": XKCD.randomXKCDRequest(); break;
+            case "!randomxkcd": XKCD.xkcdRequest(true); break;
+            case "!latestxkcd": XKCD.xkcdRequest(false); break;
             case "!spacelaunch": SpaceLaunch.spaceLaunchRequest("any"); break;
             case "!spacexlaunch": SpaceLaunch.spaceLaunchRequest("spacex"); break;
             case "!nextspacelaunch": SpaceLaunch.spaceLaunchRequest("next"); break;

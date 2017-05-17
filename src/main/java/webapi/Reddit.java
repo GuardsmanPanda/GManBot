@@ -3,7 +3,6 @@ package webapi;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import twitch.TwitchChat;
-import utility.MoreUtility;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -93,7 +93,7 @@ public class Reddit {
             minScoreForPost = scoreToBeat;
             sub = subReddit;
             new Thread(() -> {
-                try { Thread.sleep(MoreUtility.nextRandomInt(0, 400000)); } catch (InterruptedException e) { e.printStackTrace(); }
+                try { Thread.sleep(ThreadLocalRandom.current().nextInt(400000)); } catch (InterruptedException e) { e.printStackTrace(); }
                 System.out.println("Starting New SubReddit Watcher for r/" + subReddit + ", Score to Beat: " + scoreToBeat);
                 fillAlreadyPostedSet();
                 Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::checkForPost, 1, updateFrequency, TimeUnit.MINUTES);

@@ -125,6 +125,13 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!randomxkdc", "!randomxkcd");
         commandTranslationMap.put("!randomkxcd", "!randomxkcd");
         commandTranslationMap.put("!randommxkcd", "!randomxkcd");
+
+        commandTranslationMap.put("!latestxkcd", "!latestxkcd");
+        commandTranslationMap.put("!latestxkck", "!latestxkcd");
+        commandTranslationMap.put("!latestxked", "!latestxkcd");
+        commandTranslationMap.put("!latestxkdc", "!latestxkcd");
+        commandTranslationMap.put("!latestkxcd", "!latestxkcd");
+        commandTranslationMap.put("!latestmxkcd", "!latestxkcd");
         
         commandTranslationMap.put("!activehours", "!activehours");
         commandTranslationMap.put("!topactivehours", "!activehours");
