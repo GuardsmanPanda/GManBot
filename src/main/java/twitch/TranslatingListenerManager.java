@@ -189,5 +189,8 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!allstats", "!totalstats");
         commandTranslationMap.put("!alllstats", "!totalstats");
         commandTranslationMap.put("!sendtotalstats", "!totalstats");
+
+        commandTranslationMap.put("!seen", "!seen");
+        commandTranslationMap.put("!lastseen", "!seen");
     }
 }

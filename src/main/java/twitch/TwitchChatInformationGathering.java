@@ -4,6 +4,7 @@ import database.BobsDatabaseHelper;
 import database.EmoteDatabase;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
+import twitch.dataobjects.TwitchChatMessage;
 import webapi.Twitchv5;
 
 import java.time.Duration;
@@ -27,11 +28,11 @@ public class TwitchChatInformationGathering extends ListenerAdapter {
     public void onMessage(MessageEvent event) {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
 
-        BobsDatabaseHelper.addChatLine(chatMessage.userID, chatMessage.displayName);
+        BobsDatabaseHelper.addChatLine(chatMessage.userID, chatMessage.displayName, chatMessage.message);
         chatLinesLastHour++;
 
         emoteSet.stream()
-                .filter(emote -> chatMessage.message.contains(emote))
+                .filter(chatMessage.message::contains)
                 .forEach(emote -> EmoteDatabase.addEmoteUsage(chatMessage.userID, emote));
     }
 

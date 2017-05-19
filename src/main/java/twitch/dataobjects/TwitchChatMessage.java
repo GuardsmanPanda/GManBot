@@ -1,4 +1,4 @@
-package twitch;
+package twitch.dataobjects;
 
 import org.pircbotx.hooks.events.MessageEvent;
 

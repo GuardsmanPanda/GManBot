@@ -6,6 +6,7 @@ import database.SongDatabase;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.MessageEvent;
+import twitch.dataobjects.TwitchChatMessage;
 import utility.FinalTriple;
 import utility.GBUtility;
 import utility.PrettyPrinter;

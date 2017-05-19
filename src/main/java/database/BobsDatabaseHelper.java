@@ -5,6 +5,8 @@ import webapi.Twitchv5;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 
 public class BobsDatabaseHelper {
@@ -47,8 +49,9 @@ public class BobsDatabaseHelper {
         }
     }
 
-    public static void addChatLine(String twitchUserID, String twitchDisplayName) {
+    public static void addChatLine(String twitchUserID, String twitchDisplayName, String chatLine) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
+        BobsDatabase.executePreparedSQL("INSERT INTO ChatLines(twitchUserID, chatLine, timestamp) VALUES(?, ?, '" + Timestamp.from(Instant.now())+"')", twitchUserID, chatLine);
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET chatLines = chatLines + 1 WHERE twitchUserID = ?", twitchUserID);
     }
     public static void addActiveHour(String twitchUserID) {

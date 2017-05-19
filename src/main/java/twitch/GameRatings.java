@@ -6,6 +6,7 @@ import core.StreamWebOverlay;
 import database.BobsDatabase;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
+import twitch.dataobjects.TwitchChatMessage;
 import webapi.Twitchv5;
 
 import java.time.Instant;

@@ -2,6 +2,8 @@ package twitch;
 
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
+import twitch.dataobjects.SeenEvent;
+import twitch.dataobjects.TwitchChatMessage;
 import utility.PrettyPrinter;
 import webapi.SpaceLaunch;
 import webapi.Twitchv5;
@@ -22,6 +24,7 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
         if (chatMessage.message.contains("youtu.be/") || chatMessage.message.contains("youtube.com/")) Youtube.sendVideoInformationFromMessage(chatMessage.message);
 
         switch (chatMessage.getMessageCommand()) {
+            case "!seen": seen(chatMessage); break;
             case "!github": TwitchChat.sendMessage("My GitHub -> https://github.com/GuardsmanPanda/GManBot"); break;
             case "!randomxkcd": XKCD.xkcdRequest(true); break;
             case "!latestxkcd": XKCD.xkcdRequest(false); break;
@@ -32,6 +35,23 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
         }
     }
 
+
+    private void seen(TwitchChatMessage message) {
+        if (!message.message.contains(" ")) return;
+        SeenEvent seenEvent = new SeenEvent(message.message.split(" ")[1]);
+
+        if (seenEvent.twitchID.isEmpty()) {
+            TwitchChat.sendMessage("I do not know of this " + seenEvent.targetName);
+        } else if (seenEvent.twitchID.equalsIgnoreCase(Twitchv5.GMANBOTUSERID)) {
+            TwitchChat.sendMessage("I Am Groo.. err GManBot!");
+        } else if (TwitchChat.getUserIDsInChannel().contains(seenEvent.twitchID)) {
+            TwitchChat.sendMessage(seenEvent.getDisplayName() + " is currently in the channel, silly.");
+        } else if (seenEvent.getLastChatLine().isEmpty()) {
+            TwitchChat.sendMessage("I have not seen " + seenEvent.getDisplayName() + " ¯\\_(ツ)_/¯");
+        } else {
+            TwitchChat.sendMessage("Last Seen " + seenEvent.getDisplayName() + " -> " + seenEvent.lastSeen() + " Ago \uD83D\uDD38 Saying: " + seenEvent.getLastChatLine());
+        }
+    }
 
 
     private void streamBirthday(TwitchChatMessage message) {

@@ -7,6 +7,7 @@ import database.EmoteDatabase;
 import database.SongDatabase;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
+import twitch.dataobjects.TwitchChatMessage;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -121,15 +122,16 @@ public class TwitchChatStats extends ListenerAdapter {
         int days = 50000;
         try {
             days = Integer.parseInt(chatMessage.getMessageContent());
-            outputString += "for the past " + days + " days";
+            outputString += " for the past " + days + " days";
         } catch (NumberFormatException nfe) { /*empty on purpose*/ }
         outputString += "! ";
-        outputString += EmoteDatabase.getEmoteUsageFromUserID(chatMessage.userID, Duration.ofDays(days))
+        String emoteString = EmoteDatabase.getEmoteUsageFromUserID(chatMessage.userID, Duration.ofDays(days))
                 .sorted(Comparator.comparingInt(Map.Entry<String, Integer>::getValue).reversed())
                 .limit(10)
                 .map(entry -> entry.getKey() + " " + entry.getValue())
                 .collect(Collectors.joining(" ▪️ "));
-        TwitchChat.sendMessage(outputString);
+        if (emoteString.isEmpty()) TwitchChat.sendMessage("No Emotes For You!");
+        else TwitchChat.sendMessage(outputString + emoteString);
     }
     private synchronized void sendEmoteStats(TwitchChatMessage chatMessage, boolean allEmotes) {
         if (nextStatTime.isAfter(Instant.now())) return;
