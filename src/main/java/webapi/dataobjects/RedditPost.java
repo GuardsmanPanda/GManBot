@@ -1,4 +1,4 @@
-package webapi;
+package webapi.dataobjects;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

@@ -3,6 +3,7 @@ package webapi;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import twitch.TwitchChat;
+import webapi.dataobjects.RedditPost;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class Reddit {
     //TODO: watch for live threads on teh front page (possibly in all subs we follow?)
+public class Reddit {
     public enum TimeSpan {
         HOUR("hour"), DAY("day"), WEEK("week"), MONTH("month"), YEAR("year"), ALL("all");
         private String nameString;
@@ -32,10 +33,12 @@ public class Reddit {
             return nameString;
         }
     }
-
     private static final String USERAGENT = "desktop:gmanbot:v4.0 (by /u/guardsmanbob)";
-    //private static String accessToken = "55MUphSbl7uANbGUxndo4i4AxrU";
     private static Map<String, SubRedditWatcher> watchers = new HashMap<>();
+
+    public static void main(String[] args) {
+        System.out.println(getJsonFromURL("https://www.googleapis.com/youtube/v3/videos?prettyPrint=false&part=snippet%2CcontentDetails%2Cstatistics&id=1N9KveJ-FU8&key=AIzaSyClFDVbyiqhHUdYi6o8w-Wv_dqLKP06vNQ"));
+    }
 
     /**
      * Watches a subreddit and prints to the twitch channel when a new post breaks into the current top posts

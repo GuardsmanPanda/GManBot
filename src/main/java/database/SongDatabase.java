@@ -104,6 +104,9 @@ public class SongDatabase {
         return returnString;
     }
 
+    public static int getTotalSongRatings() { return songsRated.size(); }
+    public static int getTotalSongQuotes() { return songsQuoted.size(); }
+
     private static void updateSongRatingStatistics() {
         System.out.println("Updating Song Rating Stats");
         songsQuoted.clear(); songsRated.clear();

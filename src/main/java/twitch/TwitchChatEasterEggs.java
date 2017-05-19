@@ -6,6 +6,7 @@ import utility.PrettyPrinter;
 import webapi.SpaceLaunch;
 import webapi.Twitchv5;
 import webapi.XKCD;
+import webapi.Youtube;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -17,7 +18,11 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
     @Override
     public void onMessage(MessageEvent event) {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
+
+        if (chatMessage.message.contains("youtu.be/") || chatMessage.message.contains("youtube.com/")) Youtube.sendVideoInformationFromMessage(chatMessage.message);
+
         switch (chatMessage.getMessageCommand()) {
+            case "!github": TwitchChat.sendMessage("My GitHub -> https://github.com/GuardsmanPanda/GManBot"); break;
             case "!randomxkcd": XKCD.xkcdRequest(true); break;
             case "!latestxkcd": XKCD.xkcdRequest(false); break;
             case "!spacelaunch": SpaceLaunch.spaceLaunchRequest("any"); break;
@@ -26,6 +31,8 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
             case "!mystreambirthday": streamBirthday(chatMessage); break;
         }
     }
+
+
 
     private void streamBirthday(TwitchChatMessage message) {
         LocalDateTime followTime = Twitchv5.getFollowDateTime(message.userID);

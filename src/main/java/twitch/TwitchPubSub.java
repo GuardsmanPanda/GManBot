@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Strings;
 import com.neovisionaries.ws.client.*;
 import database.BobsDatabaseHelper;
 import utility.PrettyPrinter;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class TwitchPubSub {
     private static WebSocket connection = null;
@@ -31,7 +33,6 @@ public class TwitchPubSub {
         // for now we just try to send a ping every 5 minutes, this should be cleaned up later
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> connection.sendText("{ \"type\": \"PING\" }"), 5, 5, TimeUnit.MINUTES);
     }
-
 
     private static class TwitchPubSubListener extends WebSocketAdapter {
         @Override
@@ -57,8 +58,16 @@ public class TwitchPubSub {
                     if (topic.equalsIgnoreCase("channel-subscribe-events-v1." + Twitchv5.BOBSCHANNELID)) {
                         JsonNode messageNode = new ObjectMapper().readTree(root.get("data").get("message").asText());
                         PrettyPrinter.prettyPrintJSonNode(messageNode);
-                        System.out.println("SubEvent -> UserID: " + messageNode.get("user_id").asText() + ", DisplayName: " + messageNode.get("display_name").asText() + ", Months: " + messageNode.get("months").asInt());
-                        BobsDatabaseHelper.setSubscriberMonths(messageNode.get("user_id").asText(), messageNode.get("months").asInt());
+
+                        String userId = messageNode.get("user_id").asText();
+                        int months = messageNode.get("months").asInt();
+                        String displayName = messageNode.get("display_name").asText();
+
+                        if (months < 2) TwitchChat.sendMessage("Thanks For Subscribing " + displayName + "! My Emotes -> " + Twitchv5.getBobsEmoticonSet().stream().collect(Collectors.joining(" ")));
+                        else if (months % 12 == 0) TwitchChat.sendMessage(Strings.repeat("bobCake ", months) + " Happy "+getBirthDayOrdinal(months/12)+" Stream Birthday " + displayName + "!" + Strings.repeat(" bobCake", months));
+                        else TwitchChat.sendMessage("Thank You So Much For Subscribing Again " + displayName + "!" + Strings.repeat(" bobHype", months));
+
+                        BobsDatabaseHelper.setSubscriberMonths(userId, months);
                     }
                 }
             } catch (IOException e) {
@@ -73,11 +82,10 @@ public class TwitchPubSub {
 
         @Override
         public void onFrame(WebSocket websocket, WebSocketFrame frame) {
-            if (frame.getPayloadText().contains("\"type\": \"PONG\"")) {
-                //Ignore pong responses for now, correct behavior would be to time the ping/pong difference and reconnect if no pong response 10 seconds after ping.
-            } else {
+            if (!frame.getPayloadText().contains("\"type\": \"PONG\"")) {
                 System.out.println("PubSub Frame: " + frame.getPayloadText());
             }
+            //Ignore pong responses for now, correct behavior would be to time the ping/pong difference and reconnect if no pong response 10 seconds after ping.
         }
 
         @Override
@@ -93,6 +101,18 @@ public class TwitchPubSub {
         @Override
         public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer) {
             System.out.println("PubSub disconnected, by server: " + closedByServer);
+        }
+
+        private String getBirthDayOrdinal(int year) {
+            switch (year) {
+                case 1: return "First";
+                case 2: return "Second";
+                case 3: return "Third";
+                case 4: return "Fourth";
+                case 5: return "Fifth";
+                case 6: return "Sixth";
+            }
+            return "";
         }
     }
 }

@@ -4,15 +4,16 @@ import com.google.common.collect.ListMultimap;
 import database.BobsDatabase;
 import database.BobsDatabaseHelper;
 import database.EmoteDatabase;
+import database.SongDatabase;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 
+import javax.sql.rowset.CachedRowSet;
+import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TwitchChatStats extends ListenerAdapter {
@@ -21,6 +22,7 @@ public class TwitchChatStats extends ListenerAdapter {
         final String statMessage;
         StatType(String message) { statMessage = message; }
     }
+    NumberFormat intFormat = NumberFormat.getIntegerInstance(Locale.getDefault());
     private static final Set<String> statHidingUsers = new HashSet<>();
     private Instant nextStatTime = Instant.now();
 
@@ -50,6 +52,8 @@ public class TwitchChatStats extends ListenerAdapter {
 
             case "!stathide": statHide(chatMessage, true);
             case "!statunhide": statHide(chatMessage, false);
+
+            case "!totalstats": sendTotalStats();
         }
     }
 
@@ -61,8 +65,10 @@ public class TwitchChatStats extends ListenerAdapter {
     }
 
     private void sendTopListStats(StatType statType, boolean everyone) {
-        if (nextStatTime.isAfter(Instant.now())) return;
-        nextStatTime = Instant.now().plusSeconds(20);
+        synchronized (this) {
+            if (nextStatTime.isAfter(Instant.now())) return;
+            nextStatTime = Instant.now().plusSeconds(20);
+        }
 
         Set<String> peopleInChat = TwitchChat.getLowerCaseNamesInChannel("#guardsmanbob");
         ListMultimap<String, Integer> names = null;
@@ -86,6 +92,27 @@ public class TwitchChatStats extends ListenerAdapter {
                 .collect(Collectors.joining(" \uD83D\uDD38 "));
 
         TwitchChat.sendMessage(statType.statMessage + ((everyone) ? "! -> " : " Currently in Chat! -> ") + statString);
+    }
+
+    private void sendTotalStats() {
+        synchronized (this) {
+            if (nextStatTime.isAfter(Instant.now())) return;
+            nextStatTime = Instant.now().plusSeconds(20);
+        }
+        try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT SUM(chatLines), SUM(activeHours), SUM(idleHours), SUM(bobCoins) FROM TwitchChatUsers")) {
+            if (cachedRowSet.next()) {
+                String response = "Total Stats -> ";
+                response += "ChatLines: " + intFormat.format(cachedRowSet.getInt(1));
+                response += " \uD83D\uDD38 ActiveHours: " + intFormat.format(cachedRowSet.getInt(2));
+                response += " \uD83D\uDD38 IdleHours: " + intFormat.format(cachedRowSet.getInt(3));
+                response += " \uD83D\uDD38 BobCoins: " + intFormat.format(cachedRowSet.getInt(4));
+                response += " \uD83D\uDD38 SongRatings: " + intFormat.format(SongDatabase.getTotalSongRatings());
+                response += " \uD83D\uDD38 SongQuotes: " + intFormat.format(SongDatabase.getTotalSongQuotes());
+                TwitchChat.sendMessage(response);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     //TODO consider condensing this down to 1 method

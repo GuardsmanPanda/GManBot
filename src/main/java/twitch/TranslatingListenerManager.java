@@ -10,10 +10,12 @@ import java.util.HashMap;
 
 public class TranslatingListenerManager extends ThreadedListenerManager {
     //TODO comtemplate a 'full translationmap' so message such as '!random xkcd' can be translated to '!randomxkcd'
+    private final HashMap<String, String> fullTranslationMap = new HashMap<>();
     private final HashMap<String, String> commandTranslationMap = new HashMap<>();
 
     public TranslatingListenerManager() {
-        fillTranslationMap();
+        fillFullTranslationMap();
+        fillCommandTranslationMap();
     }
 
     @Override
@@ -22,6 +24,8 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
             String message = ((MessageEvent) event).getMessage();
             String command = message.split(" ")[0].toLowerCase();
             if (command.startsWith("!")) {
+                message = fullTranslationMap.getOrDefault(message.toLowerCase(), message);
+
                 if (commandTranslationMap.containsKey(command)) {
                     String newMessage = message.replace(command, commandTranslationMap.get(command));
                     super.onEvent(new MessageEvent(event.getBot(), ((MessageEvent) event).getChannel(), ((MessageEvent) event).getChannelSource(), ((MessageEvent) event).getUserHostmask(), ((MessageEvent) event).getUser(), newMessage, ((MessageEvent) event).getTags()));
@@ -34,8 +38,14 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         super.onEvent(event);
     }
 
+    private void fillFullTranslationMap() {
+        fullTranslationMap.put("!random xkcd", "!randomxkcd");
+        fullTranslationMap.put("!latest xkcd", "!latestxkcd");
+    }
 
-    private void fillTranslationMap() {
+    private void fillCommandTranslationMap() {
+        commandTranslationMap.put("!github", "!github");
+
         commandTranslationMap.put("!ratereminder", "!ratereminder");
         commandTranslationMap.put("!songreminder", "!ratereminder");
         commandTranslationMap.put("!ratingreminder", "!ratereminder");
@@ -103,6 +113,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!nextspacelaunch", "!nextspacelaunch");
 
+        //TODO implement in chat support for these commands?
         commandTranslationMap.put("!emotestats", "!emotestats");
         commandTranslationMap.put("!emotes", "!emotestats");
         commandTranslationMap.put("!bobemotes", "!emotestats");
@@ -172,5 +183,10 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!statunhide", "!statunhide");
         commandTranslationMap.put("!unhidestats", "!statunhide");
         commandTranslationMap.put("!removestathide", "!statunhide");
+
+        commandTranslationMap.put("!totalstats", "!totalstats");
+        commandTranslationMap.put("!allstats", "!totalstats");
+        commandTranslationMap.put("!alllstats", "!totalstats");
+        commandTranslationMap.put("!sendtotalstats", "!totalstats");
     }
 }
