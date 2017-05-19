@@ -3,15 +3,16 @@ package webapi.dataobjects;
 import com.fasterxml.jackson.databind.JsonNode;
 import utility.PrettyPrinter;
 
+import java.text.NumberFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Locale;
 
-/**
- * Created by Dons on 18-05-2017.
- */
+
 public class YoutubeVideo {
+    private static final NumberFormat intFormat = NumberFormat.getIntegerInstance(Locale.getDefault());
     public final LocalDateTime uploadTime;
     public final Duration duration;
     public final String title;
@@ -31,12 +32,11 @@ public class YoutubeVideo {
         duration = Duration.parse(node.get("contentDetails").get("duration").asText());
     }
 
-    //2000 Views, 1231 Likes [60%]
     public String getLength() { return PrettyPrinter.shortTimeFromDuration(duration); }
     public String viewsAndLikes() {
-        String returnString = views + " Views";
+        String returnString = intFormat.format(views) + " Views";
         if (likes == 1) returnString += " \uD83D\uDD38 1 Like";
-        else if (likes > 1) returnString += " \uD83D\uDD38 " + likes + " Likes [" + (100*likes)/(likes+dislikes) + "%]";
+        else if (likes > 1) returnString += " \uD83D\uDD38 " + intFormat.format(likes) + " Likes [" + Math.round(((float)100*likes)/(likes+dislikes)) + "%]";
         return returnString;
     }
 }

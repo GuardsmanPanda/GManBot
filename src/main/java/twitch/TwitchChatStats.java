@@ -22,7 +22,7 @@ public class TwitchChatStats extends ListenerAdapter {
         final String statMessage;
         StatType(String message) { statMessage = message; }
     }
-    NumberFormat intFormat = NumberFormat.getIntegerInstance(Locale.getDefault());
+    private static final NumberFormat intFormat = NumberFormat.getIntegerInstance(Locale.getDefault());
     private static final Set<String> statHidingUsers = new HashSet<>();
     private Instant nextStatTime = Instant.now();
 
@@ -67,7 +67,7 @@ public class TwitchChatStats extends ListenerAdapter {
     private void sendTopListStats(StatType statType, boolean everyone) {
         synchronized (this) {
             if (nextStatTime.isAfter(Instant.now())) return;
-            nextStatTime = Instant.now().plusSeconds(20);
+            nextStatTime = Instant.now().plusSeconds(12);
         }
 
         Set<String> peopleInChat = TwitchChat.getLowerCaseNamesInChannel("#guardsmanbob");
@@ -97,7 +97,7 @@ public class TwitchChatStats extends ListenerAdapter {
     private void sendTotalStats() {
         synchronized (this) {
             if (nextStatTime.isAfter(Instant.now())) return;
-            nextStatTime = Instant.now().plusSeconds(20);
+            nextStatTime = Instant.now().plusSeconds(12);
         }
         try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT SUM(chatLines), SUM(activeHours), SUM(idleHours), SUM(bobCoins) FROM TwitchChatUsers")) {
             if (cachedRowSet.next()) {
@@ -133,7 +133,7 @@ public class TwitchChatStats extends ListenerAdapter {
     }
     private synchronized void sendEmoteStats(TwitchChatMessage chatMessage, boolean allEmotes) {
         if (nextStatTime.isAfter(Instant.now())) return;
-        nextStatTime = Instant.now().plusSeconds(20);
+        nextStatTime = Instant.now().plusSeconds(12);
 
         int days = 30;
         try { days = Integer.parseInt(chatMessage.getMessageContent()); } catch (NumberFormatException nfe) { /*empty on purpose*/ }

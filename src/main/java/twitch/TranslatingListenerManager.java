@@ -22,12 +22,11 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
     public void onEvent(Event event) {
         if (event instanceof MessageEvent) {
             String message = ((MessageEvent) event).getMessage();
-            String command = message.split(" ")[0].toLowerCase();
-            if (command.startsWith("!")) {
-                message = fullTranslationMap.getOrDefault(message.toLowerCase(), message);
-
+             if (message.startsWith("!")) {
+                String newMessage = fullTranslationMap.getOrDefault(message.toLowerCase(), message);
+                String command = newMessage.split(" ")[0].toLowerCase();
                 if (commandTranslationMap.containsKey(command)) {
-                    String newMessage = message.replace(command, commandTranslationMap.get(command));
+                    newMessage = newMessage.replace(command, commandTranslationMap.get(command));
                     super.onEvent(new MessageEvent(event.getBot(), ((MessageEvent) event).getChannel(), ((MessageEvent) event).getChannelSource(), ((MessageEvent) event).getUserHostmask(), ((MessageEvent) event).getUser(), newMessage, ((MessageEvent) event).getTags()));
                     return;
                 } else {
@@ -145,7 +144,9 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!latestmxkcd", "!latestxkcd");
         
         commandTranslationMap.put("!activehours", "!activehours");
+        commandTranslationMap.put("!tophours", "!activehours");
         commandTranslationMap.put("!topactivehours", "!activehours");
+        commandTranslationMap.put("!tophoursinchat", "!activehours");
         commandTranslationMap.put("!activehoursinchat", "!activehoursinchat");
         commandTranslationMap.put("!topactivehoursinchat", "!activehoursinchat");
 

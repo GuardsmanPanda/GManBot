@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class TwitchChatExtras extends ListenerAdapter {
+    private static final NumberFormat intFormat = NumberFormat.getIntegerInstance(Locale.getDefault());
     private static final HashMap<String, LocalDateTime> lastWelcomeMessageTime = new HashMap<>();
     private static final HashMap<String, String> flagTranslationMap = new HashMap<>();
     private static final LocalDateTime startTime = LocalDateTime.now();
@@ -104,13 +106,13 @@ public class TwitchChatExtras extends ListenerAdapter {
                 int idleHours = cachedRowSet.getInt("idleHours");
                 int bobCoins = cachedRowSet.getInt("bobCoins");
 
-                statStringBuilder.append("ChatLines: " + chatLines);
+                statStringBuilder.append("ChatLines: " + intFormat.format(chatLines));
                 statStringBuilder.append(" [Rank: " + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE chatLines > "+chatLines) + 1) + "]");
-                statStringBuilder.append(" \uD83D\uDD38 BobCoins: " + bobCoins);
+                statStringBuilder.append(" \uD83D\uDD38 BobCoins: " + intFormat.format(bobCoins));
                 statStringBuilder.append(" [" + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE bobCoins > "+bobCoins) + 1) + "]");
-                statStringBuilder.append(" \uD83D\uDD38 ActiveHours: " + activeHours);
+                statStringBuilder.append(" \uD83D\uDD38 ActiveHours: " + intFormat.format(activeHours));
                 statStringBuilder.append(" [" + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE activeHours > "+activeHours) + 1) + "]");
-                statStringBuilder.append(" \uD83D\uDD38 IdleHours: " + idleHours);
+                statStringBuilder.append(" \uD83D\uDD38 IdleHours: " + intFormat.format(idleHours));
                 statStringBuilder.append(" [" + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE idleHours > "+idleHours) + 1) + "]");
                 statStringBuilder.append(SongDatabase.getSongRatingStatString(chatMessage.userID));
             }
