@@ -1,10 +1,9 @@
 package database;
 
+import utility.FinalPair;
 import utility.FinalTriple;
 import webapi.Twitchv5;
 
-import javax.sql.rowset.CachedRowSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashMap;
@@ -64,7 +63,6 @@ public class BobsDatabaseHelper {
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET bobCoins = bobCoins + "+bobCoinsToAdd+" WHERE twitchUserID = ?", twitchUserID);
     }
 
-
     public static String getDisplayName(String twitchUserID) {
         createUserIfNotExists(twitchUserID);
         return (cachedUserIDs.getOrDefault(twitchUserID, ""));
@@ -81,20 +79,9 @@ public class BobsDatabaseHelper {
     }
 
     public static FinalTriple<String, String, Boolean> getDisplayNameWelcomeMessageAndHasSubbedStatus(String twitchName) {
-        String first = "";
-        String second = "";
-        Boolean third = false;
-        try {
-            CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("Select twitchDisplayName, welcomeMessage, hasSubscribed FROM TwitchChatUsers WHERE twitchLowerCaseName = ?", twitchName.toLowerCase());
-            if (cachedRowSet.next()) {
-                first = cachedRowSet.getString("twitchDisplayName");
-                second = cachedRowSet.getString("welcomeMessage");
-                third = cachedRowSet.getBoolean("hasSubscribed");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return new FinalTriple<>(first, second, third);
+        FinalTriple<String, String, Boolean> triple = BobsDatabase.getTripleFromSQL("Select twitchDisplayName, welcomeMessage, hasSubscribed FROM TwitchChatUsers WHERE twitchLowerCaseName = ?", twitchName.toLowerCase());
+        if (triple == null) return new FinalTriple<>("", "", false);
+        else return triple;
     }
 
 
@@ -106,37 +93,27 @@ public class BobsDatabaseHelper {
         if (cachedUserIDs.containsKey(twitchUserID)) return;
 
         synchronized (BobsDatabaseHelper.class) {
-            try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("Select twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE twitchUserID = ?", twitchUserID)) {
-                if (cachedRowSet.next()) {
-                    if (!cachedRowSet.getString("twitchDisplayName").equals(twitchDisplayName) && !twitchDisplayName.isEmpty()) {
-                        makeRoomInTwitchUserTableForTwitchName(twitchDisplayName);
-                        System.out.println("Changed display name for user " + twitchDisplayName + " old display name: " + cachedRowSet.getString("twitchDisplayName") + " user id: " + twitchUserID);
-                        setTwitchDisplayName(twitchUserID, twitchDisplayName);
-                    }
-                } else {
+            FinalPair<String, String> sqlResult = BobsDatabase.getPairFromSQL("Select twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE twitchUserID = ?", twitchUserID);
+            if (sqlResult != null) {
+                if (!sqlResult.second.equals(twitchDisplayName) && !twitchDisplayName.isEmpty()) {
                     makeRoomInTwitchUserTableForTwitchName(twitchDisplayName);
-                    BobsDatabase.executePreparedSQL("INSERT INTO TwitchChatUsers(twitchUserID, twitchDisplayName) VALUES (?, ?)", twitchUserID, twitchDisplayName);
-                    System.out.println("Created new DB entry for " + twitchDisplayName);
+                    System.out.println("Changed display name for user " + twitchDisplayName + " old display name: " + sqlResult.second + " user id: " + twitchUserID);
+                    setTwitchDisplayName(twitchUserID, twitchDisplayName);
                 }
-                cachedUserIDs.put(twitchUserID, twitchDisplayName);
-            } catch (SQLException e) {
-                e.printStackTrace();
+            } else {
+                makeRoomInTwitchUserTableForTwitchName(twitchDisplayName);
+                BobsDatabase.executePreparedSQL("INSERT INTO TwitchChatUsers(twitchUserID, twitchDisplayName) VALUES (?, ?)", twitchUserID, twitchDisplayName);
+                System.out.println("Created new DB entry for " + twitchDisplayName);
             }
+            cachedUserIDs.put(twitchUserID, twitchDisplayName);
         }
     }
     private static void makeRoomInTwitchUserTableForTwitchName(String twitchName) {
-        try {
-            CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE twitchLowerCaseName = ?", twitchName.toLowerCase());
-            if (cachedRowSet.next()) {
-                String otherTwitchID = cachedRowSet.getString("twitchUserID");
-                String otherDisplayName = cachedRowSet.getString("twitchDisplayName");
-                setTwitchDisplayName(otherTwitchID, otherDisplayName + "." + otherTwitchID);
-                System.out.println("Changed Account ID: " + otherTwitchID + " from " + otherDisplayName + " to " + otherDisplayName + "." + otherTwitchID);
-            } else {
-                System.out.println("no display name collision for " + twitchName);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        FinalPair<String, String> sqlResult = BobsDatabase.getPairFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE twitchLowerCaseName = ?", twitchName.toLowerCase());
+        if (sqlResult == null) System.out.println("no display name collision for " + twitchName);
+        else {
+            setTwitchDisplayName(sqlResult.first, sqlResult.second + "." + sqlResult.first);
+            System.out.println("Changed Account ID: " + sqlResult.first + " from " + sqlResult.second + " to " + sqlResult.second + "." + sqlResult.first);
         }
     }
     private static void setTwitchDisplayName(String twitchUserID, String twitchDisplayName) {

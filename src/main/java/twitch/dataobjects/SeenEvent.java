@@ -2,12 +2,12 @@ package twitch.dataobjects;
 
 import database.BobsDatabase;
 import database.BobsDatabaseHelper;
+import utility.FinalPair;
 import utility.PrettyPrinter;
 
-import javax.sql.rowset.CachedRowSet;
-import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.Period;
 
 public class SeenEvent {
@@ -25,14 +25,11 @@ public class SeenEvent {
         if (!twitchID.isEmpty()) {
             //TODO collapse to 1 select for id and name
             displayName = BobsDatabaseHelper.getDisplayName(twitchID);
-            try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT chatLine, timeStamp FROM ChatLines WHERE twitchUserID = ? ORDER BY timeStamp DESC FETCH FIRST ROW ONLY", twitchID)) {
-                if (cachedRowSet.next()) {
-                    lastChatLine = cachedRowSet.getString("chatLine");
-                    LocalDateTime chatTime = cachedRowSet.getTimestamp("timeStamp").toLocalDateTime();
-                    notSeenFor = Duration.between(chatTime, LocalDateTime.now());
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+
+            FinalPair<String, Timestamp> sqlResult = BobsDatabase.getPairFromSQL("SELECT chatLine, timeStamp FROM ChatLines WHERE twitchUserID = ? ORDER BY timeStamp DESC FETCH FIRST ROW ONLY", twitchID);
+            if (sqlResult != null) {
+                lastChatLine = sqlResult.first;
+                notSeenFor = Duration.between(sqlResult.second.toInstant(), Instant.now());
             }
         }
     }

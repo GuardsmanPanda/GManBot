@@ -3,6 +3,7 @@ package database;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import utility.FinalPair;
 import utility.FinalTriple;
 
 import javax.sql.rowset.CachedRowSet;
@@ -173,10 +174,27 @@ public class BobsDatabase {
         return returnMap;
     }
 
-    public static <E, F, G> FinalTriple<E, F, G> getFinalTripleListFromSQL(String sql, String... arguments) {
+    //consider having these implemented as a call to a method that returns a list of values.
+    @SuppressWarnings("unchecked")
+    public static <E, F> FinalPair<E, F> getPairFromSQL(String sql, String... arguments) {
         try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
+            assert (cachedRowSet.getMetaData().getColumnCount() == 2);
+            if (cachedRowSet.size() > 1) throw new RuntimeException("More than 1 Row Returned from SQL: " + sql);
             if (cachedRowSet.next()) {
-                assert (cachedRowSet.getMetaData().getColumnCount() == 3);
+                 return (FinalPair<E, F>) new FinalPair<>(cachedRowSet.getObject(1), cachedRowSet.getObject(2));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <E, F, G> FinalTriple<E, F, G> getTripleFromSQL(String sql, String... arguments) {
+        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
+            assert (cachedRowSet.getMetaData().getColumnCount() == 3);
+            if (cachedRowSet.size() > 1) throw new RuntimeException("More than 1 Row Returned from SQL: " + sql);
+            if (cachedRowSet.next()) {
                 return (FinalTriple<E, F, G>) new FinalTriple<>(cachedRowSet.getObject(1), cachedRowSet.getObject(2), cachedRowSet.getObject(3));
             }
         } catch (SQLException e) {
