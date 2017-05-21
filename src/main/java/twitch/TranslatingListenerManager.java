@@ -9,7 +9,6 @@ import java.util.HashMap;
 
 
 public class TranslatingListenerManager extends ThreadedListenerManager {
-    //TODO comtemplate a 'full translationmap' so message such as '!random xkcd' can be translated to '!randomxkcd'
     private final HashMap<String, String> fullTranslationMap = new HashMap<>();
     private final HashMap<String, String> commandTranslationMap = new HashMap<>();
 
@@ -127,6 +126,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!myemotes", "!myemotestats");
         commandTranslationMap.put("!myemotesstats", "!myemotestats");
         commandTranslationMap.put("!selfemotestats", "!myemotestats");
+        commandTranslationMap.put("!myemoteusage", "!myemotestats");
         commandTranslationMap.put("!personalemotestats", "!myemotestats");
 
         commandTranslationMap.put("!randomxkcd", "!randomxkcd");

@@ -64,7 +64,7 @@ public class TwitchPubSub {
                         String displayName = messageNode.get("display_name").asText();
 
                         if (months < 2) TwitchChat.sendMessage("Thanks For Subscribing " + displayName + "! My Emotes -> " + Twitchv5.getBobsEmoticonSet().stream().collect(Collectors.joining(" ")));
-                        else if (months % 12 == 0) TwitchChat.sendMessage(Strings.repeat("bobCake ", months) + " Happy "+getBirthDayOrdinal(months/12)+" Stream Birthday " + displayName + "!" + Strings.repeat(" bobCake", months));
+                        else if (months % 12 == 0) TwitchChat.sendMessage(Strings.repeat("bobCake ", months/12) + " Happy "+getBirthDayOrdinal(months/12)+" Stream Birthday " + displayName + "!" + Strings.repeat(" bobCake", months/12));
                         else TwitchChat.sendMessage("Thank You So Much For Subscribing Again " + displayName + "!" + Strings.repeat(" bobHype", months));
 
                         BobsDatabaseHelper.setSubscriberMonths(userId, months);

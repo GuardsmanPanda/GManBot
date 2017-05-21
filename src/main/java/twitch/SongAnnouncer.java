@@ -28,11 +28,8 @@ public class SongAnnouncer extends ListenerAdapter {
     private static final int STREAMDELAYINSECONDS = 10;
     private static String currentSong = "Guardsman Bob";
     private static String displayOnStreamSong = "Guardsman Bob";
-    //private static float displayOnStreamSongRating = 0f;
-    //private static int displayOnStreamNumberOfRatings = 0;
 
     public SongAnnouncer(Path songFilePath) {
-        //startSongAnnouncer();
         watchSongFile(songFilePath);
         //Load the rating reminders
         BobsDatabase.getMultiMapFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE songRatingReminder = true", String.class, String.class)
@@ -70,18 +67,6 @@ public class SongAnnouncer extends ListenerAdapter {
             }
         }
     }
-/*
-    public static void startSongAnnouncer() {
-        try {
-            HttpServer server = HttpServer.create( new InetSocketAddress(9100), 0);
-            server.createContext("/songs", new songOverlayHttpHandler());
-            server.createContext("/songPlaying", new songHttpHandler());
-            server.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-*/
 
     private static void songFileChange(String newSongName) {
         if (newSongName.equalsIgnoreCase("Guardsman Bob")) return;
@@ -92,8 +77,6 @@ public class SongAnnouncer extends ListenerAdapter {
         Pair<Float, Integer> songRatingPair = SongDatabase.getSongRating(newSongName);
         float newSongRating = songRatingPair.getKey();
         displayOnStreamSong = newSongName;
-        //displayOnStreamSongRating = newSongRating;
-        //displayOnStreamNumberOfRatings = songRatingPair.getValue();
 
         if (newSongRating < 7.7f) GBUtility.textToBob("Do you want to remove the song: " + newSongName + " ⏩ rating: " +newSongRating);
 
@@ -169,115 +152,4 @@ public class SongAnnouncer extends ListenerAdapter {
             }
         }).start();
     }
-
-/*
-    private static class songHttpHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
-            rootNode.put("songName", displayOnStreamSong);
-            rootNode.put("songRating", String.format("%.2f", displayOnStreamSongRating));
-            rootNode.put("numberOfRatings", displayOnStreamNumberOfRatings);
-            rootNode.put("songQuote", SongDatabase.getSongQuote(displayOnStreamSong, true));
-
-            String response = rootNode.toString();
-            exchange.sendResponseHeaders(200, response.getBytes().length);
-            exchange.getResponseBody().write(response.getBytes());
-            exchange.getResponseBody().close();
-            exchange.close();
-        }
-    }
-
-    private static class songOverlayHttpHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            System.out.println(exchange.getRequestURI().toString());
-            String response = "<html>" +
-                    "<head>" +
-                    "   <style>" +
-                    "       body { font: 26px \"Helvetica Neue\",Helvetica,Arial,sans-serif; color: #eeeeee; " +
-                    "           font-weight: 700;" +
-                    "           text-shadow: 0px 0px 20px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000; " +
-                    "       }" +
-                    "   </style>" +
-                    "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css\">" +
-                    "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js\"></script>" +
-                    "<script src=\"http://jschr.github.io/textillate/jquery.textillate.js\"></script>" +
-                    getLetteringJS()+
-                    "</head>" +
-                    "<body>" +
-                    "   <div id =\"song\" class=\"tlt\" style=\"display: inline-block; visibility: hidden; \">Bobs Song Rating!</div>" +
-                    "   <div class=\"tlt2\" style=\"display: inline-block; color: #ff9900; visibility: hidden;\">10,00</div>" +
-                    "   <div class=\"tlt3\" style=\"display: inline-block; color: #dddddd; font-weight: 300; font-size: 20px; vertical-align: middle; visibility: hidden;\"> [150]</div>" +
-                    "<script>" +
-                    "   var currentSongPlaying = 'Guardsman';" +
-                    "   var currentSongRating = '9,50';" +
-                    "   var currentSongQuote = 'Guardsman Bob Is Awesome';" +
-                    "   var numberOfRatings = 42;" +
-                    "   var timeToNextUpdate = 2000;" +
-                    "   function runUpdates() {" +
-                    "       var request = new XMLHttpRequest();" +
-                    "       request.onreadystatechange = function() {" +
-                    "           if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {" +
-                    "               var songJSON = JSON.parse(request.responseText);" +
-                    "               updateSong(songJSON);" +
-                    "           }" +
-                    "       };" +
-                    "       request.open('GET', 'http://127.0.0.1:9100/songPlaying', true);" +
-                    "       request.setRequestHeader(\"Content-Type\", \"text/plain\");" +
-                    "       request.send();" +
-                    "       setTimeout(runUpdates, timeToNextUpdate);" +
-                    "   }" +
-                    "   function updateSong(newSongJSON) {" +
-                    "       if (currentSongPlaying === newSongJSON.songName) {" +
-                    "           if (currentSongRating === newSongJSON.songRating) {" +
-                    "               timeToNextUpdate = 2000;" +
-                    "           } else {" +
-                    "               timeToNextUpdate = 6000;" +
-                    "               currentSongRating = newSongJSON.songRating;" +
-                    "               songRatingColor = newSongJSON.songRatingColor;" +
-                    "               $('.tlt2').textillate('out');" +
-                    "               setTimeout(songRatingIn, 1500)" +
-                    "           }" +
-                    "       } else {" +
-                    "           timeToNextUpdate = 8000;" +
-                    "           currentSongPlaying = newSongJSON.songName;" +
-                    "           currentSongRating = newSongJSON.songRating;" +
-                    "           currentSongQuote = newSongJSON.songQuote;" +
-                    "           numberOfRatings = newSongJSON.numberOfRatings;" +
-                    "           $('.tlt').textillate('out');" +
-                    "           $('.tlt2').textillate('out');" +
-                    "       }" +
-                    "   }" +
-                    "   function setNewSong() {" +
-                    "       $('.tlt').find('li').html(currentSongPlaying);" +
-                    "       $('.tlt3').find('li').html(' Vote Count: ' + numberOfRatings);" +
-                    "       $('.tlt').textillate('start');" +
-                    "       $('.tlt3').textillate('start');" +
-                    "       setTimeout(numberOfRatingsOut, 11000);" +
-                    "   }" +
-                    "   function songRatingIn() {" +
-                    "       $('.tlt2').find('li').html(currentSongRating);" +
-                    "       $('.tlt2').css('color','hsl('+ ((currentSongRating.replace(',','.') - 1)*24-120) +',100%,50%)');" +
-                    "       $('.tlt2').textillate('in');" +
-                    "   }" +
-                    "   function numberOfRatingsOut() { $('.tlt3').textillate('out'); }" +
-                    "$('.tlt').textillate({initialDelay: 1500, in: { effect: 'bounceIn', callback: songRatingIn }, out: { effect: 'bounceOut', sync: true, callback: setNewSong }, type: 'word' });" +
-                    "$('.tlt2').textillate({ autoStart: false, in: { effect: 'fadeIn' }, out: { effect: 'hinge', sync: true }, type: 'word' });" +
-                    "$('.tlt3').textillate({ initialDelay: 4000, autoStart: false, in: { effect: 'fadeInRight', sync: true }, out: { effect: 'fadeOut' }, type: 'word' });" +
-                    "setTimeout(runUpdates, 5000);" +
-                    "</script>" +
-                    "</body>" +
-                    "</html>";
-            exchange.sendResponseHeaders(200, response.getBytes().length);
-            exchange.getResponseBody().write(response.getBytes());
-            exchange.getResponseBody().close();
-            exchange.close();
-        }
-    }
-
-
-    private static String getLetteringJS() {
-        return "<script>(function($){function injector(t,splitter,klass,after){var a=t.text().split(splitter),inject='';if(a.length){$(a).each(function(i,item){inject+='<span class=\"'+klass+(i+1)+'\">'+item+'</span>'+after});t.empty().append(inject)}}var methods={init:function(){return this.each(function(){injector($(this),'','char','')})},words:function(){return this.each(function(){injector($(this),' ','word',' ')})},lines:function(){return this.each(function(){var r=\"eefec303079ad17405c889e092e105b0\";injector($(this).children(\"br\").replaceWith(r).end(),r,'line','')})}};$.fn.lettering=function(method){if(method&&methods[method]){return methods[method].apply(this,[].slice.call(arguments,1))}else if(method==='letters'||!method){return methods.init.apply(this,[].slice.call(arguments,0))}$.error('Method '+method+' does not exist on jQuery.lettering');return this}})(jQuery);</script>";
-    } */
 }

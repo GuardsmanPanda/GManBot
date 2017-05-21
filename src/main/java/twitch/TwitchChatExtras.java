@@ -60,7 +60,7 @@ public class TwitchChatExtras extends ListenerAdapter {
         if (hasSubscribed && !welcomeMessage.equalsIgnoreCase("none")) {
             if (welcomeMessage.startsWith("/") && !welcomeMessage.toLowerCase().startsWith("/me ")) return;
 
-            if (lastWelcomeMessageTime.containsKey(displayName) && lastWelcomeMessageTime.get(displayName).isAfter(LocalDateTime.now().minus(2, ChronoUnit.HOURS))) {
+            if (lastWelcomeMessageTime.containsKey(displayName) && lastWelcomeMessageTime.get(displayName).isAfter(LocalDateTime.now().minus(4, ChronoUnit.HOURS))) {
                 //we have recently sent a welcome message to the user
             } else {
                 new Thread(() -> {

@@ -9,6 +9,20 @@
             font-size: 30px;
             text-shadow: 0px 0px 20px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000;
         }
+
+        .voteOption {
+            font-weight: bold;
+            width: 40px;
+            display: inline-block;
+            visibility: hidden;
+        }
+
+        .vote {
+            width: 60px;
+            display: inline-block;
+            text-align: right;
+            visibility: hidden;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -31,6 +45,18 @@
     <div class="songNumRatings" style="display: inline-block; color: #dddddd; font-size: 20px; vertical-align: middle; visibility: hidden;">Number of Ratings: 120</div>
 </div>
 
+<div class="votePosition" style="position: absolute; top: 450px; left: 50px; width: 1200px;">
+    <div id="option1" class="voteOption">!1</div>
+    <div id="vote1" class="vote">2</div><br />
+    <div id="option2" class="voteOption">!2</div>
+    <div id="vote2" class="vote">22</div><br />
+    <div id="option3" class="voteOption">!3</div>
+    <div id="vote3" class="vote">312</div><br />
+    <div id="option4" class="voteOption">!4</div>
+    <div id="vote4" class="vote">22</div><br />
+    <div id="option5" class="voteOption">!5</div>
+    <div id="vote5" class="vote">2</div><br />
+</div>
 
 <script>
     var songName = "Guardsman Bob";
@@ -52,6 +78,9 @@
             else if (messageJSON.type === "headline") headlineUpdate(messageJSON);
             else if (messageJSON.type === "songUpdate") songUpdate(messageJSON);
             else if (messageJSON.type === "songRatingUpdate") songRatingUpdate(messageJSON);
+            else if (messageJSON.type === "voteStart") voteStart(messageJSON);
+            else if (messageJSON.type === "voteEnd") voteEnd(messageJSON);
+            else if (messageJSON.type === "voteUpdate") voteUpdate(messageJSON);
         }
         connection.onclose = function(event) {
             setTimeout(startWebSocket, 5000);
@@ -115,13 +144,25 @@
         $('.songQuote').textillate('start');
 
         setTimeout(function() { $('.songNumRatings').textillate('out'); }, 14000);
-        setTimeout(function() { $('.songQuote').textillate('out'); }, 28000);
+        setTimeout(function() { $('.songQuote').textillate('out'); }, 33000);
     }
 
     function songRatingIn() {
         $('.songRating').find('li').html(songRating);
         $('.songRating').css('color','hsl('+ ((songRating.replace(',','.') - 1)*24-120) +',100%,50%)');
         $('.songRating').textillate('start');
+    }
+
+    function voteStart(data) {
+
+    }
+
+    function voteEnd(data) {
+
+    }
+
+    function voteUpdate(data) {
+
     }
 </script>
 
@@ -133,7 +174,7 @@
     $('.songName').textillate({initialDelay: 1500, in: { effect: 'fadeInLeft', callback: songRatingIn }, out: { effect: 'bounceOut', sync: true }, type: 'word' });
     $('.songRating').textillate({ autoStart: false, in: { effect: 'fadeIn' }, out: { effect: 'hinge', sync: true }, type: 'word' });
     $('.songNumRatings').textillate({ initialDelay: 5000, autoStart: false, in: { effect: 'fadeInRight', sync: true }, out: { effect: 'fadeOut' }, type: 'word' });
-    $('.songQuote').textillate({ initialDelay: 5000, autoStart: false, in: { effect: 'fadeInLeft', sync: true }, out: { effect: 'fadeOut' }, type: 'word' });
+    $('.songQuote').textillate({ initialDelay: 10000, autoStart: false, in: { effect: 'fadeInLeft', sync: true }, out: { effect: 'fadeOut' }, type: 'word' });
 </script>
 </body>
 </html>

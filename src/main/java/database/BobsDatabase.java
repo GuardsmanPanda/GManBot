@@ -3,6 +3,7 @@ package database;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import utility.FinalTriple;
 
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
@@ -37,7 +38,7 @@ public class BobsDatabase {
             connection.createStatement().execute("CREATE INDEX twitchLowerIndex ON TwitchChatUsers(twitchLowerCaseName)");
             System.out.println("Created Tables");
         } catch (SQLException e) {
-            // Silently ignore if the table already exists, TODO: Probably shouldn't ... Whenever derby supports CREATE TABLE IF NOT EXISTS
+            // Silently ignore if the table already exists, Probably shouldn't ... Whenever derby supports CREATE TABLE IF NOT EXISTS
         }
 
         try {
@@ -171,19 +172,16 @@ public class BobsDatabase {
         }
         return returnMap;
     }
-/*
-    public static <E, F, G> List<FinalTriple<E, F, G>> getFinalTripleArrayFromSQL(String sql, TypeToken<FinalTriple<E, F, G>> token, String... arguments) {
-        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
-            assert (cachedRowSet.getMetaData().getColumnCount() == 3);
-            List<FinalTriple<E, F, G>> returnList = new ArrayList<>();
-            FinalTriple<E, F, G> triple = () new FinalTriple<Object, Object, Object>(cachedRowSet.getObject(1), cachedRowSet.getObject(2), cachedRowSet.getObject(3));
-            returnList.add(token.getRawType().cast()))
 
-            return returnList;
+    public static <E, F, G> FinalTriple<E, F, G> getFinalTripleListFromSQL(String sql, String... arguments) {
+        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
+            if (cachedRowSet.next()) {
+                assert (cachedRowSet.getMetaData().getColumnCount() == 3);
+                return (FinalTriple<E, F, G>) new FinalTriple<>(cachedRowSet.getObject(1), cachedRowSet.getObject(2), cachedRowSet.getObject(3));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return List.of();
+        return null;
     }
-    */
 }

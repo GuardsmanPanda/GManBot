@@ -41,7 +41,7 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
         SeenEvent seenEvent = new SeenEvent(message.message.split(" ")[1]);
 
         if (seenEvent.twitchID.isEmpty()) {
-            TwitchChat.sendMessage("I do not know of this " + seenEvent.targetName);
+            TwitchChat.sendMessage("I do not know of this " + seenEvent.targetName +" bobSigh");
         } else if (seenEvent.twitchID.equalsIgnoreCase(Twitchv5.GMANBOTUSERID)) {
             TwitchChat.sendMessage("I Am Groo.. err GManBot!");
         } else if (TwitchChat.getUserIDsInChannel().contains(seenEvent.twitchID)) {
@@ -52,7 +52,6 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
             TwitchChat.sendMessage("Last Seen " + seenEvent.getDisplayName() + " -> " + seenEvent.lastSeen() + " Ago \uD83D\uDD38 Saying: " + seenEvent.getLastChatLine());
         }
     }
-
 
     private void streamBirthday(TwitchChatMessage message) {
         LocalDateTime followTime = Twitchv5.getFollowDateTime(message.userID);
