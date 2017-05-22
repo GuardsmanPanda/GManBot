@@ -3,6 +3,7 @@ package database;
 import com.google.common.collect.*;
 import javafx.util.Pair;
 import twitch.TwitchChat;
+import utility.FinalPair;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -31,15 +32,12 @@ public class SongDatabase {
     }
 
     public static void addSongRating(String twitchUserID, String songName, int songRating, String songQuote) {
-        try (CachedRowSet cachedRowSet = BobsDatabase.getCachedRowSetFromSQL("SELECT * FROM SongRatings WHERE twitchUserID = ? AND songName = ?", twitchUserID, songName)) {
-            if (cachedRowSet.next()) {
-                if (songQuote.equalsIgnoreCase("none")) songQuote = cachedRowSet.getString("songQuote");
-                BobsDatabase.executePreparedSQL("UPDATE SongRatings SET songRating = " + songRating + ", songQuote = ?, ratingTimestamp = '" + Timestamp.valueOf(LocalDateTime.now()) + "' WHERE twitchUserID = ? AND songName = ?", songQuote, twitchUserID, songName);
-            } else {
-                BobsDatabase.executePreparedSQL("INSERT INTO SongRatings(twitchUserID, songName, songRating, songQuote) VALUES(?, ?, " + songRating + ", ?)", twitchUserID, songName, songQuote);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        FinalPair<String, String> sqlResult = BobsDatabase.getPairFromSQL("SELECT songName, songQuote FROM SongRatings WHERE twitchUserID = ? AND songName = ?", twitchUserID, songName);
+
+        if (sqlResult == null) BobsDatabase.executePreparedSQL("INSERT INTO SongRatings(twitchUserID, songName, songRating, songQuote) VALUES(?, ?, " + songRating + ", ?)", twitchUserID, songName, songQuote);
+        else {
+            if (songQuote.equalsIgnoreCase("none")) songQuote = sqlResult.second;
+            BobsDatabase.executePreparedSQL("UPDATE SongRatings SET songRating = " + songRating + ", songQuote = ?, ratingTimestamp = '" + Timestamp.valueOf(LocalDateTime.now()) + "' WHERE twitchUserID = ? AND songName = ?", songQuote, twitchUserID, songName);
         }
     }
 

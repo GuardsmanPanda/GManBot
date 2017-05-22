@@ -95,7 +95,6 @@ public class BobsDatabase {
         }
     }
 
-
     public static String getStringFromSQL(String sql, String... arguments) {
         try {
             return getValueFromSQL(sql, String.class, arguments);
@@ -128,7 +127,6 @@ public class BobsDatabase {
     public static <E> E getValueFromSQL(String sql, Class<E> returnType, String... arguments) {
         try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
             assert (cachedRowSet.getMetaData().getColumnCount() == 1);
-
             switch (cachedRowSet.size()) {
                 case 0:
                     throw new IllegalArgumentException("0 results");
