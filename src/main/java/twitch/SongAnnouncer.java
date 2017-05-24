@@ -35,7 +35,7 @@ public class SongAnnouncer extends ListenerAdapter {
         BobsDatabase.getMultiMapFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE songRatingReminder = true", String.class, String.class)
                 .forEach(ratingReminderMap::put);
     }
-
+    // Song Name 2:14 Rating: 8,21
     //TODO: consider implementing a !randomsongsuggestion on a long cooldown to suggest youtube link to a song you have previously rated 11 (or havent rated)
     @Override
     public void onMessage(MessageEvent event) {
@@ -68,7 +68,7 @@ public class SongAnnouncer extends ListenerAdapter {
         }
     }
 
-    private static void songFileChange(String newSongName) {
+    private static void songFileChange(String newSongName, int durationInSeconds) {
         if (newSongName.equalsIgnoreCase("Guardsman Bob")) return;
 
         Pair<Float, Integer> lastSongPair = SongDatabase.getSongRating(displayOnStreamSong);
@@ -87,6 +87,7 @@ public class SongAnnouncer extends ListenerAdapter {
         rootNode.put("songRating", String.format("%.2f", songRatingPair.getKey()));
         rootNode.put("songNumRatings", songRatingPair.getValue());
         rootNode.put("songQuote", SongDatabase.getSongQuote(newSongName, true));
+        rootNode.put("songDuration", durationInSeconds);
         StreamWebOverlay.sendJsonToOverlay(rootNode);
 
         new Thread(() -> {
@@ -135,9 +136,12 @@ public class SongAnnouncer extends ListenerAdapter {
                             List<String> songFileLineArray = Files.readAllLines(songFileLocation, Charset.forName("windows-1252"));
                             //if for some reason the file is empty just ignore it.
                             if (songFileLineArray.size() == 0) break;
-                            String newSongNameInFile = songFileLineArray.get(0);
+                            String[] rawSongData = songFileLineArray.get(0).split(" @");
+                            if (rawSongData.length < 3) break;
+                            String newSongNameInFile = rawSongData[0];
                             if (!lastSongNameInFile.equalsIgnoreCase(newSongNameInFile)) {
-                                songFileChange(newSongNameInFile);
+                                int songDuration = Integer.parseInt(rawSongData[1])*60 + Integer.parseInt(rawSongData[2]);
+                                songFileChange(newSongNameInFile, songDuration);
                                 lastSongNameInFile = newSongNameInFile;
                             }
                         }

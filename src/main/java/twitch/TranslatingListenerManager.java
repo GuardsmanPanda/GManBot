@@ -42,6 +42,10 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
     }
 
     private void fillCommandTranslationMap() {
+        commandTranslationMap.put("!commands", "!commands");
+        commandTranslationMap.put("!commandlist", "!commands");
+        commandTranslationMap.put("!commandslist", "!commands");
+        commandTranslationMap.put("!help", "!commands");
         commandTranslationMap.put("!github", "!github");
 
         commandTranslationMap.put("!ratereminder", "!ratereminder");
@@ -82,6 +86,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!followage","!followage");
         commandTranslationMap.put("!followtime","!followage");
         commandTranslationMap.put("!folloage","!followage");
+        commandTranslationMap.put("!followed","!followage");
 
         commandTranslationMap.put("!setflag","!setflag");
         commandTranslationMap.put("!flag", "!setflag");
@@ -117,10 +122,20 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!bobemotes", "!emotestats");
         commandTranslationMap.put("!bobemotestats", "!emotestats");
 
+        commandTranslationMap.put("!emotestatsinchat", "!emotestatsinchat");
+        commandTranslationMap.put("!emotesinchat", "!emotestatsinchat");
+        commandTranslationMap.put("!bobemotesinchat", "!emotestatsinchat");
+        commandTranslationMap.put("!bobemotestatsinchat", "!emotestatsinchat");
+
         commandTranslationMap.put("!allemotestats", "!allemotestats");
         commandTranslationMap.put("!allemotes", "!allemotestats");
         commandTranslationMap.put("!topemotes", "!allemotestats");
         commandTranslationMap.put("!topemotestats", "!allemotestats");
+
+        commandTranslationMap.put("!allemotestatsinchat", "!allemotestatsinchat");
+        commandTranslationMap.put("!allemotesinchat", "!allemotestatsinchat");
+        commandTranslationMap.put("!topemotesinchat", "!allemotestatsinchat");
+        commandTranslationMap.put("!topemotestatsinchat", "!allemotestatsinchat");
 
         commandTranslationMap.put("!myemotestats", "!myemotestats");
         commandTranslationMap.put("!myemotes", "!myemotestats");
@@ -178,6 +193,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!mystreambirthdate", "!mystreambirthday");
         commandTranslationMap.put("!mybirthday", "!mystreambirthday");
         commandTranslationMap.put("!mybirthdate", "!mystreambirthday");
+        commandTranslationMap.put("!chatbirthday", "!mystreambirthday");
 
         commandTranslationMap.put("!stathide", "!stathide");
         commandTranslationMap.put("!hidestats", "!stathide");
@@ -191,6 +207,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!sendtotalstats", "!totalstats");
 
         commandTranslationMap.put("!seen", "!seen");
+        commandTranslationMap.put("!seem", "!seen");
         commandTranslationMap.put("!lastseen", "!seen");
     }
 }

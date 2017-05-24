@@ -35,8 +35,11 @@ public class TwitchChatStats extends ListenerAdapter {
     public void onMessage(MessageEvent event) {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
         switch (chatMessage.getMessageCommand()) {
-            case "!emotestats": sendEmoteStats(chatMessage, false); break;
-            case "!allemotestats": sendEmoteStats(chatMessage, true); break;
+            case "!emotestats": sendEmoteStats(chatMessage, false, true); break;
+            case "!allemotestats": sendEmoteStats(chatMessage, true, true); break;
+            case "!emotestatsinchat": sendEmoteStats(chatMessage, false, false); break;
+            case "!allemotestatsinchat": sendEmoteStats(chatMessage, true, false); break;
+
             case "!myemotestats": sendPersonalEmoteStats(chatMessage); break;
 
             case "!activehours": sendTopListStats(StatType.ACTIVEHOURS, true); break;
@@ -88,7 +91,7 @@ public class TwitchChatStats extends ListenerAdapter {
                 .filter(entry -> everyone || peopleInChat.contains(entry.getKey().toLowerCase()))
                 .filter(entry -> !statHidingUsers.contains(entry.getKey().toLowerCase()))
                 .sorted(Comparator.comparingInt(Map.Entry<String, Integer>::getValue).reversed())
-                .map(entry -> entry.getKey() + ": " + entry.getValue())
+                .map(entry -> entry.getKey() + ": " + intFormat.format(entry.getValue()))
                 .limit(15)
                 .collect(Collectors.joining(" \uD83D\uDD38 "));
 
@@ -115,7 +118,6 @@ public class TwitchChatStats extends ListenerAdapter {
             e.printStackTrace();
         }
     }
-
     //TODO consider condensing this down to 1 method
     private void sendPersonalEmoteStats(TwitchChatMessage chatMessage) {
         String outputString = chatMessage.displayName + " emotes";
@@ -128,24 +130,25 @@ public class TwitchChatStats extends ListenerAdapter {
         String emoteString = EmoteDatabase.getEmoteUsageFromUserID(chatMessage.userID, Duration.ofDays(days))
                 .sorted(Comparator.comparingInt(Map.Entry<String, Integer>::getValue).reversed())
                 .limit(10)
-                .map(entry -> entry.getKey() + " " + entry.getValue())
+                .map(entry -> entry.getKey() + " " + intFormat.format(entry.getValue()))
                 .collect(Collectors.joining(" ▪️ "));
         if (emoteString.isEmpty()) TwitchChat.sendMessage("No Emotes For You!");
         else TwitchChat.sendMessage(outputString + emoteString);
     }
-    private synchronized void sendEmoteStats(TwitchChatMessage chatMessage, boolean allEmotes) {
+    private synchronized void sendEmoteStats(TwitchChatMessage chatMessage, boolean allEmotes, boolean everyone) {
         if (nextStatTime.isAfter(Instant.now())) return;
         nextStatTime = Instant.now().plusSeconds(12);
 
         int days = 30;
         try { days = Integer.parseInt(chatMessage.getMessageContent()); } catch (NumberFormatException nfe) { /*empty on purpose*/ }
 
-        String printString = "Emote usage for the past " + days + " days: ";
-        printString += EmoteDatabase.getEmoteUsageByEmoteName(Duration.ofDays(days))
+        String printString = "Emote usage" +((everyone)?"":", by people in chat,") + " in the past " + days + " days: ";
+
+        printString += EmoteDatabase.getEmoteUsageByEmoteName(Duration.ofDays(days), (everyone) ? Set.of() : TwitchChat.getUserIDsInChannel())
                 .filter(entry -> (allEmotes || entry.getKey().startsWith("bob")))
                 .sorted(Comparator.comparingInt(Map.Entry<String, Integer>::getValue).reversed())
                 .limit(20)
-                .map(entry -> entry.getKey() + " " + entry.getValue())
+                .map(entry -> entry.getKey() + " " + intFormat.format(entry.getValue()))
                 .collect(Collectors.joining(" \uD83D\uDD38 "));
         TwitchChat.sendMessage(printString);
     }

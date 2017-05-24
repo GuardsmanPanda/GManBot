@@ -6,12 +6,15 @@ import database.BobsDatabaseHelper;
 import webapi.Twitchv5;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.stream.StreamSupport;
 
 public class DataMaintenance {
 
     public static void main(String[] args) throws SQLException {
-        addAllCurrentSubsAndPrimeSubstoDB();
+        //addAllCurrentSubsAndPrimeSubstoDB();
+        System.out.println(Arrays.toString(Locale.getISOLanguages()));
     }
 
     //TODO, use Songs table to clear songs not palyed since a certain date.

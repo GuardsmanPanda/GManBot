@@ -9,6 +9,7 @@ import webapi.SpaceLaunch;
 import webapi.XKCD;
 
 import java.nio.file.Paths;
+import java.util.Locale;
 
 public class GManBot extends Application {
     public static void main(String[] args) {
@@ -17,6 +18,8 @@ public class GManBot extends Application {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        Locale.setDefault(Locale.forLanguageTag("da"));
 
         //Ask the twitch handler to open the chat connection, this may take several seconds
         TwitchChat.connect();

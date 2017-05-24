@@ -17,7 +17,7 @@ import java.util.stream.StreamSupport;
 //TODO: implement !lastspacelaunch to lookup how the last launch went.
 public class SpaceLaunch {
     private static LocalDateTime nextLaunchTime = LocalDateTime.MAX;
-    private static Instant nextChatMessageTime = Instant.now().plusSeconds(40);
+    private static Instant nextChatMessageTime = Instant.now().plusSeconds(20);
     private static JsonNode nextLaunchNode;
 
     static {
@@ -35,7 +35,7 @@ public class SpaceLaunch {
 
     public static synchronized void spaceLaunchRequest(String agency) {
         if (nextChatMessageTime.isAfter(Instant.now())) return;
-        nextChatMessageTime = Instant.now().plusSeconds(120);
+        nextChatMessageTime = Instant.now().plusSeconds(12);
 
         if (agency.equalsIgnoreCase("spacex")) {
             printLaunchInformationToTwitchChat(getNextLaunchNode("spacex", 1), "Next SpaceX Launch! -> ");
@@ -60,7 +60,7 @@ public class SpaceLaunch {
         if (timeUntilLaunch.toHours() < 1) {
             Duration timeSinceLastLaunchRequest = Duration.between(nextChatMessageTime, Instant.now());
             if (timeSinceLastLaunchRequest.toHours() >= 1) {
-                nextChatMessageTime = Instant.now().plusSeconds(120);
+                nextChatMessageTime = Instant.now().plusSeconds(12);
                 printLaunchInformationToTwitchChat(nextLaunchNode, "Space Launch Warning! -> ");
             }
         }

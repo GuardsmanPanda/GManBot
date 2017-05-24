@@ -24,8 +24,9 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
         if (chatMessage.message.contains("youtu.be/") || chatMessage.message.contains("youtube.com/")) Youtube.sendVideoInformationFromMessage(chatMessage.message);
 
         switch (chatMessage.getMessageCommand()) {
-            case "!seen": seen(chatMessage); break;
+            case "!commands": TwitchChat.sendMessage("List of Commands -> https://pastebin.com/fam4TAMg"); break;
             case "!github": TwitchChat.sendMessage("My GitHub -> https://github.com/GuardsmanPanda/GManBot"); break;
+            case "!seen": seen(chatMessage); break;
             case "!randomxkcd": XKCD.xkcdRequest(true); break;
             case "!latestxkcd": XKCD.xkcdRequest(false); break;
             case "!spacelaunch": SpaceLaunch.spaceLaunchRequest("any"); break;
@@ -39,7 +40,6 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
     private void seen(TwitchChatMessage message) {
         if (!message.message.contains(" ")) return;
         SeenEvent seenEvent = new SeenEvent(message.message.split(" ")[1]);
-
         if (seenEvent.twitchID.isEmpty()) {
             TwitchChat.sendMessage("I do not know of this " + seenEvent.targetName +" bobSigh");
         } else if (seenEvent.twitchID.equalsIgnoreCase(Twitchv5.GMANBOTUSERID)) {
