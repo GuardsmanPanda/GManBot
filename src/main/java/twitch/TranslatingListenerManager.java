@@ -39,6 +39,15 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
     private void fillFullTranslationMap() {
         fullTranslationMap.put("!random xkcd", "!randomxkcd");
         fullTranslationMap.put("!latest xkcd", "!latestxkcd");
+
+        fullTranslationMap.put("!quote pratchett","!pratchettquote");
+        fullTranslationMap.put("!quote terrypratchett","!pratchettquote");
+        fullTranslationMap.put("!quote terry pratchett","!pratchettquote");
+        fullTranslationMap.put("!quote pratchet","!pratchettquote");
+        fullTranslationMap.put("!quote sanderson","!sandersonquote");
+        fullTranslationMap.put("!quote douglasadams","!adamsquote");
+        fullTranslationMap.put("!quote douglas adams","!adamsquote");
+        fullTranslationMap.put("!quote adams","!adamsquote");
     }
 
     private void fillCommandTranslationMap() {
@@ -209,5 +218,18 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!seen", "!seen");
         commandTranslationMap.put("!seem", "!seen");
         commandTranslationMap.put("!lastseen", "!seen");
+
+        commandTranslationMap.put("!douglasadamsquote", "!douglasadamsquote");
+        commandTranslationMap.put("!adamsquote", "!douglasadamsquote");
+        commandTranslationMap.put("!adams", "!douglasadamsquote");
+
+        commandTranslationMap.put("!pratchettquote", "!pratchettquote");
+        commandTranslationMap.put("!pratchet", "!pratchettquote");
+        commandTranslationMap.put("!pratchett", "!pratchettquote");
+        commandTranslationMap.put("!terrypratchettquote", "!pratchettquote");
+
+        commandTranslationMap.put("!sandersonquote", "!sandersonquote");
+        commandTranslationMap.put("!sanderson", "!sandersonquote");
+        commandTranslationMap.put("!brandonsandersonquote", "!sandersonquote");
     }
 }

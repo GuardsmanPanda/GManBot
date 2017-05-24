@@ -30,6 +30,8 @@ public class BobsDatabase {
         }
 
         try {
+            //connection.createStatement().execute("DELETE FROM AuthorQuotes"); // to reset the quote db if needed.
+            connection.createStatement().execute("CREATE TABLE AuthorQuotes (quoteID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY(START WITH 1, INCREMENT BY 1), name VARCHAR(50)NOT NULL, QUOTE VARCHAR(550) NOT NULL)");
             connection.createStatement().execute("CREATE TABLE ChatLines (twitchUserID VARCHAR(50) NOT NULL, chatLine VARCHAR(255) NOT NULL, timeStamp TIMESTAMP NOT NULL PRIMARY KEY)");
             connection.createStatement().execute("CREATE TABLE Songs (songName VARCHAR(100) PRIMARY KEY NOT NULL, LastDatePlayed DATE NOT NULL DEFAULT CURRENT_DATE, timesPlayed INTEGER NOT NULL DEFAULT 1)");
             connection.createStatement().execute("CREATE TABLE EmoteUsage (twitchUserID VARCHAR(50) NOT NULL, emoteName VARCHAR(30) NOT NULL, timeStamp TIMESTAMP NOT NULL PRIMARY KEY)");

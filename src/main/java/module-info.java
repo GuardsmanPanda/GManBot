@@ -1,7 +1,6 @@
 module gmanbot.main {
     requires jdk.incubator.httpclient;
     requires guava;
-    requires pircbotx;
     requires jackson.databind;
     requires jackson.core;
     requires jackson.annotations;
@@ -20,6 +19,7 @@ module gmanbot.main {
     requires Java.WebSocket;
     requires derby;
     requires nv.websocket.client;
+    requires pircbotx;
     exports core;
     exports database;
     exports twitch;

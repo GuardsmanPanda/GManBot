@@ -42,7 +42,7 @@
     <div class="songQuote" style="color: #dddddd; font-size: 20px; visibility: hidden;">TestQuote</div>
     <div class="songName" style="display: inline-block; font-size: 26px; font-weight: bold; visibility: hidden;">Guardsman Bob</div>
     <div class="songDuration" style="display: inline-block; color:#cccccc; font-size: 26px; font-weight: bold;">12:30</div>
-    <div class="songRateText" style="display: inline-block; color:#cccccc; font-size: 22px; font-weight: bold; visibility: hidden;">🔸&nbsp;Rate:</div>
+    <div class="songRateText" style="display: inline-block; color:#cccccc; font-size: 22px; font-weight: bold; visibility: hidden;">🔸&nbsp;Rating:</div>
     <div class="songRating" style="display: inline-block; font-size: 22px; font-weight: bold; visibility: hidden;">10,00</div>
     <div class="songNumRatings" style="display: inline-block; color: #dddddd; font-size: 20px; vertical-align: middle; visibility: hidden;">Number of Ratings: 120</div>
 </div>
@@ -128,7 +128,7 @@
         songRating = data.songRating;
         songQuote = data.songQuote;
         songNumRatings = data.songNumRatings;
-        songDuration = data.songDuration - 3;
+        songDuration = data.songDuration;
 
         setTimeout(newSongIn, 1600);
     }
@@ -163,9 +163,7 @@
     function songDurationUpdate() {
         if (songDuration > 0) {
             songDuration--;
-            var songDurationString = '';
-            if (songDuration/60 < 9) songDurationString += '&ensp;';
-            songDurationString += Math.floor(songDuration/60) + ':';
+            var songDurationString = Math.floor(songDuration/60) + ':';
             if (songDuration % 60 < 10) songDurationString += '0';
             songDurationString += songDuration % 60;
 

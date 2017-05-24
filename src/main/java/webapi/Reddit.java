@@ -24,7 +24,7 @@ import java.util.stream.StreamSupport;
 public class Reddit {
     public enum TimeSpan {
         HOUR("hour"), DAY("day"), WEEK("week"), MONTH("month"), YEAR("year"), ALL("all");
-        private String nameString;
+        private final String nameString;
         TimeSpan(String name) {
             nameString = name;
         }

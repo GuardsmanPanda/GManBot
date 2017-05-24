@@ -119,8 +119,7 @@ public class Twitchv5 {
 
     public synchronized static JsonNode executeHttpGet(String requestURIString) {
         try {
-            URI requestURI = new URI(requestURIString);
-            HttpRequest getRequest = HttpRequest.newBuilder(requestURI)
+            HttpRequest getRequest = HttpRequest.newBuilder(new URI(requestURIString))
                     .header("Accept", "application/vnd.twitchtv.v5+json")
                     .header("Client-ID", twitchApiKey)
                     .header("Authorization", "OAuth " + AuthTokenForBobsChannel)

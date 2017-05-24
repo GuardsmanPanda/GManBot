@@ -41,4 +41,13 @@ public class WebClient {
             return JsonNodeFactory.instance.objectNode().put("bobError", "error");
         }
     }
+
+    public static String getStringFromRequest(HttpRequest request) {
+        try {
+            return client.send(request, HttpResponse.BodyHandler.asString()).body();
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 }

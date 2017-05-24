@@ -5,10 +5,8 @@ import org.pircbotx.hooks.events.MessageEvent;
 import twitch.dataobjects.SeenEvent;
 import twitch.dataobjects.TwitchChatMessage;
 import utility.PrettyPrinter;
-import webapi.SpaceLaunch;
-import webapi.Twitchv5;
-import webapi.XKCD;
-import webapi.Youtube;
+import webapi.*;
+import webapi.dataobjects.Authors;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -33,6 +31,9 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
             case "!spacexlaunch": SpaceLaunch.spaceLaunchRequest("spacex"); break;
             case "!nextspacelaunch": SpaceLaunch.spaceLaunchRequest("next"); break;
             case "!mystreambirthday": streamBirthday(chatMessage); break;
+            case "!pratchettquote": Quotes.sendQuote(Authors.TERRY_PRATCHETT); break;
+            case "!sandersonquote": Quotes.sendQuote(Authors.BRANDON_SANDERSON); break;
+            case "!douglasadamsquote": Quotes.sendQuote(Authors.DOUGLAS_ADAMS); break;
         }
     }
 
