@@ -10,7 +10,9 @@ import twitch.dataobjects.TwitchChatMessage;
 import utility.FinalTriple;
 import utility.GBUtility;
 import utility.PrettyPrinter;
+import webapi.Quotes;
 import webapi.Twitchv5;
+import webapi.dataobjects.Author;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.IOException;
@@ -69,7 +71,15 @@ public class TwitchChatExtras extends ListenerAdapter {
                         TwitchChat.sendAction(welcomeMessage.substring(4));
                     }
                     else {
-                        TwitchChat.sendMessage(welcomeMessage);
+                        switch (welcomeMessage.toLowerCase()) {
+                            case "quote": Quotes.sendQuote(Author.randomAuthor()); break;
+                            case "pratchett": Quotes.sendQuote(Author.TERRY_PRATCHETT); break;
+                            case "douglasadams": Quotes.sendQuote(Author.DOUGLAS_ADAMS); break;
+                            case "sanderson": Quotes.sendQuote(Author.BRANDON_SANDERSON); break;
+                            case "rothfuss": Quotes.sendQuote(Author.PATRICK_ROTHFUSS); break;
+                            case "tolkien": Quotes.sendQuote(Author.TOLKIEN); break;
+                            default: TwitchChat.sendMessage(welcomeMessage);
+                        }
                     }
                     lastWelcomeMessageTime.put(displayName, LocalDateTime.now());
                 }).start();

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 public class Youtube {
     private static String googleAPIKey = "";
-    private static final String videoIdRegex = "^((?:https?:)?\\/\\/)?((?:www|m)\\.)?((?:youtube\\.com|youtu.be))(\\/(?:[\\w\\-]+\\?v=|embed\\/|v\\/)?)([\\w\\-]+)(\\S+)?$";
+    private static final String videoIdRegex = "^((?:https?:)?//)?((?:www|m)\\.)?((?:youtube\\.com|youtu\\.be))(/(?:[\\w\\-]+\\?v=|embed/|v/)?)([\\w\\-]+)(\\S+)?$";
     private static final Pattern idRegexPattern = Pattern.compile(videoIdRegex);
 
     static {

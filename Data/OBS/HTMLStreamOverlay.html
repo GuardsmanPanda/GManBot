@@ -41,7 +41,7 @@
 <div class="songs" style="position: absolute; top: 1015px; left: 10px; width: 1200px;">
     <div class="songQuote" style="color: #dddddd; font-size: 20px; visibility: hidden;">TestQuote</div>
     <div class="songName" style="display: inline-block; font-size: 26px; font-weight: bold; visibility: hidden;">Guardsman Bob</div>
-    <div class="songDuration" style="display: inline-block; color:#cccccc; font-size: 26px; font-weight: bold;">12:30</div>
+    <div class="songDuration" style="display: inline-block; color:#cccccc; font-size: 22px; font-weight: bold;">2:30</div>
     <div class="songRateText" style="display: inline-block; color:#cccccc; font-size: 22px; font-weight: bold; visibility: hidden;">🔸&nbsp;Rating:</div>
     <div class="songRating" style="display: inline-block; font-size: 22px; font-weight: bold; visibility: hidden;">10,00</div>
     <div class="songNumRatings" style="display: inline-block; color: #dddddd; font-size: 20px; vertical-align: middle; visibility: hidden;">Number of Ratings: 120</div>
@@ -123,12 +123,13 @@
         $('.songName').textillate('out');
         $('.songRateText').textillate('out');
         $('.songRating').textillate('out');
+        $('.songDuration').fadeOut(400);
 
         songName = data.songName;
         songRating = data.songRating;
         songQuote = data.songQuote;
         songNumRatings = data.songNumRatings;
-        songDuration = data.songDuration;
+        songDuration = data.songDuration - 1;
 
         setTimeout(newSongIn, 1600);
     }
@@ -158,6 +159,7 @@
         $('.songRating').css('color','hsl('+ ((songRating.replace(',','.') - 1)*24-120) +',100%,50%)');
         $('.songRating').textillate('start');
         $('.songRateText').textillate('start');
+        $('.songDuration').fadeIn(400);
     }
 
     function songDurationUpdate() {

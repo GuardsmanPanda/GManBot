@@ -4,7 +4,7 @@ import database.BobsDatabase;
 import jdk.incubator.http.HttpRequest;
 import twitch.TwitchChat;
 import utility.FinalPair;
-import webapi.dataobjects.Authors;
+import webapi.dataobjects.Author;
 
 import java.net.URI;
 import java.time.Instant;
@@ -16,9 +16,11 @@ import java.util.List;
 public class Quotes {
     private static Instant nextQuoteTime = Instant.now();
 
-    public static void sendQuote(Authors author) {
-        if (nextQuoteTime.isAfter(Instant.now())) return;
-        nextQuoteTime = Instant.now().plusSeconds(12);
+    public static void sendQuote(Author author) {
+        synchronized (Quotes.class) {
+            if (nextQuoteTime.isAfter(Instant.now())) return;
+            nextQuoteTime = Instant.now().plusSeconds(12);
+        }
 
         FinalPair<Integer, String> quotePair = BobsDatabase.getPairFromSQL("SELECT quoteID, quote FROM AuthorQuotes WHERE name = ? ORDER BY quoteID FETCH FIRST ROW ONLY", author.name);
         if (quotePair == null) {
@@ -42,7 +44,7 @@ public class Quotes {
         }
     }
 
-    private static void updateQuotes(Authors author) {
+    private static void updateQuotes(Author author) {
         System.out.println("Updating Quotes From " + author);
         getQuoteList(author).forEach(quote -> BobsDatabase.executePreparedSQL("INSERT INTO AuthorQuotes(name, quote) VALUES(?, ?)", author.name, quote));
         System.out.println("Updated Quotes From " + author);
@@ -53,7 +55,7 @@ public class Quotes {
      * @param author
      * @return a SHUFFLED list of quotes.
      */
-    private static List<String> getQuoteList(Authors author) {
+    private static List<String> getQuoteList(Author author) {
         List<String> returnList = new ArrayList<>();
         for (int i = 1; i <= author.pages; i++) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(author.getQuoteURL() + "?page=" + i)).GET().build();

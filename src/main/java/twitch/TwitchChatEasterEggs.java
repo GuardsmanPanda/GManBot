@@ -6,7 +6,7 @@ import twitch.dataobjects.SeenEvent;
 import twitch.dataobjects.TwitchChatMessage;
 import utility.PrettyPrinter;
 import webapi.*;
-import webapi.dataobjects.Authors;
+import webapi.dataobjects.Author;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -31,12 +31,14 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
             case "!spacexlaunch": SpaceLaunch.spaceLaunchRequest("spacex"); break;
             case "!nextspacelaunch": SpaceLaunch.spaceLaunchRequest("next"); break;
             case "!mystreambirthday": streamBirthday(chatMessage); break;
-            case "!pratchettquote": Quotes.sendQuote(Authors.TERRY_PRATCHETT); break;
-            case "!sandersonquote": Quotes.sendQuote(Authors.BRANDON_SANDERSON); break;
-            case "!douglasadamsquote": Quotes.sendQuote(Authors.DOUGLAS_ADAMS); break;
+            case "!quote": Quotes.sendQuote(Author.randomAuthor()); break;
+            case "!pratchett": Quotes.sendQuote(Author.TERRY_PRATCHETT); break;
+            case "!sanderson": Quotes.sendQuote(Author.BRANDON_SANDERSON); break;
+            case "!douglasadams": Quotes.sendQuote(Author.DOUGLAS_ADAMS); break;
+            case "!rothfuss": Quotes.sendQuote(Author.PATRICK_ROTHFUSS); break;
+            case "!tolkien": Quotes.sendQuote(Author.TOLKIEN); break;
         }
     }
-
 
     private void seen(TwitchChatMessage message) {
         if (!message.message.contains(" ")) return;
