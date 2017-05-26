@@ -8,9 +8,12 @@ public enum Author {
     PATRICK_ROTHFUSS("Patrick Rothfuss", 6,"108424.Patrick_Rothfuss"),
     TOLKIEN("J.R.R. Tolkien", 6,"656983.J_R_R_Tolkien"),
     BRANDON_SANDERSON("Brandon Sanderson", 6, "38550.Brandon_Sanderson");
+    private static final Author[] values = Author.values();
+
     public final String name;
     public final int pages;
     private final String urlEnd;
+
     Author(String authorName, int quotePages, String quoteURLEnd) {
         name = authorName;
         pages = quotePages;
@@ -19,5 +22,5 @@ public enum Author {
     public String getQuoteURL() {
         return "https://www.goodreads.com/author/quotes/" + urlEnd;
     }
-    public static Author randomAuthor() { return Author.class.getEnumConstants()[ThreadLocalRandom.current().nextInt(Author.class.getEnumConstants().length)]; }
+    public static Author randomAuthor() { return values[ThreadLocalRandom.current().nextInt(values.length)]; }
 }

@@ -54,6 +54,7 @@ public class Quotes {
      * Returns a list of quotes from the author, the amount is define in the pages in the Author enum.
      * @param author
      * @return a SHUFFLED list of quotes.
+     * //TODO have get quote pages return a list of page urls to visit, removing outer loop and making pagecount private in enum.
      */
     private static List<String> getQuoteList(Author author) {
         List<String> returnList = new ArrayList<>();
