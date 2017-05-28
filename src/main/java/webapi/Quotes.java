@@ -8,13 +8,15 @@ import webapi.dataobjects.Author;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 //todo: consider supporting quote by tag as well (we could technically cheat and make the tag and 'author') .. but then we maybe wanna knowt he quote auther and.. now its complciated.
 public class Quotes {
     private static Instant nextQuoteTime = Instant.now();
+
 
     public static void sendQuote(Author author) {
         synchronized (Quotes.class) {
@@ -22,15 +24,15 @@ public class Quotes {
             nextQuoteTime = Instant.now().plusSeconds(12);
         }
 
-        FinalPair<Integer, String> quotePair = BobsDatabase.getPairFromSQL("SELECT quoteID, quote FROM AuthorQuotes WHERE name = ? ORDER BY quoteID FETCH FIRST ROW ONLY", author.name);
-        if (quotePair == null) {
+        String quote = getQuote(author);
+
+        if (quote.isEmpty()) {
             TwitchChat.sendMessage("Finding quotes by " + author.name + ", please wait a minute.");
             updateQuotes(author);
-            quotePair = BobsDatabase.getPairFromSQL("SELECT quoteID, quote FROM AuthorQuotes WHERE name = ? ORDER BY quoteID FETCH FIRST ROW ONLY", author.name);
+            quote = getQuote(author);
         }
 
-        if (quotePair != null) {
-            String quote = quotePair.second;
+        if (!quote.isEmpty()) {
             //if it fits in 1 line
             if (quote.length() < 260) TwitchChat.sendMessage(quote + " -" + author.name);
             else {
@@ -38,9 +40,36 @@ public class Quotes {
                 TwitchChat.sendMessage(quote.substring(0, index));
                 TwitchChat.sendMessage(quote.substring(index + 1, quote.length()) + " -" + author.name);
             }
-            BobsDatabase.executePreparedSQL("DELETE FROM AuthorQuotes WHERE quoteID = " + quotePair.first);
         } else {
             TwitchChat.sendMessage("Could not find any quotes from " + author.name + " ¯\\_(ツ)_/¯");
+        }
+    }
+    public static void sendRandomQuote() {
+        sendQuote(Author.randomAuthor());
+    }
+
+
+    /**
+     * Gets a random quote, Warning this method may block if quotes need to be refreshed.
+     * @return
+     */
+    public static FinalPair<String, String> getRandomQuote() {
+        Author author = Author.randomAuthor();
+        String quote = getQuote(author);
+        if (quote.isEmpty()) {
+            updateQuotes(author);
+            quote = getQuote(author);
+        }
+        return new FinalPair<>(quote, author.name);
+    }
+
+    private static String getQuote(Author author) {
+        FinalPair<Integer, String> quotePair = BobsDatabase.getPairFromSQL("SELECT quoteID, quote FROM AuthorQuotes WHERE name = ? ORDER BY quoteID FETCH FIRST ROW ONLY", author.name);
+        if (quotePair != null) {
+            BobsDatabase.executePreparedSQL("DELETE FROM AuthorQuotes WHERE quoteID = " + quotePair.first);
+            return quotePair.second;
+        } else {
+            return "";
         }
     }
 
@@ -54,29 +83,22 @@ public class Quotes {
      * Returns a list of quotes from the author, the amount is define in the pages in the Author enum.
      * @param author
      * @return a SHUFFLED list of quotes.
-     * //TODO have get quote pages return a list of page urls to visit, removing outer loop and making pagecount private in enum.
+     * //TODO contemplate saving the rawQuote for display in overlay
      */
     private static List<String> getQuoteList(Author author) {
-        List<String> returnList = new ArrayList<>();
-        for (int i = 1; i <= author.pages; i++) {
-            HttpRequest request = HttpRequest.newBuilder(URI.create(author.getQuoteURL() + "?page=" + i)).GET().build();
-            String webPage = WebClient.getStringFromRequest(request);
-            String[] rawQuoteArray = webPage.split("<div class=\"quoteText\">");
+        List<String> returnList =  author.getQuoteURLs()
+                .map(url -> HttpRequest.newBuilder(URI.create(url)).GET().build())
+                .map(WebClient::getStringFromRequest)
+                .flatMap(rawWebPage -> Stream.of(rawWebPage.split("<div class=\"quoteText\">")))
+                .filter(rawQuote -> rawQuote.contains("<br>  &#8213;\n    <a class=\"authorOrTitle\""))
+                .map(rawQuote -> rawQuote.substring(0, rawQuote.indexOf("<br>  &#8213;\n    <a class=\"authorOrTitle\"")).trim())
+                .map(quote -> quote.replaceAll("&ldquo;", "“"))
+                .map(quote -> quote.replaceAll("&rdquo;", "”"))
+                .map(quote -> quote.replaceAll("<br />", " "))
+                .map(quote -> quote.replaceAll("</?[^>]>", ""))
+                .filter(quote -> quote.length() < 500)
+                .collect(Collectors.toList());
 
-            for (String rawQuote : rawQuoteArray) {
-                if (rawQuote.contains("<br>  &#8213;\n    <a class=\"authorOrTitle\"")) {
-                    String quote = rawQuote.substring(0, rawQuote.indexOf("<br>  &#8213;\n    <a class=\"authorOrTitle\"")).trim();
-                    quote = quote.replace("&ldquo;","“");
-                    quote = quote.replace("&rdquo;","”");
-                    quote = quote.replaceAll("<br />"," ");
-                    quote = quote.replaceAll("</?[^>]>", "");
-                    //only add quotes shorter than 500 characters
-                    if (quote.length() < 500) returnList.add(quote);
-                    else System.out.println("discarding quote");
-                }
-            }
-            System.out.println("Got page " + i + ", " + returnList.size() + " quotes found so far");
-        }
         System.out.println("Found " + returnList.size() + " Quotes For " + author.name);
         Collections.shuffle(returnList);
         return returnList;

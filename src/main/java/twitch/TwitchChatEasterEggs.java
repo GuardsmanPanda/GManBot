@@ -25,18 +25,20 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
             case "!commands": TwitchChat.sendMessage("List of Commands -> https://pastebin.com/fam4TAMg"); break;
             case "!github": TwitchChat.sendMessage("My GitHub -> https://github.com/GuardsmanPanda/GManBot"); break;
             case "!seen": seen(chatMessage); break;
+            case "!uptime": uptime(); break;
             case "!randomxkcd": XKCD.xkcdRequest(true); break;
             case "!latestxkcd": XKCD.xkcdRequest(false); break;
             case "!spacelaunch": SpaceLaunch.spaceLaunchRequest("any"); break;
             case "!spacexlaunch": SpaceLaunch.spaceLaunchRequest("spacex"); break;
             case "!nextspacelaunch": SpaceLaunch.spaceLaunchRequest("next"); break;
             case "!mystreambirthday": streamBirthday(chatMessage); break;
-            case "!quote": Quotes.sendQuote(Author.randomAuthor()); break;
+            case "!quote": Quotes.sendRandomQuote(); break;
             case "!pratchett": Quotes.sendQuote(Author.TERRY_PRATCHETT); break;
             case "!sanderson": Quotes.sendQuote(Author.BRANDON_SANDERSON); break;
             case "!douglasadams": Quotes.sendQuote(Author.DOUGLAS_ADAMS); break;
             case "!rothfuss": Quotes.sendQuote(Author.PATRICK_ROTHFUSS); break;
             case "!tolkien": Quotes.sendQuote(Author.TOLKIEN); break;
+            case "!scottlynch": Quotes.sendQuote(Author.SCOTT_LYNCH); break;
         }
     }
 
@@ -56,6 +58,12 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
         }
     }
 
+    private void uptime() {
+        Duration uptime = Twitchv5.getStreamUpTime();
+        if (uptime.isZero()) TwitchChat.sendMessage("The Stream Is Offline You Fool!");
+        else TwitchChat.sendMessage("The Stream Has Been Online For " + PrettyPrinter.timeStringFromDuration(uptime) + "!");
+    }
+
     private void streamBirthday(TwitchChatMessage message) {
         LocalDateTime followTime = Twitchv5.getFollowDateTime(message.userID);
         if (followTime == null) {
@@ -69,13 +77,14 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
             LocalDateTime subStreakStartTime = Twitchv5.getSubStreakStartDate(message.userID);
             if (subStreakStartTime != null) {
                 LocalDateTime subBirthday = subStreakStartTime.withYear(Year.now().getValue());
-                if (Duration.between(subBirthday, now).toDays() == 0) responseString += "bobCake bobCake Today is your Sub Birthday! bobCake bobCake";
+                if (Duration.between(subBirthday, now).toDays() == 0) responseString += "bobCake bobCake Today is your Sub Birthday! bobCake bobCake ";
                 else {
                     if (now.isAfter(subBirthday)) subBirthday = subBirthday.plusYears(1);
                     if (Duration.between(now, subBirthday).toDays() < 14) responseString += PrettyPrinter.timeStringFromDuration(Duration.between(now, subBirthday));
                     else responseString += PrettyPrinter.timeStringFromPeriod(Period.between(now.toLocalDate(), subBirthday.toLocalDate()));
+
+                    responseString += " Until Sub Birthday! bobCake ";
                 }
-                responseString += " Until Sub Birthday! bobCake ";
             }
         }
 
@@ -85,9 +94,9 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
             if (now.isAfter(followBirthday)) followBirthday = followBirthday.plusYears(1);
             if (Duration.between(now, followBirthday).toDays() < 14) responseString += PrettyPrinter.timeStringFromDuration(Duration.between(now, followBirthday));
             else responseString += PrettyPrinter.timeStringFromPeriod(Period.between(now.toLocalDate(), followBirthday.toLocalDate()));
-        }
-        responseString += " Until Follow Birthday! bobHype";
 
+            responseString += " Until Follow Birthday! bobHype";
+        }
         TwitchChat.sendMessage(responseString);
     }
 }

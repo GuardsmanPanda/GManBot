@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -34,6 +35,20 @@ public class Twitchv5 {
             System.out.println("Expecting api key");
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        //System.out.println(PrettyPrinter.timeStringFromDuration(getStreamUpTime(BOBSCHANNELID)));
+    }
+
+    public static Duration getStreamUpTime() { return getStreamUpTime(BOBSCHANNELID); }
+    public static Duration getStreamUpTime(String channelID) {
+        JsonNode root = executeHttpGet("https://api.twitch.tv/kraken/streams/" + channelID);
+        if (root != null && root.has("stream")) {
+            Instant startTime = Instant.parse(root.get("stream").get("created_at").asText());
+            return Duration.between(startTime, Instant.now());
+        }
+        return Duration.ZERO;
     }
 
     public static String getGameName() {
@@ -70,7 +85,6 @@ public class Twitchv5 {
 
     /**
      * Gets the emoticon set for BTTV, please not that this is not a call to the official twitch APi
-     * @return
      */
     public static Set<String> getBTTVEmoteSet() {
         JsonNode root = WebClient.getJSonNodeFromRequest(HttpRequest.newBuilder(URI.create("https://api.betterttv.net/2/emotes")).GET().build());

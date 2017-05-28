@@ -11,6 +11,7 @@ import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import twitch.dataobjects.TwitchChatMessage;
 import utility.GBUtility;
+import webapi.Twitchv5;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -33,6 +34,8 @@ public class SongAnnouncer extends ListenerAdapter {
         watchSongFile(songFilePath);
         //Load the rating reminders
         BobsDatabase.getMultiMapFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE songRatingReminder = true", String.class, String.class)
+                .forEach(ratingReminderMap::put);
+        BobsDatabase.getMultiMapFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE songQuoteReminder = true", String.class, String.class)
                 .forEach(ratingReminderMap::put);
     }
     // Song Name 2:14 Rating: 8,21
@@ -64,12 +67,21 @@ public class SongAnnouncer extends ListenerAdapter {
             switch (tcm.getMessageCommand()) {
                 case "!ratereminder": ratingReminderMap.put(tcm.userID, tcm.displayName); BobsDatabaseHelper.setSongRatingReminder(tcm.userID, tcm.displayName, true); break;
                 case "!removeratereminder": ratingReminderMap.remove(tcm.userID); BobsDatabaseHelper.setSongRatingReminder(tcm.userID, tcm.displayName,false); break;
+                case "!quotereminder": quoteReminderMap.put(tcm.userID, tcm.displayName); BobsDatabaseHelper.setSongQuoteReminder(tcm.userID, tcm.displayName, true); break;
+                case "!removequotereminder": quoteReminderMap.remove(tcm.userID); BobsDatabaseHelper.setSongQuoteReminder(tcm.userID, tcm.displayName,false); break;
             }
         }
     }
 
     private static void songFileChange(String newSongName, int durationInSeconds) {
         if (newSongName.equalsIgnoreCase("Guardsman Bob")) return;
+
+        //Start quote announcer if intro song
+        if (newSongName.equalsIgnoreCase("The xx - Intro") && Twitchv5.getStreamUpTime().toMinutes() < 15) {
+            StreamWebOverlay.startQuoteOverlayService();
+        }
+        //Stop quote overlay service if last song was the Megas
+        if (displayOnStreamSong.equalsIgnoreCase("The Megas - History Repeating Pt. 2 (One Last Time)")) StreamWebOverlay.stopQuoteOverlayService();
 
         Pair<Float, Integer> lastSongPair = SongDatabase.getSongRating(displayOnStreamSong);
         String lastSongString = displayOnStreamSong + " ⏩ Rating: " + String.format("%.2f", lastSongPair.getKey()) + " [" + lastSongPair.getValue() + "]";
@@ -99,15 +111,26 @@ public class SongAnnouncer extends ListenerAdapter {
                 TwitchChat.sendMessage("\uD83C\uDFB8\uD83C\uDFBB Now Playing: " + newSongName + " \uD83D\uDD37\uD83D\uDD37 Last Song: " + lastSongString);
 
                 //Add long delay before song rating reminder, so allow for people to rate the song and not be reminded.
-                try { Thread.sleep(25000); } catch (InterruptedException e) { e.printStackTrace(); }
+                try { Thread.sleep(23000); } catch (InterruptedException e) { e.printStackTrace(); }
                 Set<String> peopleInChat = TwitchChat.getActiveUserIDsInChannel(Duration.ofMinutes(90));
                 String remindString = ratingReminderMap.keySet().stream()
                         .filter(peopleInChat::contains)
-                        .filter(twitchID -> getIndividualSongRating(twitchID, newSongName) == 0)
+                        .filter(twitchID -> SongDatabase.getIndividualSongRating(twitchID, newSongName) == 0)
                         .limit(20)
+                        .peek(peopleInChat::remove)
                         .map(ratingReminderMap::get)
                         .collect(Collectors.joining(", "));
                 if (!remindString.isEmpty()) TwitchChat.sendMessage("Rate The Song! -> " + remindString);
+
+                try { Thread.sleep(4000); } catch (InterruptedException e) { e.printStackTrace(); }
+
+                String quoteRemindString = quoteReminderMap.keySet().stream()
+                        .filter(peopleInChat::contains)
+                        .filter(twitchID -> SongDatabase.getIndividualSongQuote(twitchID, newSongName).equalsIgnoreCase("none"))
+                        .limit(20)
+                        .map(quoteReminderMap::get)
+                        .collect(Collectors.joining(", "));
+                if (!quoteRemindString.isEmpty()) TwitchChat.sendMessage("Quote The Song! -> " + quoteRemindString);
 
                 //Send out random songquote
                 try { Thread.sleep(10000); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -116,10 +139,6 @@ public class SongAnnouncer extends ListenerAdapter {
                 System.out.println("ignoring " + newSongName + "Another song is already playing");
             }
         }).start();
-    }
-
-    private static int getIndividualSongRating(String twitchUserID, String songName) {
-        return BobsDatabase.getIntFromSQL("SELECT songRating FROM SongRatings WHERE twitchUserID = ? AND songName = ?", twitchUserID, songName);
     }
 
     private static void watchSongFile(Path songFileLocation) {

@@ -47,6 +47,12 @@
     <div class="songNumRatings" style="display: inline-block; color: #dddddd; font-size: 20px; vertical-align: middle; visibility: hidden;">Number of Ratings: 120</div>
 </div>
 
+<div class="quotes" style="position: absolute; top: 400px; left: 1200px; width: 650px;">
+    <div class="quoteText">Something Profound</div>
+    <div>&nbsp;</div>
+    <div class="quoteAuthor" style="width: 100%; text-align: right; color: #cccccc;">- The Master&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+</div>
+
 <div class="votePosition" style="position: absolute; top: 450px; left: 50px; width: 1200px;">
     <div id="option1" class="voteOption">!1</div>
     <div id="vote1" class="vote">2</div><br />
@@ -67,6 +73,9 @@
     var songDuration = 10;
     var songQuote = "Read Terry Pratchett";
 
+    var quoteText = "";
+    var quoteAuthor = "";
+
     startWebSocket();
     setInterval(songDurationUpdate, 1000);
 
@@ -85,6 +94,7 @@
             else if (messageJSON.type === "voteStart") voteStart(messageJSON);
             else if (messageJSON.type === "voteEnd") voteEnd(messageJSON);
             else if (messageJSON.type === "voteUpdate") voteUpdate(messageJSON);
+            else if (messageJSON.type === "quote") quoteUpdate(messageJSON);
         }
         connection.onclose = function(event) {
             setTimeout(startWebSocket, 5000);
@@ -173,6 +183,26 @@
         }
     }
 
+
+    function quoteUpdate(data) {
+        quoteText = data.quoteText;
+        quoteAuthor =  data.quoteAuthor;
+        $('.quoteText').textillate('out');
+        $('.quoteAuthor').textillate('out');
+        setTimeout(newQuoteIn, 1600);
+    }
+
+    function newQuoteIn() {
+        $('.quoteText').find('li').html(quoteText);
+        $('.quoteAuthor').find('li').html("- " + quoteAuthor + "          ");
+        $('.quoteText').textillate('start');
+
+    }
+
+    function newAuthorIn() {
+        $('.quoteAuthor').textillate('start');
+    }
+
     function voteStart(data) {
 
     }
@@ -196,6 +226,8 @@
     $('.songRating').textillate({ autoStart: false, in: { effect: 'fadeIn' }, out: { effect: 'hinge', sync: true }, type: 'word' });
     $('.songNumRatings').textillate({ initialDelay: 5000, autoStart: false, in: { effect: 'fadeInRight', sync: true }, out: { effect: 'fadeOut' }, type: 'word' });
     $('.songQuote').textillate({ initialDelay: 10000, autoStart: false, in: { effect: 'fadeInLeft', sync: true }, out: { effect: 'fadeOut' }, type: 'word' });
+    $('.quoteText').textillate({ autoStart: false, in: { effect: 'fadeIn', callback: newAuthorIn }, out: { effect: 'fadeOut', sync: true }, type: 'word' });
+    $('.quoteAuthor').textillate({ autoStart: false, in: { effect: 'fadeInRight', sync: true }, out: { effect: 'fadeOut' }, type: 'word' });
 </script>
 </body>
 </html>

@@ -72,12 +72,13 @@ public class TwitchChatExtras extends ListenerAdapter {
                     }
                     else {
                         switch (welcomeMessage.toLowerCase()) {
-                            case "quote": Quotes.sendQuote(Author.randomAuthor()); break;
+                            case "quote": Quotes.sendRandomQuote(); break;
                             case "pratchett": Quotes.sendQuote(Author.TERRY_PRATCHETT); break;
                             case "douglasadams": Quotes.sendQuote(Author.DOUGLAS_ADAMS); break;
                             case "sanderson": Quotes.sendQuote(Author.BRANDON_SANDERSON); break;
                             case "rothfuss": Quotes.sendQuote(Author.PATRICK_ROTHFUSS); break;
                             case "tolkien": Quotes.sendQuote(Author.TOLKIEN); break;
+                            case "scottlynch": Quotes.sendQuote(Author.SCOTT_LYNCH); break;
                             default: TwitchChat.sendMessage(welcomeMessage);
                         }
                     }
@@ -142,6 +143,8 @@ public class TwitchChatExtras extends ListenerAdapter {
 
     private static void setFlag(TwitchChatMessage chatMessage) {
         String flagRequest = chatMessage.getMessageContent().replaceAll("\\W", "").toLowerCase().trim();
+        if (flagRequest.equalsIgnoreCase("!setflag")) flagRequest = "random";
+
         if (flagTranslationMap.containsKey(flagRequest)) {
             System.out.println("Found flag for " + chatMessage.displayName + " flag name: " + flagTranslationMap.get(flagRequest) + " flagRequest: " + flagRequest + " Message: " + chatMessage.message);
             BobsDatabaseHelper.setFlag(chatMessage.userID, chatMessage.displayName, flagTranslationMap.get(flagRequest));

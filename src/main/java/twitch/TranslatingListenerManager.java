@@ -54,8 +54,10 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!commands", "!commands");
         commandTranslationMap.put("!commandlist", "!commands");
         commandTranslationMap.put("!commandslist", "!commands");
+
         commandTranslationMap.put("!help", "!commands");
         commandTranslationMap.put("!github", "!github");
+        commandTranslationMap.put("!uptime", "!uptime");
 
         commandTranslationMap.put("!ratereminder", "!ratereminder");
         commandTranslationMap.put("!songreminder", "!ratereminder");
@@ -68,6 +70,11 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!removesongreminder", "!removeratereminder");
         commandTranslationMap.put("!removeratingreminder", "!removeratereminder");
         commandTranslationMap.put("!stopsongreminder", "!removeratereminder");
+
+        commandTranslationMap.put("!quotereminder", "!quotereminder");
+        commandTranslationMap.put("!addquotereminder", "!quotereminder");
+
+        commandTranslationMap.put("!removequotereminder", "!removequotereminder");
 
         commandTranslationMap.put("!rate", "!rate");
         commandTranslationMap.put("!ratr", "!rate");
@@ -225,6 +232,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!adams", "!douglasadams");
 
         commandTranslationMap.put("!pratchett", "!pratchett");
+        commandTranslationMap.put("!prachett", "!pratchett");
         commandTranslationMap.put("!pratchet", "!pratchett");
         commandTranslationMap.put("!terrypratchett", "!pratchett");
 
@@ -232,6 +240,8 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!brandonsanderson", "!sanderson");
         
         commandTranslationMap.put("!tolkien", "!tolkien");
+
+        commandTranslationMap.put("!scottlynch", "!scottlynch");
 
         commandTranslationMap.put("!rothfuss", "!rothfuss");
         commandTranslationMap.put("!patrickrothfuss", "!rothfuss");

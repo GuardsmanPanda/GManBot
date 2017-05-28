@@ -29,7 +29,7 @@ public class GBUtility {
 
     /**
      * Writes the string as if the user typed it on his keyboard.
-     * @param stringToPaste
+     * @param stringToPaste5
      */
     public static void copyAndPasteString(String stringToPaste) {
         StringSelection text = new StringSelection(stringToPaste);
@@ -40,6 +40,7 @@ public class GBUtility {
         robot.keyRelease(KeyEvent.VK_V);
     }
 
+    //todo: reaplce with better filewriter from lol api
     public static void writeTextToFile(String text, String filePath, boolean append) {
         File file = new File(filePath);
         if (!file.exists()) {

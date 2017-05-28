@@ -8,6 +8,8 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import utility.FinalPair;
+import webapi.Quotes;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.nio.file.Path;
 public class StreamWebOverlay {
     private static final Path OVERLAYFILEPATH = new File("Data/OBS/HTMLStreamOverlay.html").toPath();
     private static final BobsWebSocketServer socketServer = new BobsWebSocketServer(new InetSocketAddress(9102));
+    private static boolean displayQuotes = false;
 
     public static void startOverlay() {
         try {
@@ -48,6 +51,44 @@ public class StreamWebOverlay {
         socketServer.sendMessage(node.toString());
     }
 
+
+    public static void startQuoteOverlayService() {
+        if (displayQuotes) return;
+
+        displayQuotes = true;
+        new Thread(() -> {
+
+            while (displayQuotes) {
+                FinalPair<String, String> quotePair = Quotes.getRandomQuote();
+                ObjectNode root = JsonNodeFactory.instance.objectNode();
+                root.put("type", "quote");
+                root.put("quoteText", quotePair.first);
+                root.put("quoteAuthor", quotePair.second);
+                socketServer.sendMessage(root.toString());
+
+                try {
+                    Thread.sleep(36000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public static void stopQuoteOverlayService() {
+        displayQuotes = false;
+        new Thread(() -> {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            ObjectNode root = JsonNodeFactory.instance.objectNode();
+            root.put("type", "quote");
+            root.put("quoteText", "");
+            root.put("quoteAuthor", "");
+        }).start();
+    }
 
     private static class OverlayContext implements HttpHandler {
         @Override

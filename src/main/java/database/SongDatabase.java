@@ -71,6 +71,15 @@ public class SongDatabase {
         return new Pair<>(rating, songRatings.size());
     }
 
+    public static int getIndividualSongRating(String twitchUserID, String songName) {
+        return BobsDatabase.getIntFromSQL("SELECT songRating FROM SongRatings WHERE twitchUserID = ? AND songName = ?", twitchUserID, songName);
+    }
+
+    public static String getIndividualSongQuote(String twitchUserID, String songName) {
+        return BobsDatabase.getStringFromSQL("SELECT songQuote FROM songRatings WHERE twitchUserID = ? AND songName = ?", twitchUserID, songName);
+    }
+
+
     /**
      * Select all song quotes and pick a random one, half the time we want to guarentee that we pick a quote from someone in chat
      * @return a random song quote
@@ -119,4 +128,5 @@ public class SongDatabase {
         songsQuotedRank.addAll(Multisets.copyHighestCountFirst(songsQuoted).elementSet());
         System.out.println("Updated Song Rating Stats" + songsRated.size() + " ratings, " + songsQuoted.size() + " quotes");
     }
+
 }

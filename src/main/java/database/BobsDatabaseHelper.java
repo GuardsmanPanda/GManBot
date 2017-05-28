@@ -36,6 +36,10 @@ public class BobsDatabaseHelper {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET songRatingReminder = " + reminderValue + " WHERE twitchUserID = ?", twitchUserID);
     }
+    public static void setSongQuoteReminder(String twitchUserID, String twitchDisplayName, boolean reminderValue) {
+        createUserIfNotExists(twitchUserID, twitchDisplayName);
+        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET songQuoteReminder = " + reminderValue + " WHERE twitchUserID = ?", twitchUserID);
+    }
     public static void setStatHide(String twitchUserID, String twitchDisplayName, boolean hide) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET statHide = " + hide + " WHERE twitchUserID = ?", twitchUserID);
