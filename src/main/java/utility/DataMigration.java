@@ -3,7 +3,6 @@ package utility;
 import database.BobsDatabaseHelper;
 
 import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.RowSetFactory;
 import javax.sql.rowset.RowSetProvider;
 import java.sql.Connection;
 import java.sql.DriverManager;

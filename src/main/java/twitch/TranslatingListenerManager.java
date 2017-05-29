@@ -258,5 +258,6 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!churchill","!churchill");
         commandTranslationMap.put("!einstein","!einstein");
 
+
     }
 }

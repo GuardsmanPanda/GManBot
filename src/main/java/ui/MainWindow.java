@@ -1,12 +1,12 @@
 package ui;
 
 import database.BobsDatabase;
-import utility.GBUtility;
+import database.SongDatabase;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -20,14 +20,13 @@ import javafx.stage.Stage;
 import twitch.GameRatings;
 import twitch.NameSelector;
 import twitch.TwitchChat;
-import database.SongDatabase;
+import utility.GBUtility;
 import utility.PrettyPrinter;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Map;
 

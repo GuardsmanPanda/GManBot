@@ -37,9 +37,6 @@ public class Twitchv5 {
         }
     }
 
-    public static void main(String[] args) {
-        //System.out.println(PrettyPrinter.timeStringFromDuration(getStreamUpTime(BOBSCHANNELID)));
-    }
 
     public static Duration getStreamUpTime() { return getStreamUpTime(BOBSCHANNELID); }
     public static Duration getStreamUpTime(String channelID) {
