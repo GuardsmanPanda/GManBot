@@ -57,6 +57,8 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!help", "!commands");
         commandTranslationMap.put("!github", "!github");
+        commandTranslationMap.put("!githb", "!github");
+        commandTranslationMap.put("!git", "!github");
         commandTranslationMap.put("!uptime", "!uptime");
 
         commandTranslationMap.put("!ratereminder", "!ratereminder");
@@ -227,6 +229,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!lastseen", "!seen");
 
         commandTranslationMap.put("!quote", "!quote");
+        commandTranslationMap.put("!qoute", "!quote");
 
         commandTranslationMap.put("!douglasadams", "!douglasadams");
         commandTranslationMap.put("!adams", "!douglasadams");
@@ -234,16 +237,26 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!pratchett", "!pratchett");
         commandTranslationMap.put("!prachett", "!pratchett");
         commandTranslationMap.put("!pratchet", "!pratchett");
+        commandTranslationMap.put("!pratchtet", "!pratchett");
         commandTranslationMap.put("!terrypratchett", "!pratchett");
 
         commandTranslationMap.put("!sanderson", "!sanderson");
         commandTranslationMap.put("!brandonsanderson", "!sanderson");
-        
-        commandTranslationMap.put("!tolkien", "!tolkien");
-
-        commandTranslationMap.put("!scottlynch", "!scottlynch");
 
         commandTranslationMap.put("!rothfuss", "!rothfuss");
         commandTranslationMap.put("!patrickrothfuss", "!rothfuss");
+
+        commandTranslationMap.put("!stephenking","!stephenking");
+        commandTranslationMap.put("!king","!stephenking");
+
+        commandTranslationMap.put("!tolkien", "!tolkien");
+        commandTranslationMap.put("!carlin", "!carlin");
+        commandTranslationMap.put("!gaiman", "!gaiman");
+        commandTranslationMap.put("!abercrombie", "!abercrombie");
+        commandTranslationMap.put("!scottlynch", "!scottlynch");
+        commandTranslationMap.put("!doyle","!doyle");
+        commandTranslationMap.put("!churchill","!churchill");
+        commandTranslationMap.put("!einstein","!einstein");
+
     }
 }

@@ -67,7 +67,7 @@ public class StreamWebOverlay {
                 socketServer.sendMessage(root.toString());
 
                 try {
-                    Thread.sleep(36000);
+                    Thread.sleep(15000 + quotePair.first.length() * 60);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
