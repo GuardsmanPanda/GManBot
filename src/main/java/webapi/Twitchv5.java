@@ -45,7 +45,7 @@ public class Twitchv5 {
             Instant startTime = Instant.parse(root.get("stream").get("created_at").asText());
             return Duration.between(startTime, Instant.now());
         }
-        return Duration.ZERO;
+        return Duration.ofMinutes(0);
     }
 
     public static String getGameName() {

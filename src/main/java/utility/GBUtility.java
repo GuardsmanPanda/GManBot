@@ -28,8 +28,8 @@ public class GBUtility {
     }
 
     /**
-     * Writes the string as if the user typed it on his keyboard.
-     * @param stringToPaste5
+     * Writes the string as if the user used ctrl + v
+     * @param stringToPaste the string to paste to the current location
      */
     public static void copyAndPasteString(String stringToPaste) {
         StringSelection text = new StringSelection(stringToPaste);
@@ -40,22 +40,35 @@ public class GBUtility {
         robot.keyRelease(KeyEvent.VK_V);
     }
 
-    //todo: reaplce with better filewriter from lol api
-    public static void writeTextToFile(String text, String filePath, boolean append) {
+    public static boolean writeTextToFile(String text, String filePath, boolean append) {
         File file = new File(filePath);
+        boolean fileCreated = false;
+
+        //Check for any missing directories and silently create them if we can
+        if (!file.getParentFile().exists()) {
+            boolean directoriesCreated = file.getParentFile().mkdirs();
+            if (!directoriesCreated) return false;
+        }
+
+        //Check if the output file exists and create it if we can
         if (!file.exists()) {
             try {
-                boolean fileCreated = file.createNewFile();
-                if (!fileCreated) return;
+                fileCreated = file.createNewFile();
+                if (!fileCreated) return false;
             } catch (IOException e) {
-                e.printStackTrace(); return;
+                e.printStackTrace(); return false;
             }
         }
+
+        //now try writing the output string
         try(FileWriter writer = new FileWriter(filePath, append)) {
-            writer.write(text + "\n");
+            if (fileCreated) writer.write(text);
+            else writer.write(System.lineSeparator() + text);
+            return true;
         } catch (IOException e) {
             System.out.println("Could not save text to: " + filePath + " - TEXT: " + text);
             e.printStackTrace();
+            return false;
         }
     }
     /**
@@ -63,6 +76,8 @@ public class GBUtility {
      * @param text The text to appeand at the end of output/TextToBob.txt
      */
     public static void textToBob(String text) {
-        writeTextToFile(text + System.lineSeparator(), "output/textToBob.txt", true);
+        if (!writeTextToFile(text + System.lineSeparator(), "output/textToBob.txt", true)) {
+            System.out.println("Could nto write to Bob file!!!");
+        }
      }
 }

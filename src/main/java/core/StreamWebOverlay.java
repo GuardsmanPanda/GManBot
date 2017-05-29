@@ -67,7 +67,7 @@ public class StreamWebOverlay {
                 socketServer.sendMessage(root.toString());
 
                 try {
-                    Thread.sleep(15000 + quotePair.first.length() * 60);
+                    Thread.sleep(10000 + quotePair.first.length() * 65);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -87,6 +87,7 @@ public class StreamWebOverlay {
             root.put("type", "quote");
             root.put("quoteText", "");
             root.put("quoteAuthor", "");
+            socketServer.sendMessage(root.toString());
         }).start();
     }
 
