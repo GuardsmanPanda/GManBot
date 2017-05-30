@@ -12,7 +12,7 @@ public enum Author {
     SCOTT_LYNCH("Scott Lynch", 5,"73149.Scott_Lynch"),
     GEORGE_CARLIN("George Carlin", 6,"22782.George_Carlin"),
     JOE_ABERCROMBIE("Joe Abercrombie", 6, "276660.Joe_Abercrombie"),
-    NEIL_GAIMAN("NeilGaiman", 6, "1221698.Neil_Gaiman"),
+    NEIL_GAIMAN("Neil Gaiman", 6, "1221698.Neil_Gaiman"),
     ARTHUR_CONAN_DOYLE("Arthur Conan Doyle", 6, "2448.Arthur_Conan_Doyle"),
     ALBERT_EINSTEIN("Albert Einstein", 6, "9810.Albert_Einstein"),
     WINSTON_CHURCHILL("Winston S. Churchill", 4, "14033.Winston_S_Churchill"),

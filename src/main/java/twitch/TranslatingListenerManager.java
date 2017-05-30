@@ -59,7 +59,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!github", "!github");
         commandTranslationMap.put("!githb", "!github");
         commandTranslationMap.put("!git", "!github");
-        
+
         commandTranslationMap.put("!uptime", "!uptime");
 
         commandTranslationMap.put("!ratereminder", "!ratereminder");
@@ -231,6 +231,8 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!quote", "!quote");
         commandTranslationMap.put("!qoute", "!quote");
+        commandTranslationMap.put("!quotes", "!quote");
+        commandTranslationMap.put("!qote", "!quote");
 
         commandTranslationMap.put("!douglasadams", "!douglasadams");
         commandTranslationMap.put("!adams", "!douglasadams");

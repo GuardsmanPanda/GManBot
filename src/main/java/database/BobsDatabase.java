@@ -32,12 +32,12 @@ public class BobsDatabase {
         try {
             //connection.createStatement().execute("DELETE FROM AuthorQuotes"); // to reset the quote db if needed.
             connection.createStatement().execute("CREATE TABLE AuthorQuotes (quoteID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY(START WITH 1, INCREMENT BY 1), name VARCHAR(50)NOT NULL, QUOTE VARCHAR(550) NOT NULL)");
-            connection.createStatement().execute("CREATE TABLE ChatLines (twitchUserID VARCHAR(50) NOT NULL, chatLine VARCHAR(255) NOT NULL, timeStamp TIMESTAMP NOT NULL PRIMARY KEY)");
+            connection.createStatement().execute("CREATE TABLE ChatLines (twitchUserID VARCHAR(50) NOT NULL, chatLine VARCHAR(512) NOT NULL, timeStamp TIMESTAMP NOT NULL PRIMARY KEY)");
             connection.createStatement().execute("CREATE TABLE Songs (songName VARCHAR(100) PRIMARY KEY NOT NULL, LastDatePlayed DATE NOT NULL DEFAULT CURRENT_DATE, timesPlayed INTEGER NOT NULL DEFAULT 1)");
             connection.createStatement().execute("CREATE TABLE EmoteUsage (twitchUserID VARCHAR(50) NOT NULL, emoteName VARCHAR(30) NOT NULL, timeStamp TIMESTAMP NOT NULL PRIMARY KEY)");
             connection.createStatement().execute("CREATE TABLE GameRatings (twitchUserID VARCHAR(50) NOT NULL, gameName VARCHAR(255) NOT NULL, gameRating INTEGER NOT NULL, gameQuote VARCHAR (255) NOT NULL DEFAULT 'none', ratingDateTime DATE NOT NULL DEFAULT CURRENT DATE, PRIMARY KEY (twitchUserID, gameName))");
             connection.createStatement().execute("CREATE TABLE SongRatings (twitchUserID VARCHAR(255) NOT NULL, songName VARCHAR(255) NOT NULL, songRating INTEGER NOT NULL, songQuote VARCHAR(255) NOT NULL DEFAULT 'none', ratingTimestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (twitchUserID, songName))");
-            connection.createStatement().execute("CREATE TABLE TwitchChatUsers (twitchUserID VARCHAR(25) NOT NULL PRIMARY KEY, twitchDisplayName VARCHAR(30) UNIQUE NOT NULL, twitchLowerCaseName GENERATED ALWAYS AS (LOWER(twitchDisplayName)), hasSubscribed BOOLEAN NOT NULL DEFAULT false, welcomeMessage VARCHAR(255) NOT NULL DEFAULT 'none')");
+            connection.createStatement().execute("CREATE TABLE TwitchChatUsers (twitchUserID VARCHAR(50) NOT NULL PRIMARY KEY, twitchDisplayName VARCHAR(50) UNIQUE NOT NULL, twitchLowerCaseName GENERATED ALWAYS AS (LOWER(twitchDisplayName)), hasSubscribed BOOLEAN NOT NULL DEFAULT false, welcomeMessage VARCHAR(255) NOT NULL DEFAULT 'none')");
             connection.createStatement().execute("CREATE INDEX twitchLowerIndex ON TwitchChatUsers(twitchLowerCaseName)");
             System.out.println("Created Tables");
         } catch (SQLException e) {
@@ -182,7 +182,7 @@ public class BobsDatabase {
             assert (cachedRowSet.getMetaData().getColumnCount() == 2);
             if (cachedRowSet.size() > 1) throw new RuntimeException("More than 1 Row Returned from SQL: " + sql);
             if (cachedRowSet.next()) {
-                 return (FinalPair<E, F>) new FinalPair<>(cachedRowSet.getObject(1), cachedRowSet.getObject(2));
+                return (FinalPair<E, F>) new FinalPair<>(cachedRowSet.getObject(1), cachedRowSet.getObject(2));
             }
         } catch (SQLException e) {
             e.printStackTrace();

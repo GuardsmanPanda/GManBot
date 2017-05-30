@@ -42,7 +42,8 @@ public class Twitchv5 {
     public static Duration getStreamUpTime(String channelID) {
         JsonNode root = executeHttpGet("https://api.twitch.tv/kraken/streams/" + channelID);
         if (root != null && root.has("stream")) {
-            Instant startTime = Instant.parse(root.get("stream").get("created_at").asText());
+            PrettyPrinter.prettyPrintJSonNode(root); //TODO find out what causes null pointer exception on stream start
+            Instant startTime = Instant.parse(root.get("stream").get("created_at").asText(Instant.now().toString()));
             return Duration.between(startTime, Instant.now());
         }
         return Duration.ofMinutes(0);

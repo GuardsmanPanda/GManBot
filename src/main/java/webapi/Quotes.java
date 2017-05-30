@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 public class Quotes {
     private static Instant nextQuoteTime = Instant.now();
 
-
     public static void sendQuote(Author author) {
         synchronized (Quotes.class) {
             if (nextQuoteTime.isAfter(Instant.now())) return;
@@ -33,13 +32,15 @@ public class Quotes {
         }
 
         if (!quote.isEmpty()) {
+            TwitchChat.sendMessage(quote + " -" + author.name);
+            /* Old code for splitting quotes into multiple lines, we shouldnt need this if quotes are under 500 characters and we are mod (otherwise we will)
             //if it fits in 1 line
             if (quote.length() < 260) TwitchChat.sendMessage(quote + " -" + author.name);
             else {
                 int index = quote.indexOf(" ", 240);
                 TwitchChat.sendMessage(quote.substring(0, index));
                 TwitchChat.sendMessage(quote.substring(index + 1, quote.length()) + " -" + author.name);
-            }
+            } */
         } else {
             TwitchChat.sendMessage("Could not find any quotes from " + author.name + " ¯\\_(ツ)_/¯");
         }
