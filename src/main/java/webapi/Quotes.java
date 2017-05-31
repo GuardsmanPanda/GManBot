@@ -97,7 +97,7 @@ public class Quotes {
                 .map(quote -> quote.replaceAll("&rdquo;", "”"))
                 .map(quote -> quote.replaceAll("<br />", " "))
                 .map(quote -> quote.replaceAll("</?[^>]>", ""))
-                .filter(quote -> quote.length() < 500)
+                .filter(quote -> quote.length() + author.name.length() < 490) // make sure a quote message fits in 1 line on twitch
                 .collect(Collectors.toList());
 
         System.out.println("Found " + returnList.size() + " Quotes For " + author.name);

@@ -161,7 +161,6 @@ public class BobsDatabase {
     }
 
     //get stream from database? .. or populate array directly from resultset to avoid data copy
-    //TODO Consider simply returning and array of final pair/triple etc... this will work well when java gets valuetypes and generic primitives.
     public static <K, V> ListMultimap<K, V> getMultiMapFromSQL(String sql, Class<K> keyType, Class<V> valueType, String... arguments) {
         ListMultimap<K, V> returnMap = ArrayListMultimap.create();
         try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {

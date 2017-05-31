@@ -134,7 +134,6 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!nextspacelaunch", "!nextspacelaunch");
 
-        //TODO implement in chat support for these commands?
         commandTranslationMap.put("!emotestats", "!emotestats");
         commandTranslationMap.put("!emotes", "!emotestats");
         commandTranslationMap.put("!bobemotes", "!emotestats");

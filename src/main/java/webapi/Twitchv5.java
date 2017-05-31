@@ -37,16 +37,19 @@ public class Twitchv5 {
         }
     }
 
+    public static void main(String[] args) {
+        System.out.println(getStreamUpTime("33"));
+    }
 
     public static Duration getStreamUpTime() { return getStreamUpTime(BOBSCHANNELID); }
     public static Duration getStreamUpTime(String channelID) {
         JsonNode root = executeHttpGet("https://api.twitch.tv/kraken/streams/" + channelID);
         if (root != null && root.has("stream") && root.get("stream").has("created_at")) {
-            PrettyPrinter.prettyPrintJSonNode(root); //TODO find out what causes null pointer exception on stream start
+            PrettyPrinter.prettyPrintJSonNode(root);
             Instant startTime = Instant.parse(root.get("stream").get("created_at").asText(Instant.now().toString()));
             return Duration.between(startTime, Instant.now());
         }
-        return Duration.ofMinutes(0);
+        return Duration.ZERO;
     }
 
     public static String getGameName() {
