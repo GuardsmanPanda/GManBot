@@ -76,8 +76,8 @@ public class GBUtility {
      * @param text The text to appeand at the end of output/TextToBob.txt
      */
     public static void textToBob(String text) {
-        if (!writeTextToFile(text + System.lineSeparator(), "output/textToBob.txt", true)) {
-            System.out.println("Could nto write to Bob file!!!");
+        if (!writeTextToFile(text, "output/textToBob.txt", true)) {
+            System.out.println("Could not write to Bob file!!!");
         }
      }
 }

@@ -7,7 +7,6 @@ import utility.GBUtility;
 
 import java.util.HashMap;
 
-
 public class TranslatingListenerManager extends ThreadedListenerManager {
     private final HashMap<String, String> fullTranslationMap = new HashMap<>();
     private final HashMap<String, String> commandTranslationMap = new HashMap<>();
@@ -29,7 +28,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
                     super.onEvent(new MessageEvent(event.getBot(), ((MessageEvent) event).getChannel(), ((MessageEvent) event).getChannelSource(), ((MessageEvent) event).getUserHostmask(), ((MessageEvent) event).getUser(), newMessage, ((MessageEvent) event).getTags()));
                     return;
                 } else {
-                    GBUtility.writeTextToFile(command + " not recognised on message: " + message + System.lineSeparator(), "output/UnknownCommands.txt", true);
+                    GBUtility.writeTextToFile(command + " not recognised on message: " + message, "output/UnknownCommands.txt", true);
                 }
             }
         }
@@ -182,6 +181,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!topactivehours", "!activehours");
         commandTranslationMap.put("!tophoursinchat", "!activehours");
         commandTranslationMap.put("!activehoursinchat", "!activehoursinchat");
+        commandTranslationMap.put("!acivehoursinchat", "!activehoursinchat");
         commandTranslationMap.put("!topactivehoursinchat", "!activehoursinchat");
 
         commandTranslationMap.put("!idlehours", "!idlehours");

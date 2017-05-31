@@ -194,7 +194,7 @@
 
     function newQuoteIn() {
         $('.quoteText').find('li').html(quoteText);
-        $('.quoteAuthor').find('li').html("- " + quoteAuthor + "          ");
+        $('.quoteAuthor').find('li').html((quoteAuthor) ? "- " + quoteAuthor + "          " : "");
         $('.quoteText').textillate('start');
 
     }
