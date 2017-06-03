@@ -113,7 +113,6 @@ public class TwitchWebChatOverlay {
 
             URLConnection connection = new URL("https://streamlabs.com" + requestURI).openConnection();
             connection.setRequestProperty("User-agent", "");
-
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             reader.lines().forEachOrdered(responseBuilder::append);
             reader.close();
