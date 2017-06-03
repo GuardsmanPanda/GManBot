@@ -36,6 +36,8 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
     }
 
     private void fillFullTranslationMap() {
+        fullTranslationMap.put("!setflag", "!setflag random");
+
         fullTranslationMap.put("!random xkcd", "!randomxkcd");
         fullTranslationMap.put("!latest xkcd", "!latestxkcd");
 
@@ -202,6 +204,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!emoteuseage", "!emoteusage");
         commandTranslationMap.put("!topemoteusage", "!emoteusage");
         commandTranslationMap.put("!topemoteuseage", "!emoteusage");
+        commandTranslationMap.put("!peoplewhoemotethemost", "!emoteusage");
         commandTranslationMap.put("!emoteusageinchat", "!emoteusageinchat");
         commandTranslationMap.put("!emoteuseageinchat", "!emoteusageinchat");
         commandTranslationMap.put("!topemoteusageinchat", "!emoteusageinchat");
@@ -257,7 +260,11 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!abercrombie", "!abercrombie");
         commandTranslationMap.put("!scottlynch", "!scottlynch");
         commandTranslationMap.put("!doyle","!doyle");
+        commandTranslationMap.put("!arthurconandoyle","!doyle");
         commandTranslationMap.put("!churchill","!churchill");
         commandTranslationMap.put("!einstein","!einstein");
+
+        commandTranslationMap.put("!heartsbob", "!heartsbob");
+        commandTranslationMap.put("!heartbob", "!heartsbob");
     }
 }

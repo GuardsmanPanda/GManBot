@@ -46,6 +46,7 @@ public class TwitchChatExtras extends ListenerAdapter {
             case "!setwelcomemessage": setWelcomeMessage(chatMessage); break;
             case "!setflag": setFlag(chatMessage); break;
             case "!chatstats": chatStats(chatMessage); break;
+            case "!heartsbob": heartsBob(chatMessage); break;
         }
     }
 
@@ -148,15 +149,16 @@ public class TwitchChatExtras extends ListenerAdapter {
         BobsDatabaseHelper.setWelcomeMessage(chatMessage.userID, chatMessage.displayName, chatMessage.getMessageContent());
     }
 
+    private static void heartsBob(TwitchChatMessage chatMessage) { BobsDatabaseHelper.setHeartsBob(chatMessage.userID, chatMessage.displayName); }
+
     private static void setFlag(TwitchChatMessage chatMessage) {
         String flagRequest = chatMessage.getMessageContent().replaceAll("\\W", "").toLowerCase().trim();
-        if (flagRequest.equalsIgnoreCase("!setflag")) flagRequest = "random";
 
         if (flagTranslationMap.containsKey(flagRequest)) {
             System.out.println("Found flag for " + chatMessage.displayName + " flag name: " + flagTranslationMap.get(flagRequest) + " flagRequest: " + flagRequest + " Message: " + chatMessage.message);
             BobsDatabaseHelper.setFlag(chatMessage.userID, chatMessage.displayName, flagTranslationMap.get(flagRequest));
 
-        } else if (flagRequest.equals("random") || flagRequest.equals("!setflag")) {
+        } else if (flagRequest.equals("random")) {
             List<String> flagNames = new ArrayList<>(new HashSet<>(flagTranslationMap.values()));
             String randomFlag = flagNames.get(random.nextInt(flagNames.size()));
             System.out.println("Giving random flag to " + chatMessage.displayName + " flagname: " + randomFlag + " Message: " + chatMessage.message);

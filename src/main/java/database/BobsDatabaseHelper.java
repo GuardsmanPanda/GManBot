@@ -1,5 +1,6 @@
 package database;
 
+import twitch.TwitchWebChatOverlay;
 import utility.FinalPair;
 import utility.FinalTriple;
 import webapi.Twitchv5;
@@ -27,10 +28,16 @@ public class BobsDatabaseHelper {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
         cachedUserIDs.put(twitchUserID, twitchDisplayName);
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET flag = ?, twitchDisplayName = ? WHERE twitchUserID = ?", flagName, twitchDisplayName, twitchUserID);
+        TwitchWebChatOverlay.invalidateIcon(twitchUserID);
     }
     public static void setHasSubscribed(String twitchUserID, String twitchDisplayName) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET hasSubscribed = true WHERE twitchUserID = ?", twitchUserID);
+    }
+    public static void setHeartsBob(String twitchUserID, String twitchDisplayName) {
+        createUserIfNotExists(twitchUserID, twitchDisplayName);
+        BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET heartsBob = true WHERE twitchUserID = ?", twitchUserID);
+        TwitchWebChatOverlay.invalidateIcon(twitchUserID);
     }
     public static void setSongRatingReminder(String twitchUserID, String twitchDisplayName, boolean reminderValue) {
         createUserIfNotExists(twitchUserID, twitchDisplayName);
@@ -74,10 +81,18 @@ public class BobsDatabaseHelper {
     public static String getTwitchUserID(String twitchDisplayName) {
         return BobsDatabase.getStringFromSQL("SELECT twitchUserID FROM TwitchChatUsers WHERE twitchLowerCaseName = ?", twitchDisplayName.toLowerCase());
     }
+
+    public static String getFlagName(String twitchUserID) {
+        return BobsDatabase.getStringFromSQL("SELECT flag FROM TwitchChatUsers WHERE twitchUserID = ?", twitchUserID);
+    }
+    public static boolean getHeartsBob(String twitchUserID) {
+        return BobsDatabase.getBooleanFromSQL("SELECT heartsBob FROM TwitchChatUsers WHERE twitchUserID = ?", twitchUserID);
+    }
+    /*
     public static String getFlagFromTwitchName(String twitchName) {
         String flagName = BobsDatabase.getStringFromSQL("SELECT flag FROM twitchChatUsers WHERE twitchLowerCaseName = ?", twitchName.toLowerCase());
         return (flagName.isEmpty()) ? "none" : flagName;
-    }
+    }*/
     public static boolean getHasSubscribed(String twitchUserID) {
         return BobsDatabase.getBooleanFromSQL("SELECT hasSubscribed FROM TwitchChatUsers WHERE twitchUserID = ?", twitchUserID);
     }

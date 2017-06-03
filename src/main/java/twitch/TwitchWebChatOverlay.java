@@ -5,21 +5,41 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import database.BobsDatabaseHelper;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class TwitchWebChatOverlay {
-    private static HashMap<String, byte[]> flagCache = new HashMap<>();
+    private static Map<String, Image> flagCache = new HashMap<>();
+    private static Map<String, byte[]> iconCache = new ConcurrentHashMap<>();
+    private static final byte[] emptyImageBytes;
+    private static final Image heartImage;
+
+    static {
+        BufferedImage newImage = new BufferedImage(53, 22, BufferedImage.TYPE_INT_ARGB);
+        Graphics graphics = newImage.createGraphics();
+        graphics.setColor(new Color(0,0,0,0));
+        try {
+            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            ImageIO.write(newImage, "jpg", byteStream);
+            emptyImageBytes = byteStream.toByteArray();
+            heartImage = ImageIO.read(new File("Data/Icons/heart.png")).getScaledInstance(22, 22, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't create emptyImage");
+        }
+    }
+
+    public static void invalidateIcon(String twitchUserID) { iconCache.remove(twitchUserID); }
 
     //TODO Consolidate all HTTP servers into one dispatcher.
     public static void startHttpService() {
@@ -34,30 +54,51 @@ public class TwitchWebChatOverlay {
         }
     }
 
+    //flag icon 30wx22h, heart icon: 22x22
     static class flagHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
             String requestURI = httpExchange.getRequestURI().toString();
-            String twitchUser = requestURI.substring(requestURI.lastIndexOf("/") + 1, requestURI.indexOf("?")).toLowerCase();
+            String twitchUserName = requestURI.substring(requestURI.lastIndexOf("/") + 1, requestURI.indexOf("?")).toLowerCase();
+            String twitchUserID = BobsDatabaseHelper.getTwitchUserID(twitchUserName);
+
             httpExchange.getRequestBody().close();
 
-            //System.out.println(requestURI);
+            byte[] returnImageBytes = emptyImageBytes;
 
-            String flagName = BobsDatabaseHelper.getFlagFromTwitchName(twitchUser);
+            if (!twitchUserID.isEmpty()) {
+                String flagName = BobsDatabaseHelper.getFlagName(twitchUserID);
 
-            flagCache.computeIfAbsent(flagName, flag -> {
-                System.out.println("Loading Flag: " + flagName);
-                File flagFile = new File("Data/Flags/Images/" + flagName + ".png");
-                try {
-                    return Files.readAllBytes(flagFile.toPath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException();
-                }
-            });
+                Image flagImage = flagCache.computeIfAbsent(flagName, flag -> {
+                    System.out.println("Loading Flag: " + flagName);
+                    File flagFile = new File("Data/Flags/Images/" + flagName + ".png");
+                    try {
+                        return ImageIO.read(flagFile).getScaledInstance(30, 22, Image.SCALE_SMOOTH);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException();
+                    }
+                });
 
-            httpExchange.sendResponseHeaders(200, flagCache.get(flagName).length);
-            httpExchange.getResponseBody().write(flagCache.get(flagName));
+                returnImageBytes = iconCache.computeIfAbsent(twitchUserID, icon -> {
+                    BufferedImage newImage = new BufferedImage(53, 22, BufferedImage.TYPE_INT_ARGB);
+                    Graphics graphics = newImage.createGraphics();
+                    graphics.setColor(new Color(0,0,0,0));
+                    if (BobsDatabaseHelper.getHeartsBob(twitchUserID)) graphics.drawImage(heartImage, 0,0, null);
+                    graphics.drawImage(flagImage, 23, 0, null);
+                    try {
+                        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+                        ImageIO.write(newImage, "png", byteStream);
+                        return byteStream.toByteArray();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException();
+                    }
+                });
+            }
+
+            httpExchange.sendResponseHeaders(200, returnImageBytes.length);
+            httpExchange.getResponseBody().write(returnImageBytes);
             httpExchange.close();
         }
     }
