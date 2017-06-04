@@ -45,6 +45,7 @@ public class BobsDatabase {
         }
 
         try {
+            connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD centsDonated INTEGER NOT NULL DEFAULT 0");
             connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD songQuoteReminder BOOLEAN NOT NULL DEFAULT false");
             connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD statHide BOOLEAN NOT NULL DEFAULT false");
             connection.createStatement().execute("ALTER TABLE TwitchChatUsers ADD flag VARCHAR(40) NOT NULL DEFAULT 'none'");

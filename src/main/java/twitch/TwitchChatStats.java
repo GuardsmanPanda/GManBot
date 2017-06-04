@@ -58,6 +58,8 @@ public class TwitchChatStats extends ListenerAdapter {
             case "!statunhide": statHide(chatMessage, false);
 
             case "!totalstats": sendTotalStats();
+
+            case "!donationcheck": sendDonationAmount(chatMessage);
         }
     }
 
@@ -135,11 +137,12 @@ public class TwitchChatStats extends ListenerAdapter {
         if (emoteString.isEmpty()) TwitchChat.sendMessage("No Emotes For You!");
         else TwitchChat.sendMessage(outputString + emoteString);
     }
-    private synchronized void sendEmoteStats(TwitchChatMessage chatMessage, boolean allEmotes, boolean everyone) {
-        if (nextStatTime.isAfter(Instant.now())) return;
-        nextStatTime = Instant.now().plusSeconds(12);
-
-        int days = 30;
+    private void sendEmoteStats(TwitchChatMessage chatMessage, boolean allEmotes, boolean everyone) {
+        synchronized (this) {
+            if (nextStatTime.isAfter(Instant.now())) return;
+            nextStatTime = Instant.now().plusSeconds(12);
+        }
+        int days = 60;
         try { days = Integer.parseInt(chatMessage.getMessageContent()); } catch (NumberFormatException nfe) { /*empty on purpose*/ }
 
         String printString = "Emote usage" +((everyone)?"":", by people in chat,") + " in the past " + days + " days: ";
@@ -151,5 +154,10 @@ public class TwitchChatStats extends ListenerAdapter {
                 .map(entry -> entry.getKey() + " " + intFormat.format(entry.getValue()))
                 .collect(Collectors.joining(" \uD83D\uDD38 "));
         TwitchChat.sendMessage(printString);
+    }
+
+    private void sendDonationAmount(TwitchChatMessage chatMessage) {
+        int donationCents = BobsDatabaseHelper.getCentsDonated(chatMessage.userID);
+        TwitchChat.sendMessage(chatMessage.displayName + " -> Amount Donated: " + donationCents / 100 + "$");
     }
 }

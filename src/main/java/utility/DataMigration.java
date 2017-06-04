@@ -2,8 +2,6 @@ package utility;
 
 import database.BobsDatabaseHelper;
 
-import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.RowSetProvider;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -16,12 +14,24 @@ public class DataMigration {
 
     //TODO: merge stats from people who changed name .. mkrh88 -> Eremiter .. (insidious void) ... immaanime -> im2be .. a
     public static void main(String[] args) throws Exception {
+        /*
         Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
         Connection databaseConnection = DriverManager.getConnection("jdbc:derby:gmanbotdb");
-        CachedRowSet cachedRowSet = RowSetProvider.newFactory().createCachedRowSet();
-
-        cachedRowSet.populate(databaseConnection.createStatement().executeQuery("SELECT * FROM Chat WHERE twitchName = '" + "chooseneye" + "'"));
-        PrettyPrinter.prettyPrintCachedRowSet(cachedRowSet, 100);
+        ResultSet resultSet = databaseConnection.createStatement().executeQuery("SELECT name, amountInCents FROM Donations");
+        while (resultSet.next()) {
+            String name = resultSet.getString("name");
+            if (name.equalsIgnoreCase("shadowbourne2929")) {
+                name = "Scourgiman2381";
+                String twitchID = BobsDatabaseHelper.getTwitchUserID(name);
+                if (twitchID.isEmpty()) {
+                    System.out.println("Could still not find name for " + name);
+                } else {
+                    int amount = resultSet.getInt("amountInCents");
+                    BobsDatabaseHelper.addCentsDonated(twitchID, amount);
+                }
+            }
+        }
+        */
     }
 
     public static void mergeOldChatName(String oldName, String newName) throws SQLException, ClassNotFoundException {

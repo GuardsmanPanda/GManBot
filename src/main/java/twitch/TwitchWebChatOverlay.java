@@ -12,6 +12,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,9 +25,12 @@ public class TwitchWebChatOverlay {
     private static Map<String, byte[]> iconCache = new ConcurrentHashMap<>();
     private static final byte[] emptyImageBytes;
     private static final Image heartImage;
+    private static final Image bronze;
+    private static final Image silver;
+    private static final Image gold;
 
     static {
-        BufferedImage newImage = new BufferedImage(53, 22, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage newImage = new BufferedImage(76, 22, BufferedImage.TYPE_INT_ARGB);
         Graphics graphics = newImage.createGraphics();
         graphics.setColor(new Color(0,0,0,0));
         try {
@@ -34,6 +38,9 @@ public class TwitchWebChatOverlay {
             ImageIO.write(newImage, "jpg", byteStream);
             emptyImageBytes = byteStream.toByteArray();
             heartImage = ImageIO.read(new File("Data/Icons/heart.png")).getScaledInstance(22, 22, Image.SCALE_SMOOTH);
+            bronze = ImageIO.read(new File("Data/Icons/bronzeStar.png")).getScaledInstance(22, 22, Image.SCALE_SMOOTH);
+            silver = ImageIO.read(new File("Data/Icons/silverStar.png")).getScaledInstance(22, 22, Image.SCALE_SMOOTH);
+            gold = ImageIO.read(new File("Data/Icons/goldStar.png")).getScaledInstance(22, 22, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create emptyImage");
         }
@@ -81,11 +88,24 @@ public class TwitchWebChatOverlay {
                 });
 
                 returnImageBytes = iconCache.computeIfAbsent(twitchUserID, icon -> {
-                    BufferedImage newImage = new BufferedImage(53, 22, BufferedImage.TYPE_INT_ARGB);
+                    java.util.List<Image> imagesToDraw = new ArrayList<>();
+                    int donated = BobsDatabaseHelper.getCentsDonated(twitchUserID);
+                    if (donated > 12000) imagesToDraw.add(gold);
+                    else if (donated > 2000) imagesToDraw.add(silver);
+                    else if (donated > 500) imagesToDraw.add(bronze);
+
+                    if (BobsDatabaseHelper.getHeartsBob(twitchUserID)) imagesToDraw.add(heartImage);
+
+                    imagesToDraw.add(flagImage);
+
+                    BufferedImage newImage = new BufferedImage(76, 22, BufferedImage.TYPE_INT_ARGB);
                     Graphics graphics = newImage.createGraphics();
                     graphics.setColor(new Color(0,0,0,0));
-                    if (BobsDatabaseHelper.getHeartsBob(twitchUserID)) graphics.drawImage(heartImage, 0,0, null);
-                    graphics.drawImage(flagImage, 23, 0, null);
+
+                    for (int i = 0; i < imagesToDraw.size(); i++) {
+                        graphics.drawImage(imagesToDraw.get(i), 23 * i + (3 - imagesToDraw.size()) * 23, 0, null);
+                    }
+
                     try {
                         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
                         ImageIO.write(newImage, "png", byteStream);
