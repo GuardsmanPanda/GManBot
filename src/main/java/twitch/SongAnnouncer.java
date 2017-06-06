@@ -16,7 +16,6 @@ import webapi.Twitchv5;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +111,8 @@ public class SongAnnouncer extends ListenerAdapter {
 
                 //Add long delay before song rating reminder, so allow for people to rate the song and not be reminded.
                 try { Thread.sleep(23000); } catch (InterruptedException e) { e.printStackTrace(); }
-                Set<String> peopleInChat = TwitchChat.getActiveUserIDsInChannel(Duration.ofMinutes(90));
+                Set<String> peopleInChat = TwitchChat.getUserIDsInChannel();
+
                 String remindString = ratingReminderMap.keySet().stream()
                         .filter(peopleInChat::contains)
                         .filter(twitchID -> SongDatabase.getIndividualSongRating(twitchID, newSongName) == 0)

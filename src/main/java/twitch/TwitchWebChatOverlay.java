@@ -24,23 +24,24 @@ public class TwitchWebChatOverlay {
     private static Map<String, Image> flagCache = new HashMap<>();
     private static Map<String, byte[]> iconCache = new ConcurrentHashMap<>();
     private static final byte[] emptyImageBytes;
+    private static final int ICONHEIGHT = 22;
     private static final Image heartImage;
     private static final Image bronze;
     private static final Image silver;
     private static final Image gold;
 
     static {
-        BufferedImage newImage = new BufferedImage(76, 22, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage newImage = new BufferedImage(76, ICONHEIGHT, BufferedImage.TYPE_INT_ARGB);
         Graphics graphics = newImage.createGraphics();
         graphics.setColor(new Color(0,0,0,0));
         try {
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
             ImageIO.write(newImage, "jpg", byteStream);
             emptyImageBytes = byteStream.toByteArray();
-            heartImage = ImageIO.read(new File("Data/Icons/heart.png")).getScaledInstance(22, 22, Image.SCALE_SMOOTH);
-            bronze = ImageIO.read(new File("Data/Icons/bronzeStar.png")).getScaledInstance(22, 22, Image.SCALE_SMOOTH);
-            silver = ImageIO.read(new File("Data/Icons/silverStar.png")).getScaledInstance(22, 22, Image.SCALE_SMOOTH);
-            gold = ImageIO.read(new File("Data/Icons/goldStar.png")).getScaledInstance(22, 22, Image.SCALE_SMOOTH);
+            heartImage = ImageIO.read(new File("Data/Icons/heart.png")).getScaledInstance(ICONHEIGHT, ICONHEIGHT, Image.SCALE_SMOOTH);
+            bronze = ImageIO.read(new File("Data/Icons/bronzeStar.png")).getScaledInstance(ICONHEIGHT, ICONHEIGHT, Image.SCALE_SMOOTH);
+            silver = ImageIO.read(new File("Data/Icons/silverStar.png")).getScaledInstance(ICONHEIGHT, ICONHEIGHT, Image.SCALE_SMOOTH);
+            gold = ImageIO.read(new File("Data/Icons/goldStar.png")).getScaledInstance(ICONHEIGHT, ICONHEIGHT, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create emptyImage");
         }
@@ -80,7 +81,7 @@ public class TwitchWebChatOverlay {
                     System.out.println("Loading Flag: " + flagName);
                     File flagFile = new File("Data/Flags/Images/" + flagName + ".png");
                     try {
-                        return ImageIO.read(flagFile).getScaledInstance(30, 22, Image.SCALE_SMOOTH);
+                        return ImageIO.read(flagFile).getScaledInstance(30, ICONHEIGHT, Image.SCALE_SMOOTH);
                     } catch (IOException e) {
                         e.printStackTrace();
                         throw new RuntimeException();
@@ -98,12 +99,13 @@ public class TwitchWebChatOverlay {
 
                     imagesToDraw.add(flagImage);
 
-                    BufferedImage newImage = new BufferedImage(76, 22, BufferedImage.TYPE_INT_ARGB);
+                    BufferedImage newImage = new BufferedImage(76, ICONHEIGHT, BufferedImage.TYPE_INT_ARGB);
                     Graphics graphics = newImage.createGraphics();
-                    graphics.setColor(new Color(0,0,0,0));
+                    int startingPixel = (3 - imagesToDraw.size()) * 23;
 
+                    graphics.setColor(new Color(0,0,0,0));
                     for (int i = 0; i < imagesToDraw.size(); i++) {
-                        graphics.drawImage(imagesToDraw.get(i), 23 * i + (3 - imagesToDraw.size()) * 23, 0, null);
+                        graphics.drawImage(imagesToDraw.get(i), 23 * i + startingPixel, 0, null);
                     }
 
                     try {

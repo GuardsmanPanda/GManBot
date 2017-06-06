@@ -169,6 +169,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!randomxkdc", "!randomxkcd");
         commandTranslationMap.put("!randomkxcd", "!randomxkcd");
         commandTranslationMap.put("!randommxkcd", "!randomxkcd");
+        commandTranslationMap.put("!xkcd", "!randomxkcd");
 
         commandTranslationMap.put("!latestxkcd", "!latestxkcd");
         commandTranslationMap.put("!latestxkck", "!latestxkcd");
@@ -253,6 +254,11 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!stephenking","!stephenking");
         commandTranslationMap.put("!king","!stephenking");
+
+        commandTranslationMap.put("!rrmarting", "rrmartin");
+        commandTranslationMap.put("!martin", "rrmartin");
+        commandTranslationMap.put("!georgemartin", "rrmartin");
+        commandTranslationMap.put("!georgerrmartin", "rrmartin");
 
         commandTranslationMap.put("!tolkien", "!tolkien");
         commandTranslationMap.put("!carlin", "!carlin");

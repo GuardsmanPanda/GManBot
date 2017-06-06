@@ -17,6 +17,7 @@ public enum Author {
     ALBERT_EINSTEIN("Albert Einstein", 6, "9810.Albert_Einstein"),
     WINSTON_CHURCHILL("Winston S. Churchill", 4, "14033.Winston_S_Churchill"),
     STEPHEN_KING("Stephen King", 6, "3389.Stephen_King"),
+    GEORGE_RR_MARTIN("George R.R. Martin", 6, "346732.George_R_R_Martin"),
     BRANDON_SANDERSON("Brandon Sanderson", 6, "38550.Brandon_Sanderson");
 
     private static final Author[] values = Author.values();

@@ -31,6 +31,7 @@ public class TwitchChatExtras extends ListenerAdapter {
     private static final NumberFormat intFormat = NumberFormat.getIntegerInstance(Locale.getDefault());
     private static final HashMap<String, LocalDateTime> lastWelcomeMessageTime = new HashMap<>();
     private static final HashMap<String, String> flagTranslationMap = new HashMap<>();
+    private static final List<String> flagNames = new ArrayList<>();
     private static final LocalDateTime startTime = LocalDateTime.now();
     private static final Random random = new Random();
 
@@ -87,6 +88,7 @@ public class TwitchChatExtras extends ListenerAdapter {
                             case "einstein": Quotes.sendQuote(Author.ALBERT_EINSTEIN); break;
                             case "churchill": Quotes.sendQuote(Author.WINSTON_CHURCHILL); break;
                             case "stephenking": Quotes.sendQuote(Author.STEPHEN_KING); break;
+                            case "rrmartin": Quotes.sendQuote(Author.GEORGE_RR_MARTIN); break;
                             default: TwitchChat.sendMessage(welcomeMessage);
                         }
                     }
@@ -157,13 +159,10 @@ public class TwitchChatExtras extends ListenerAdapter {
         if (flagTranslationMap.containsKey(flagRequest)) {
             System.out.println("Found flag for " + chatMessage.displayName + " flag name: " + flagTranslationMap.get(flagRequest) + " flagRequest: " + flagRequest + " Message: " + chatMessage.message);
             BobsDatabaseHelper.setFlag(chatMessage.userID, chatMessage.displayName, flagTranslationMap.get(flagRequest));
-
         } else if (flagRequest.equals("random")) {
-            List<String> flagNames = new ArrayList<>(new HashSet<>(flagTranslationMap.values()));
             String randomFlag = flagNames.get(random.nextInt(flagNames.size()));
             System.out.println("Giving random flag to " + chatMessage.displayName + " flagname: " + randomFlag + " Message: " + chatMessage.message);
             BobsDatabaseHelper.setFlag(chatMessage.userID, chatMessage.displayName, randomFlag);
-
         } else {
             GBUtility.textToBob("could not find flag translation for " + chatMessage.displayName + " Flag translation: " + flagRequest + " Message: " + chatMessage.message);
             System.out.println("could not find flag translation for " + chatMessage.displayName + " Flag translation: " + flagRequest + " Message: " + chatMessage.message);
@@ -177,6 +176,7 @@ public class TwitchChatExtras extends ListenerAdapter {
             for (String flagTranslation : flagTranslations) {
                 String[] flagArray = flagTranslation.split(",");
                 String trueFlagName = flagArray[0];
+                flagNames.add(trueFlagName);
                 for (String flagTranslationName : flagArray) {
                     flagTranslationName = flagTranslationName.replaceAll("\\W", "").toLowerCase().trim();
                     if (translationMap.containsKey(flagTranslationName)) {
@@ -189,6 +189,5 @@ public class TwitchChatExtras extends ListenerAdapter {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error loading the flag translation map");
-        }
     }
-}
+}}

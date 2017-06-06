@@ -1,5 +1,6 @@
 package core;
 
+import experiments.TextGeneration;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import twitch.*;
@@ -29,6 +30,9 @@ public class GManBot extends Application {
         TwitchChat.addListener(new TwitchChatExtras());
         TwitchChat.addListener(new TwitchChatStats());
         TwitchChat.addListener(new GameRatings());
+
+        //Experimental features
+        TwitchChat.addListener(new TextGeneration());
 
         //Start everything else
         TwitchPubSub.connect();
