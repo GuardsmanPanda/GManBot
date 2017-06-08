@@ -89,6 +89,7 @@ public class TwitchChatExtras extends ListenerAdapter {
                             case "churchill": Quotes.sendQuote(Author.WINSTON_CHURCHILL); break;
                             case "stephenking": Quotes.sendQuote(Author.STEPHEN_KING); break;
                             case "rrmartin": Quotes.sendQuote(Author.GEORGE_RR_MARTIN); break;
+                            case "herbert": Quotes.sendQuote(Author.FRANK_HERBERT); break;
                             default: TwitchChat.sendMessage(welcomeMessage);
                         }
                     }

@@ -13,9 +13,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -35,6 +35,7 @@ public class Reddit {
     }
     private static final String USERAGENT = "desktop:gmanbot:v4.0 (by /u/guardsmanbob)";
     private static Map<String, SubRedditWatcher> watchers = new HashMap<>();
+    private static final Random random = new Random();
 
     public static void main(String[] args) {
         System.out.println(getJsonFromURL("https://www.googleapis.com/youtube/v3/videos?prettyPrint=false&part=snippet%2CcontentDetails%2Cstatistics&id=1N9KveJ-FU8&key=AIzaSyClFDVbyiqhHUdYi6o8w-Wv_dqLKP06vNQ"));
@@ -96,7 +97,7 @@ public class Reddit {
             minScoreForPost = scoreToBeat;
             sub = subReddit;
             new Thread(() -> {
-                try { Thread.sleep(ThreadLocalRandom.current().nextInt(400000)); } catch (InterruptedException e) { e.printStackTrace(); }
+                try { Thread.sleep(random.nextInt(400000)); } catch (InterruptedException e) { e.printStackTrace(); }
                 System.out.println("Starting New SubReddit Watcher for r/" + subReddit + ", Score to Beat: " + scoreToBeat);
                 fillAlreadyPostedSet();
                 Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::checkForPost, 1, updateFrequency, TimeUnit.MINUTES);

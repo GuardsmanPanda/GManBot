@@ -1,17 +1,13 @@
 package webapi;
 
 import database.BobsDatabase;
-import jdk.incubator.http.HttpRequest;
 import twitch.TwitchChat;
 import utility.FinalPair;
 import webapi.dataobjects.Author;
 
-import java.net.URI;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 //todo: consider supporting quote by tag as well (we could technically cheat and make the tag and 'author') .. but then we maybe wanna knowt he quote auther and.. now its complciated.
 public class Quotes {
@@ -20,7 +16,7 @@ public class Quotes {
     public static void sendQuote(Author author) {
         synchronized (Quotes.class) {
             if (nextQuoteTime.isAfter(Instant.now())) return;
-            nextQuoteTime = Instant.now().plusSeconds(12);
+            nextQuoteTime = Instant.now().plusSeconds(8);
         }
 
         String quote = getQuote(author);
@@ -87,19 +83,7 @@ public class Quotes {
      * //TODO contemplate saving the rawQuote for display in overlay
      */
     private static List<String> getQuoteList(Author author) {
-        List<String> returnList =  author.getQuoteURLs()
-                .map(url -> HttpRequest.newBuilder(URI.create(url)).GET().build())
-                .map(WebClient::getStringFromRequest)
-                .flatMap(rawWebPage -> Stream.of(rawWebPage.split("<div class=\"quoteText\">")))
-                .filter(rawQuote -> rawQuote.contains("<br>  &#8213;\n    <a class=\"authorOrTitle\""))
-                .map(rawQuote -> rawQuote.substring(0, rawQuote.indexOf("<br>  &#8213;\n    <a class=\"authorOrTitle\"")).trim())
-                .map(quote -> quote.replaceAll("&ldquo;", "“"))
-                .map(quote -> quote.replaceAll("&rdquo;", "”"))
-                .map(quote -> quote.replaceAll("<br />", " "))
-                .map(quote -> quote.replaceAll("</?[^>]>", ""))
-                .filter(quote -> quote.length() + author.name.length() < 490) // make sure a quote message fits in 1 line on twitch
-                .collect(Collectors.toList());
-
+        List<String> returnList =  author.getQuotes(470);
         System.out.println("Found " + returnList.size() + " Quotes For " + author.name);
         Collections.shuffle(returnList);
         return returnList;

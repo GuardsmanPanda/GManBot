@@ -9,6 +9,7 @@ import twitch.TwitchChat;
 
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 
 public class TextGeneration extends ListenerAdapter {
@@ -20,21 +21,23 @@ public class TextGeneration extends ListenerAdapter {
     }
 
     public static String generateText() {
-        StringBuffer output = new StringBuffer();
-        String lastWord = "START";
-         while (output.length() < 250) {
-             String newWord = "END";
-             if (output.length() < random.nextInt(150) + 100 || !textModel.get(lastWord).contains("END")) {
-                 String[] wordArray = textModel.get(lastWord).toArray(new String[0]);
-                 newWord = wordArray[random.nextInt(wordArray.length)];
-             }
-
-             if (newWord.equals("END")) break;
-             if (!lastWord.equals("START")) output.append(" ");
-             output.append(newWord);
-             lastWord = newWord;
-         }
-         return output.toString();
+        StringBuilder output = new StringBuilder();
+        String lastWord = textModel.get("START").toArray(new String[0])[random.nextInt(textModel.get("START").size())];
+        output.append(lastWord);
+        while (output.length() < 250) {
+            if (lastWord.endsWith("END")) {
+                output.setLength(output.indexOf("END"));
+                break;
+            }
+            String[] lastWords = lastWord.split(" ");
+            List<String> newWords = textModel.get(lastWords[0]).stream()
+                    .filter(word -> random.nextInt(8) == 0 || word.split(" ")[0].equals(lastWords[1])) // 50% chance that 3 words in a row must match
+                    .collect(Collectors.toList());
+            lastWord = newWords.get(random.nextInt(newWords.size()));
+            output.append(" ");
+            output.append(lastWord.split(" ")[1]);
+        }
+        return output.toString();
     }
 
     @Override
@@ -44,17 +47,18 @@ public class TextGeneration extends ListenerAdapter {
     }
 
     private static void loadTextModel() {
-        List<String> textList = BobsDatabase.getListFromSQL("SELECT chatLine FROM ChatLines WHERE LENGTH(chatLine) > 30 ORDER BY timeStamp DESC FETCH FIRST 100000 ROWS ONLY", String.class);
-        textList.forEach(line -> {
-            String[] wordArray = line.split(" ");
-            String lastWord = "START";
-            for (String word : wordArray) {
-                if (!word.contains("http://") || !word.contains(".com") || !word.contains("https://")) {
-                    textModel.put(lastWord, word);
-                    lastWord = word;
-                }
-            }
-            textModel.put(lastWord, "END");
-        });
+        List<String> textList = BobsDatabase.getListFromSQL("SELECT chatLine FROM ChatLines WHERE LENGTH(chatLine) > 20 ORDER BY timeStamp DESC FETCH FIRST 100000 ROWS ONLY", String.class);
+        System.out.println("TEXT LIST SIZE: " + textList.size());
+        textList.stream()
+                .filter(text -> !text.contains("http://") && !text.contains(".com") && !text.contains("https://"))
+                .forEach(line -> {
+                    String[] wordArray = line.split(" ");
+                    String lastWord = "START";
+                    for (int i = 1; i < wordArray.length; i++) {
+                        textModel.put(lastWord, wordArray[i - 1] + " " + wordArray[i]);
+                        lastWord = wordArray[i - 1];
+                    }
+                    textModel.put(lastWord, wordArray[wordArray.length-1] + " END");
+                });
     }
 }

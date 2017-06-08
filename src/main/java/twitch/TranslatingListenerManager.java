@@ -255,10 +255,10 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!stephenking","!stephenking");
         commandTranslationMap.put("!king","!stephenking");
 
-        commandTranslationMap.put("!rrmarting", "rrmartin");
-        commandTranslationMap.put("!martin", "rrmartin");
-        commandTranslationMap.put("!georgemartin", "rrmartin");
-        commandTranslationMap.put("!georgerrmartin", "rrmartin");
+        commandTranslationMap.put("!rrmarting", "!rrmartin");
+        commandTranslationMap.put("!martin", "!rrmartin");
+        commandTranslationMap.put("!georgemartin", "!rrmartin");
+        commandTranslationMap.put("!georgerrmartin", "!rrmartin");
 
         commandTranslationMap.put("!tolkien", "!tolkien");
         commandTranslationMap.put("!carlin", "!carlin");
@@ -269,6 +269,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!arthurconandoyle","!doyle");
         commandTranslationMap.put("!churchill","!churchill");
         commandTranslationMap.put("!einstein","!einstein");
+        commandTranslationMap.put("!herbert","!herbert");
 
         commandTranslationMap.put("!heartsbob", "!heartsbob");
         commandTranslationMap.put("!heartbob", "!heartsbob");
