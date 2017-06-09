@@ -7,6 +7,7 @@ import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import twitch.TwitchChat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -30,12 +31,20 @@ public class TextGeneration extends ListenerAdapter {
                 break;
             }
             String[] lastWords = lastWord.split(" ");
-            List<String> newWords = textModel.get(lastWords[0]).stream()
-                    .filter(word -> random.nextInt(8) == 0 || word.split(" ")[0].equals(lastWords[1])) // 50% chance that 3 words in a row must match
-                    .collect(Collectors.toList());
-            lastWord = newWords.get(random.nextInt(newWords.size()));
-            output.append(" ");
-            output.append(lastWord.split(" ")[1]);
+            boolean oneWord = random.nextInt(5) != 0;
+            if (oneWord) {
+                List<String> newWords = textModel.get(lastWords[0]).stream()
+                        .filter(word -> word.split(" ")[0].equals(lastWords[1]))
+                        .collect(Collectors.toList());
+                lastWord = newWords.get(random.nextInt(newWords.size()));
+                output.append(" ");
+                output.append(lastWord.split(" ")[1]);
+            } else {
+                List<String> newWords = new ArrayList<>(textModel.get(lastWords[1]));
+                lastWord = newWords.get(random.nextInt(newWords.size()));
+                output.append(" ");
+                output.append(lastWord);
+            }
         }
         return output.toString();
     }
@@ -58,7 +67,7 @@ public class TextGeneration extends ListenerAdapter {
                         textModel.put(lastWord, wordArray[i - 1] + " " + wordArray[i]);
                         lastWord = wordArray[i - 1];
                     }
-                    textModel.put(lastWord, wordArray[wordArray.length-1] + " END");
+                    textModel.put(lastWord, wordArray[wordArray.length - 1] + " END");
                 });
     }
 }
