@@ -1,20 +1,18 @@
 package experiments;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import database.BobsDatabase;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import twitch.TwitchChat;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 
 public class TextGeneration extends ListenerAdapter {
-    private static final Multimap<String, String> textModel = ArrayListMultimap.create();
+    private static final ArrayListMultimap<String, String> textModel = ArrayListMultimap.create();
     private static final Random random = new Random();
 
     static {
@@ -23,26 +21,31 @@ public class TextGeneration extends ListenerAdapter {
 
     public static String generateText() {
         StringBuilder output = new StringBuilder();
-        String lastWord = textModel.get("START").toArray(new String[0])[random.nextInt(textModel.get("START").size())];
+        String lastWord = textModel.get("START").get(random.nextInt(textModel.get("START").size()));
         output.append(lastWord);
+
         while (output.length() < 250) {
             if (lastWord.endsWith("END")) {
                 output.setLength(output.indexOf("END"));
                 break;
             }
+            output.append(" ");
             String[] lastWords = lastWord.split(" ");
+
             boolean oneWord = random.nextInt(6) != 0;
             if (oneWord) {
                 List<String> newWords = textModel.get(lastWords[0]).stream()
                         .filter(word -> word.split(" ")[0].equals(lastWords[1]))
                         .collect(Collectors.toList());
                 lastWord = newWords.get(random.nextInt(newWords.size()));
-                output.append(" ");
                 output.append(lastWord.split(" ")[1]);
             } else {
-                List<String> newWords = new ArrayList<>(textModel.get(lastWords[1]));
+                List<String> newWords = textModel.get(lastWords[1]);
+                if (newWords.isEmpty()) {
+                    System.out.println("Empty word list, found end of string");
+                    break;
+                }
                 lastWord = newWords.get(random.nextInt(newWords.size()));
-                output.append(" ");
                 output.append(lastWord);
             }
         }
