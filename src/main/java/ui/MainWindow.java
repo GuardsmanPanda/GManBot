@@ -1,8 +1,8 @@
 package ui;
 
+import core.StreamWebOverlay;
 import database.BobsDatabase;
 import database.SongDatabase;
-import experiments.TextGeneration;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -125,10 +125,11 @@ public class MainWindow {
         });
 
 
-        Button textTestButton = new Button("New Text");
-        textTestButton.setOnAction(event -> {
-            System.out.println(TextGeneration.generateText());
-        });
+        Button showImage = new Button("Show Image");
+        showImage.setOnAction(action -> StreamWebOverlay.showEmoteImage());
+
+        Button hideImage = new Button("Hide Image");
+        hideImage.setOnAction(action -> StreamWebOverlay.hideEmoteImage());
 
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.CENTER_LEFT);
@@ -137,7 +138,8 @@ public class MainWindow {
         gridPane.add(toggleNameSelectorButton, 1, 0);
         gridPane.add(sqlInput, 0, 1);
         gridPane.add(printSQLButton, 1, 1);
-        gridPane.add(textTestButton, 0, 2);
+        gridPane.add(showImage, 0, 2);
+        gridPane.add(hideImage, 1, 2);
 
         tab.setContent(gridPane);
         return tab;

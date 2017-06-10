@@ -66,7 +66,10 @@
     <div id="vote5" class="vote">2</div><br />
 </div>
 
+<div id="bobEmotes" style="position: absolute; top: 890px; left: 0px; width: 100%;"></div>
+
 <script>
+    $('#bobEmotes').fadeOut(10);
     var songName = "Guardsman Bob";
     var songRating = "0,00";
     var songNumRatings = 0;
@@ -95,11 +98,13 @@
             else if (messageJSON.type === "voteEnd") voteEnd(messageJSON);
             else if (messageJSON.type === "voteUpdate") voteUpdate(messageJSON);
             else if (messageJSON.type === "quote") quoteUpdate(messageJSON);
+            else if (messageJSON.type === "bobEmotes") bobEmotesUpdate(messageJSON);
         }
         connection.onclose = function(event) {
             setTimeout(startWebSocket, 5000);
         }
     }
+
 
     function gameRatingUpdate(data) {
         $('.gameName').find('li').html(data.gameName);
@@ -198,10 +203,25 @@
         $('.quoteText').textillate('start');
 
     }
+    function newAuthorIn() { $('.quoteAuthor').textillate('start'); }
 
-    function newAuthorIn() {
-        $('.quoteAuthor').textillate('start');
+
+    function bobEmotesUpdate(data) {
+        console.log('bobEmotes, showImage = ' + data.showImage);
+        if (data.showImage == true) {
+            if (document.getElementById('bobEmotesImage') == null) {
+                var image = document.createElement('img');
+                image.id = 'bobEmotesImage';
+                image.style.width = '100%';
+                image.src = 'data:image/png;base64,' + data.imageData;
+                document.getElementById('bobEmotes').appendChild(image);
+            }
+            $('#bobEmotes').fadeIn(2000);
+        } else {
+            $('#bobEmotes').fadeOut(2000);
+        }
     }
+
 
     function voteStart(data) {
 

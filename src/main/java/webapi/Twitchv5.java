@@ -65,6 +65,7 @@ public class Twitchv5 {
         }
     }
 
+    //TODO: cache emoteNames sowe only request them once per session
     public static Set<String> getBobsEmoticonSet() {
         return getEmoticonSet("581");
     }

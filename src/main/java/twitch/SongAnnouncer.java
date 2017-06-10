@@ -77,10 +77,10 @@ public class SongAnnouncer extends ListenerAdapter {
 
         //Start quote announcer if intro song
         if (newSongName.equalsIgnoreCase("The xx - Intro") && Twitchv5.getStreamUpTime().toMinutes() < 15) {
-            StreamWebOverlay.startQuoteOverlayService();
+            StreamWebOverlay.streamIntro();
         }
         //Stop quote overlay service if last song was the Megas
-        if (displayOnStreamSong.equalsIgnoreCase("The Megas - History Repeating Pt. 2 (One Last Time)")) StreamWebOverlay.stopQuoteOverlayService();
+        if (displayOnStreamSong.equalsIgnoreCase("The Megas - History Repeating Pt. 2 (One Last Time)")) StreamWebOverlay.endStreamIntro();
 
         Pair<Float, Integer> lastSongPair = SongDatabase.getSongRating(displayOnStreamSong);
         String lastSongString = displayOnStreamSong + " ⏩ Rating: " + String.format("%.2f", lastSongPair.getKey()) + " [" + lastSongPair.getValue() + "]";

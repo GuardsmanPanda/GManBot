@@ -36,7 +36,7 @@ public class SeenEvent {
 
     public String lastSeen() {
         if (notSeenFor.toDays() < 7) return PrettyPrinter.timeStringFromDuration(notSeenFor);
-        else return PrettyPrinter.timeStringFromPeriod(Period.from(notSeenFor));
+        else return PrettyPrinter.timeStringFromPeriod(Period.ofDays((int)notSeenFor.toDays()));
     }
     public String getDisplayName() { return displayName; }
     public String getLastChatLine() { return lastChatLine; }

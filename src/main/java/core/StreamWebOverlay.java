@@ -10,12 +10,19 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import utility.FinalPair;
 import webapi.Quotes;
+import webapi.Twitchv5;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class StreamWebOverlay {
@@ -51,8 +58,65 @@ public class StreamWebOverlay {
         socketServer.sendMessage(node.toString());
     }
 
+    public static void streamIntro() {
+        startQuoteOverlayService();
+        showEmoteImage();
+    }
 
-    public static void startQuoteOverlayService() {
+
+    public static void endStreamIntro() {
+        stopQuoteOverlayService();
+        hideEmoteImage();
+    }
+
+    public static void showEmoteImage() {
+        int PADDING = 6;
+        ObjectNode root = JsonNodeFactory.instance.objectNode();
+        root.put("type", "bobEmotes");
+        root.put("showImage", true);
+
+        List<Image> emoteImages = Twitchv5.getBobsEmoticonSet().stream()
+                .map(name -> {
+                    try {
+                        return ImageIO.read(new File("Data/Icons/bobEmotes/" + name + ".png"));
+                    } catch (IOException e) {
+                        System.out.println("Error reading " + name);
+                        e.printStackTrace();
+                        throw new RuntimeException("Error loading emoteImages");
+                    }
+                }).collect(Collectors.toList());
+
+        int imageWidth = emoteImages.get(0).getWidth(null);
+        int imageHeight = emoteImages.get(0).getHeight(null);
+        int totalWidth = PADDING*2 + (imageWidth + PADDING) * emoteImages.size();
+
+        System.out.println("iconImage width/height/totalWidth " + imageWidth + "/" + imageHeight + "/" + totalWidth);
+
+        BufferedImage iconImage = new BufferedImage(totalWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics iconGraphics = iconImage.createGraphics();
+
+        for (int i = 0; i < emoteImages.size(); i++) {
+            iconGraphics.drawImage(emoteImages.get(i), PADDING + i * (imageWidth + PADDING), 0, imageWidth, imageHeight, null);
+        }
+
+        try {
+            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            ImageIO.write(iconImage, "png", byteStream);
+            root.put("imageData", byteStream.toByteArray());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        sendJsonToOverlay(root);
+    }
+
+    public static void hideEmoteImage() {
+        ObjectNode root = JsonNodeFactory.instance.objectNode();
+        root.put("type", "bobEmotes");
+        root.put("showImage", false);
+        sendJsonToOverlay(root);
+    }
+
+    private static void startQuoteOverlayService() {
         if (displayQuotes) return;
 
         displayQuotes = true;
@@ -64,7 +128,7 @@ public class StreamWebOverlay {
                 root.put("type", "quote");
                 root.put("quoteText", quotePair.first);
                 root.put("quoteAuthor", quotePair.second);
-                socketServer.sendMessage(root.toString());
+                sendJsonToOverlay(root);
 
                 try {
                     Thread.sleep(10000 + quotePair.first.length() * 65);
@@ -75,7 +139,7 @@ public class StreamWebOverlay {
         }).start();
     }
 
-    public static void stopQuoteOverlayService() {
+    private static void stopQuoteOverlayService() {
         displayQuotes = false;
         new Thread(() -> {
             try {
@@ -87,9 +151,10 @@ public class StreamWebOverlay {
             root.put("type", "quote");
             root.put("quoteText", "");
             root.put("quoteAuthor", "");
-            socketServer.sendMessage(root.toString());
+            sendJsonToOverlay(root);
         }).start();
     }
+
 
     private static class OverlayContext implements HttpHandler {
         @Override

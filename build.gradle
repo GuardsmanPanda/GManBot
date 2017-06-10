@@ -12,13 +12,13 @@ repositories {
 
 dependencies {
     compile 'com.google.guava:guava:21.0'
-    compile 'com.neovisionaries:nv-websocket-client:2.2'
+    compile 'com.neovisionaries:nv-websocket-client:2.2' //for pubsub socket client, can be repalced with java9 weksocket
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.0.pr3'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.0.pr3'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.0.pr3'
     compile group: 'org.apache.derby', name: 'derby', version: '10.13.1.1'
     compile group: 'org.pircbotx', name: 'pircbotx', version: '2.1'
-    compile group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.3.0'
+    compile group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.3.0' //for overlay socketserver, can be repalced with java9 weksocket
     compile group: 'com.1stleg', name: 'jnativehook', version: '2.1.0'
     compile group: 'org.twitter4j', name: 'twitter4j-core', version: '4.0.4'
     compile group: 'com.esotericsoftware.yamlbeans', name: 'yamlbeans', version: '1.08'

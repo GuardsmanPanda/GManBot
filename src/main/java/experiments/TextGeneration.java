@@ -31,7 +31,7 @@ public class TextGeneration extends ListenerAdapter {
                 break;
             }
             String[] lastWords = lastWord.split(" ");
-            boolean oneWord = random.nextInt(5) != 0;
+            boolean oneWord = random.nextInt(6) != 0;
             if (oneWord) {
                 List<String> newWords = textModel.get(lastWords[0]).stream()
                         .filter(word -> word.split(" ")[0].equals(lastWords[1]))
@@ -56,7 +56,7 @@ public class TextGeneration extends ListenerAdapter {
     }
 
     private static void loadTextModel() {
-        List<String> textList = BobsDatabase.getListFromSQL("SELECT chatLine FROM ChatLines WHERE LENGTH(chatLine) > 20 ORDER BY timeStamp DESC FETCH FIRST 100000 ROWS ONLY", String.class);
+        List<String> textList = BobsDatabase.getListFromSQL("SELECT chatLine FROM ChatLines WHERE LENGTH(chatLine) > 20 ORDER BY timeStamp DESC FETCH FIRST 200000 ROWS ONLY", String.class);
         System.out.println("TEXT LIST SIZE: " + textList.size());
         textList.stream()
                 .filter(text -> !text.contains("http://") && !text.contains(".com") && !text.contains("https://"))
