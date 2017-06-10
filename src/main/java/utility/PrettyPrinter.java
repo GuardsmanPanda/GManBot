@@ -17,7 +17,6 @@ import java.util.List;
  */
 public class PrettyPrinter {
 
-    // TItle here (4:30)  . .TItle here [4:30] TItle here - 4:30   TItle here ⏩ 4:30
     public static String shortTimeFromDuration(Duration duration) {
         String returnString = (duration.toHours() > 0) ? duration.toHours() + ":" : "";
         if (duration.toHours() > 0 || duration.toMinutesPart() > 10) returnString += duration.toMinutesPart() / 10;
@@ -39,15 +38,23 @@ public class PrettyPrinter {
 
         return String.join(", ", timeStrings);
     }
+
+
     public static String timeStringFromDuration(Duration duration) {
+        return timeStringFromDuration(duration, false);
+    }
+
+    public static String timeStringFromDuration(Duration duration, boolean milliSeconds) {
         List<String> timeStrings = new ArrayList<>(3);
         long days = duration.toDays();
         int hours = duration.toHoursPart();
         int minutes = duration.toMinutesPart();
+        int ms = duration.toMillisPart();
 
         if (days > 0) timeStrings.add(days + ((days > 1) ? " Days": " Day"));
         if (hours > 0) timeStrings.add(hours + ((hours > 1) ? " Hours": " Hour"));
         if (minutes > 0) timeStrings.add(minutes + ((minutes > 1) ? " Minutes": " Minute"));
+        if (milliSeconds && ms > 0) timeStrings.add(ms + ((ms > 1) ? "ms" : "ms"));
 
         return String.join(", ", timeStrings);
     }
