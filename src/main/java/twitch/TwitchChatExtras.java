@@ -3,6 +3,7 @@ package twitch;
 import database.BobsDatabase;
 import database.BobsDatabaseHelper;
 import database.SongDatabase;
+import experiments.TextGeneration;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.MessageEvent;
@@ -74,6 +75,7 @@ public class TwitchChatExtras extends ListenerAdapter {
                     }
                     else {
                         switch (welcomeMessage.toLowerCase()) {
+                            case "text": TextGeneration.generateText(); break;
                             case "quote": Quotes.sendRandomQuote(); break;
                             case "pratchett": Quotes.sendQuote(Author.TERRY_PRATCHETT); break;
                             case "douglasadams": Quotes.sendQuote(Author.DOUGLAS_ADAMS); break;
@@ -92,6 +94,7 @@ public class TwitchChatExtras extends ListenerAdapter {
                             case "herbert": Quotes.sendQuote(Author.FRANK_HERBERT); break;
                             case "feynman": Quotes.sendQuote(Author.RICHARD_FEYNMAN); break;
                             case "brentweeks": Quotes.sendQuote(Author.BRENT_WEEKS); break;
+                            case "robinhobb": Quotes.sendQuote(Author.ROBIN_HOBB); break;
                             default: TwitchChat.sendMessage(welcomeMessage);
                         }
                     }

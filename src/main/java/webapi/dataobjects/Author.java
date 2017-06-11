@@ -13,21 +13,22 @@ import java.util.stream.Stream;
 public enum Author {
     ALBERT_EINSTEIN("Albert Einstein", 6, "9810.Albert_Einstein"),
     ARTHUR_CONAN_DOYLE("Arthur Conan Doyle", 6, "2448.Arthur_Conan_Doyle"),
+    BRANDON_SANDERSON("Brandon Sanderson", 6, "38550.Brandon_Sanderson"),
     BRENT_WEEKS("Brent Weeks", 6, "1370283.Brent_Weeks"),
     DOUGLAS_ADAMS("Douglas Adams", 6,"4.Douglas_Adams"),
+    FRANK_HERBERT("Frank Herbert", 4, "58.Frank_Herbert"),
     GEORGE_CARLIN("George Carlin", 6,"22782.George_Carlin"),
-    TERRY_PRATCHETT("Terry Pratchett", 12, "1654.Terry_Pratchett"),
+    GEORGE_RR_MARTIN("George R.R. Martin", 6, "346732.George_R_R_Martin"),
+    NEIL_GAIMAN("Neil Gaiman", 6, "1221698.Neil_Gaiman"),
     PATRICK_ROTHFUSS("Patrick Rothfuss", 6,"108424.Patrick_Rothfuss"),
     TOLKIEN("J.R.R. Tolkien", 6,"656983.J_R_R_Tolkien"),
     SCOTT_LYNCH("Scott Lynch", 5,"73149.Scott_Lynch"),
     JOE_ABERCROMBIE("Joe Abercrombie", 6, "276660.Joe_Abercrombie"),
-    NEIL_GAIMAN("Neil Gaiman", 6, "1221698.Neil_Gaiman"),
-    WINSTON_CHURCHILL("Winston S. Churchill", 4, "14033.Winston_S_Churchill"),
+    TERRY_PRATCHETT("Terry Pratchett", 12, "1654.Terry_Pratchett"),
+    ROBIN_HOBB("Robin Hobb", 6, "25307.Robin_Hobb"),
     STEPHEN_KING("Stephen King", 6, "3389.Stephen_King"),
-    GEORGE_RR_MARTIN("George R.R. Martin", 6, "346732.George_R_R_Martin"),
-    FRANK_HERBERT("Frank Herbert", 4, "58.Frank_Herbert"),
     RICHARD_FEYNMAN("Richard Feynman", 6, "1429989.Richard_Feynman"),
-    BRANDON_SANDERSON("Brandon Sanderson", 6, "38550.Brandon_Sanderson");
+    WINSTON_CHURCHILL("Winston S. Churchill", 4, "14033.Winston_S_Churchill");
 
     private static final Author[] values = Author.values();
     private static final Random random = new Random();
