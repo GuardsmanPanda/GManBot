@@ -11,16 +11,17 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public enum Author {
-    TERRY_PRATCHETT("Terry Pratchett", 12, "1654.Terry_Pratchett"),
+    ALBERT_EINSTEIN("Albert Einstein", 6, "9810.Albert_Einstein"),
+    ARTHUR_CONAN_DOYLE("Arthur Conan Doyle", 6, "2448.Arthur_Conan_Doyle"),
+    BRENT_WEEKS("Brent Weeks", 6, "1370283.Brent_Weeks"),
     DOUGLAS_ADAMS("Douglas Adams", 6,"4.Douglas_Adams"),
+    GEORGE_CARLIN("George Carlin", 6,"22782.George_Carlin"),
+    TERRY_PRATCHETT("Terry Pratchett", 12, "1654.Terry_Pratchett"),
     PATRICK_ROTHFUSS("Patrick Rothfuss", 6,"108424.Patrick_Rothfuss"),
     TOLKIEN("J.R.R. Tolkien", 6,"656983.J_R_R_Tolkien"),
     SCOTT_LYNCH("Scott Lynch", 5,"73149.Scott_Lynch"),
-    GEORGE_CARLIN("George Carlin", 6,"22782.George_Carlin"),
     JOE_ABERCROMBIE("Joe Abercrombie", 6, "276660.Joe_Abercrombie"),
     NEIL_GAIMAN("Neil Gaiman", 6, "1221698.Neil_Gaiman"),
-    ARTHUR_CONAN_DOYLE("Arthur Conan Doyle", 6, "2448.Arthur_Conan_Doyle"),
-    ALBERT_EINSTEIN("Albert Einstein", 6, "9810.Albert_Einstein"),
     WINSTON_CHURCHILL("Winston S. Churchill", 4, "14033.Winston_S_Churchill"),
     STEPHEN_KING("Stephen King", 6, "3389.Stephen_King"),
     GEORGE_RR_MARTIN("George R.R. Martin", 6, "346732.George_R_R_Martin"),
@@ -40,13 +41,7 @@ public enum Author {
         pages = quotePages;
         urlEnd = quoteURLEnd;
     }
-    //todo return list of quotes, this allows for use of more sources then just goodreads
-    public Stream<String> getQuoteURLs() {
-        return IntStream.rangeClosed(1, pages)
-                .mapToObj(page -> "https://www.goodreads.com/author/quotes/" + urlEnd + "?page=" + page);
-    }
 
-    //TODO implement this
     public List<String> getQuotes(int maxLength) {
         return IntStream.rangeClosed(1, pages)
                 .mapToObj(page -> "https://www.goodreads.com/author/quotes/" + urlEnd + "?page=" + page)

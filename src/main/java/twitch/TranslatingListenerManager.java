@@ -255,6 +255,9 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!stephenking","!stephenking");
         commandTranslationMap.put("!king","!stephenking");
 
+        commandTranslationMap.put("!brentweeks", "!brentweeks");
+        commandTranslationMap.put("!weeks", "!brentweeks");
+
         commandTranslationMap.put("!rrmarting", "!rrmartin");
         commandTranslationMap.put("!martin", "!rrmartin");
         commandTranslationMap.put("!georgemartin", "!rrmartin");

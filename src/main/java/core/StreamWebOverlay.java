@@ -54,7 +54,7 @@ public class StreamWebOverlay {
      * This will silently fail if the overlay has not established a connection.
      */
     public synchronized static void sendJsonToOverlay(JsonNode node) {
-        System.out.println("* Sending Message to Socket: " + node.toString());
+        //System.out.println("* Sending Message to Socket: " + node.toString());
         socketServer.sendMessage(node.toString());
     }
 
