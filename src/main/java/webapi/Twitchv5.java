@@ -16,6 +16,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -26,6 +28,9 @@ public class Twitchv5 {
     private static final HttpClient httpClient = HttpClient.newHttpClient();
     private static String AuthTokenForBobsChannel = "";
     private static String twitchApiKey = "";
+
+    //Caches
+    private static final Map<String, Set<String>> emoteSetCache = new HashMap<>();
 
     static {
         try {
@@ -65,24 +70,24 @@ public class Twitchv5 {
         }
     }
 
-    //TODO: cache emoteNames sowe only request them once per session
     public static Set<String> getBobsEmoticonSet() {
         return getEmoticonSet("581");
     }
     public static Set<String> getGlobalTwitchEmoteSet() {
-        Set<String> emotes = getEmoticonSet("0");
-        emotes.removeIf(emote -> emote.contains("\\"));
-        return emotes;
+        return getEmoticonSet("0");
     }
     public static Set<String> getEmoticonSet(String emoteSet) {
-        JsonNode root = executeHttpGet("https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=" + emoteSet);
-        if (root != null && root.has("emoticon_sets") && root.get("emoticon_sets").has(emoteSet)) {
-            return StreamSupport.stream(root.get("emoticon_sets").get(emoteSet).spliterator(), false)
-                    .map(node -> node.get("code").asText())
-                    .collect(Collectors.toSet());
-        } else {
-            throw new RuntimeException("Could not rating emote set " + emoteSet);
-        }
+        return emoteSetCache.computeIfAbsent(emoteSet, emoteSetID -> {
+            JsonNode root = executeHttpGet("https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=" + emoteSet);
+            if (root != null && root.has("emoticon_sets") && root.get("emoticon_sets").has(emoteSet)) {
+                return StreamSupport.stream(root.get("emoticon_sets").get(emoteSet).spliterator(), false)
+                        .map(node -> node.get("code").asText())
+                        .filter(emoteString -> !emoteString.contains("\\")) //Remove all emotes that are regex
+                        .collect(Collectors.toSet());
+            } else {
+                throw new RuntimeException("Could not rating emote set " + emoteSet);
+            }
+        });
     }
 
     /**

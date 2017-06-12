@@ -12,6 +12,7 @@ import utility.FinalTriple;
 import utility.GBUtility;
 import utility.PrettyPrinter;
 import webapi.Quotes;
+import webapi.SpaceLaunch;
 import webapi.Twitchv5;
 import webapi.dataobjects.Author;
 
@@ -95,6 +96,7 @@ public class TwitchChatExtras extends ListenerAdapter {
                             case "feynman": Quotes.sendQuote(Author.RICHARD_FEYNMAN); break;
                             case "brentweeks": Quotes.sendQuote(Author.BRENT_WEEKS); break;
                             case "robinhobb": Quotes.sendQuote(Author.ROBIN_HOBB); break;
+                            case "!spacexlaunch": SpaceLaunch.spaceLaunchRequest("spacex"); break;
                             default: TwitchChat.sendMessage(welcomeMessage);
                         }
                     }
