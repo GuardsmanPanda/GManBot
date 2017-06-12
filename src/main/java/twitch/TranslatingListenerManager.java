@@ -63,6 +63,9 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!uptime", "!uptime");
 
+        commandTranslationMap.put("!text", "!text");
+        commandTranslationMap.put("!texts", "!text");
+
         commandTranslationMap.put("!ratereminder", "!ratereminder");
         commandTranslationMap.put("!songreminder", "!ratereminder");
         commandTranslationMap.put("!ratingreminder", "!ratereminder");

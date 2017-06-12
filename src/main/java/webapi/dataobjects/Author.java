@@ -19,15 +19,15 @@ public enum Author {
     FRANK_HERBERT("Frank Herbert", 4, "58.Frank_Herbert"),
     GEORGE_CARLIN("George Carlin", 6,"22782.George_Carlin"),
     GEORGE_RR_MARTIN("George R.R. Martin", 6, "346732.George_R_R_Martin"),
+    JOE_ABERCROMBIE("Joe Abercrombie", 6, "276660.Joe_Abercrombie"),
     NEIL_GAIMAN("Neil Gaiman", 6, "1221698.Neil_Gaiman"),
     PATRICK_ROTHFUSS("Patrick Rothfuss", 6,"108424.Patrick_Rothfuss"),
-    TOLKIEN("J.R.R. Tolkien", 6,"656983.J_R_R_Tolkien"),
-    SCOTT_LYNCH("Scott Lynch", 5,"73149.Scott_Lynch"),
-    JOE_ABERCROMBIE("Joe Abercrombie", 6, "276660.Joe_Abercrombie"),
-    TERRY_PRATCHETT("Terry Pratchett", 12, "1654.Terry_Pratchett"),
-    ROBIN_HOBB("Robin Hobb", 6, "25307.Robin_Hobb"),
-    STEPHEN_KING("Stephen King", 6, "3389.Stephen_King"),
     RICHARD_FEYNMAN("Richard Feynman", 6, "1429989.Richard_Feynman"),
+    ROBIN_HOBB("Robin Hobb", 6, "25307.Robin_Hobb"),
+    SCOTT_LYNCH("Scott Lynch", 5,"73149.Scott_Lynch"),
+    STEPHEN_KING("Stephen King", 6, "3389.Stephen_King"),
+    TERRY_PRATCHETT("Terry Pratchett", 12, "1654.Terry_Pratchett"),
+    TOLKIEN("J.R.R. Tolkien", 6,"656983.J_R_R_Tolkien"),
     WINSTON_CHURCHILL("Winston S. Churchill", 4, "14033.Winston_S_Churchill");
 
     private static final Author[] values = Author.values();
