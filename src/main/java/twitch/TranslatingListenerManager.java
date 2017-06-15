@@ -6,14 +6,20 @@ import org.pircbotx.hooks.managers.ThreadedListenerManager;
 import utility.GBUtility;
 
 import java.util.HashMap;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TranslatingListenerManager extends ThreadedListenerManager {
-    private final HashMap<String, String> fullTranslationMap = new HashMap<>();
-    private final HashMap<String, String> commandTranslationMap = new HashMap<>();
+    private static final HashMap<String, String> fullTranslationMap = new HashMap<>();
+    private static final HashMap<String, String> commandTranslationMap = new HashMap<>();
 
-    public TranslatingListenerManager() {
+    static {
         fillFullTranslationMap();
         fillCommandTranslationMap();
+    }
+
+    public TranslatingListenerManager() {
+
     }
 
     @Override
@@ -35,27 +41,25 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         super.onEvent(event);
     }
 
-    private void fillFullTranslationMap() {
+
+    public static Set<String> getTranslatedCommands() {
+        return commandTranslationMap.values().stream().filter(command -> !command.contains(" ")).collect(Collectors.toSet());
+    }
+
+    private static void fillFullTranslationMap() {
         fullTranslationMap.put("!setflag", "!setflag random");
 
         fullTranslationMap.put("!random xkcd", "!randomxkcd");
         fullTranslationMap.put("!latest xkcd", "!latestxkcd");
-
-        fullTranslationMap.put("!quote pratchett","!pratchett");
-        fullTranslationMap.put("!quote terrypratchett","!pratchett");
-        fullTranslationMap.put("!quote terry pratchett","!pratchett");
-        fullTranslationMap.put("!quote pratchet","!pratchett");
-        fullTranslationMap.put("!quote sanderson","!sanderson");
-        fullTranslationMap.put("!quote douglasadams","!douglasadams");
-        fullTranslationMap.put("!quote douglas adams","!douglasadams");
-        fullTranslationMap.put("!quote adams","!douglasadams");
     }
 
-    private void fillCommandTranslationMap() {
+    private static void fillCommandTranslationMap() {
         commandTranslationMap.put("!commands", "!commands");
         commandTranslationMap.put("!commandlist", "!commands");
         commandTranslationMap.put("!commandslist", "!commands");
         commandTranslationMap.put("!help", "!commands");
+
+        commandTranslationMap.put("!commandstats", "!commandstats");
 
         commandTranslationMap.put("!github", "!github");
         commandTranslationMap.put("!githb", "!github");
@@ -280,6 +284,9 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!einstein","!einstein");
         commandTranslationMap.put("!herbert","!herbert");
         commandTranslationMap.put("!feynman","!feynman");
+
+        commandTranslationMap.put("!herbert","!herbert");
+        commandTranslationMap.put("!frankherbert", "!herbert");
 
         commandTranslationMap.put("!heartsbob", "!heartsbob");
         commandTranslationMap.put("!heartbob", "!heartsbob");

@@ -1,10 +1,7 @@
 package twitch;
 
 import com.google.common.collect.ListMultimap;
-import database.BobsDatabase;
-import database.BobsDatabaseHelper;
-import database.EmoteDatabase;
-import database.SongDatabase;
+import database.*;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import twitch.dataobjects.TwitchChatMessage;
@@ -16,11 +13,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TwitchChatStats extends ListenerAdapter {
     public enum StatType {
         IDLEHOURS("The Sneakiest Lurkers"), ACTIVEHOURS("Biggest Hour Farmers"), TOTALEMOTES("Top Emote Users"), CHATLINES("Top Chatters"), BOBCOINS("One Percenters");
-        final String statMessage;
+        public final String statMessage;
         StatType(String message) { statMessage = message; }
     }
     private static final NumberFormat intFormat = NumberFormat.getIntegerInstance(Locale.getDefault());
@@ -35,33 +33,33 @@ public class TwitchChatStats extends ListenerAdapter {
     public void onMessage(MessageEvent event) {
         TwitchChatMessage chatMessage = new TwitchChatMessage(event);
         switch (chatMessage.getMessageCommand()) {
-            case "!emotestats": sendEmoteStats(chatMessage, false, true); break;
-            case "!allemotestats": sendEmoteStats(chatMessage, true, true); break;
-            case "!emotestatsinchat": sendEmoteStats(chatMessage, false, false); break;
-            case "!allemotestatsinchat": sendEmoteStats(chatMessage, true, false); break;
+            case "!emotestats": emoteStats(chatMessage, false, true); break;
+            case "!allemotestats": emoteStats(chatMessage, true, true); break;
+            case "!emotestatsinchat": emoteStats(chatMessage, false, false); break;
+            case "!allemotestatsinchat": emoteStats(chatMessage, true, false); break;
 
-            case "!myemotestats": sendPersonalEmoteStats(chatMessage); break;
+            case "!myemotestats": personalEmoteStats(chatMessage); break;
+            case "!commandstats": commandStats(true); break;
 
-            case "!activehours": sendTopListStats(StatType.ACTIVEHOURS, true); break;
-            case "!idlehours": sendTopListStats(StatType.IDLEHOURS, true); break;
-            case "!chatlines": sendTopListStats(StatType.CHATLINES, true); break;
-            case "!bobcoins": sendTopListStats(StatType.BOBCOINS, true); break;
-            case "!emoteusage": sendTopListStats(StatType.TOTALEMOTES, true); break;
+            case "!activehours": topListStats(StatType.ACTIVEHOURS, true); break;
+            case "!idlehours": topListStats(StatType.IDLEHOURS, true); break;
+            case "!chatlines": topListStats(StatType.CHATLINES, true); break;
+            case "!bobcoins": topListStats(StatType.BOBCOINS, true); break;
+            case "!emoteusage": topListStats(StatType.TOTALEMOTES, true); break;
 
-            case "!activehoursinchat": sendTopListStats(StatType.ACTIVEHOURS, false); break;
-            case "!idlehoursinchat": sendTopListStats(StatType.IDLEHOURS, false); break;
-            case "!chatlinesinchat": sendTopListStats(StatType.CHATLINES, false); break;
-            case "!bobcoinsinchat": sendTopListStats(StatType.BOBCOINS, false); break;
-            case "!emoteusageinchat": sendTopListStats(StatType.TOTALEMOTES, false); break;
+            case "!activehoursinchat": topListStats(StatType.ACTIVEHOURS, false); break;
+            case "!idlehoursinchat": topListStats(StatType.IDLEHOURS, false); break;
+            case "!chatlinesinchat": topListStats(StatType.CHATLINES, false); break;
+            case "!bobcoinsinchat": topListStats(StatType.BOBCOINS, false); break;
+            case "!emoteusageinchat": topListStats(StatType.TOTALEMOTES, false); break;
 
-            case "!stathide": statHide(chatMessage, true);
-            case "!statunhide": statHide(chatMessage, false);
-
-            case "!totalstats": sendTotalStats();
-
-            case "!donationcheck": sendDonationAmount(chatMessage);
+            case "!stathide": statHide(chatMessage, true); break;
+            case "!statunhide": statHide(chatMessage, false); break;
+            case "!totalstats": totalStats(); break;
+            case "!donationcheck": donationAmount(chatMessage); break;
         }
     }
+
 
     private void statHide(TwitchChatMessage chatMessage, boolean hide) {
         if (hide) statHidingUsers.add(chatMessage.displayName.toLowerCase());
@@ -70,12 +68,13 @@ public class TwitchChatStats extends ListenerAdapter {
         BobsDatabaseHelper.setStatHide(chatMessage.userID, chatMessage.displayName, hide);
     }
 
-    private void sendTopListStats(StatType statType, boolean everyone) {
+    private void topListStats(StatType statType, boolean everyone) {
         synchronized (this) {
             if (nextStatTime.isAfter(Instant.now())) return;
             nextStatTime = Instant.now().plusSeconds(8);
         }
 
+        //TODO add songrating and song quote toplsits
         Set<String> peopleInChat = TwitchChat.getLowerCaseNamesInChannel("#guardsmanbob");
         ListMultimap<String, Integer> names = null;
         switch (statType) {
@@ -89,18 +88,17 @@ public class TwitchChatStats extends ListenerAdapter {
             TwitchChat.sendMessage("Names Is Null");
             return;
         }
-        String statString = names.entries().stream()
+
+        Stream<Map.Entry<String,Integer>> stream = names.entries().stream()
                 .filter(entry -> everyone || peopleInChat.contains(entry.getKey().toLowerCase()))
-                .filter(entry -> !statHidingUsers.contains(entry.getKey().toLowerCase()))
-                .sorted(Comparator.comparingInt(Map.Entry<String, Integer>::getValue).reversed())
-                .map(entry -> entry.getKey() + ": " + intFormat.format(entry.getValue()))
-                .limit(15)
-                .collect(Collectors.joining(" \uD83D\uDD38 "));
+                .filter(entry -> !statHidingUsers.contains(entry.getKey().toLowerCase()));
+
+        String statString = stringFromMapEntryStream(stream,16, ": ");
 
         TwitchChat.sendMessage(statType.statMessage + ((everyone) ? "! -> " : " Currently in Chat! -> ") + statString);
     }
 
-    private void sendTotalStats() {
+    private void totalStats() {
         synchronized (this) {
             if (nextStatTime.isAfter(Instant.now())) return;
             nextStatTime = Instant.now().plusSeconds(8);
@@ -121,7 +119,7 @@ public class TwitchChatStats extends ListenerAdapter {
         }
     }
     //TODO consider condensing this down to 1 method
-    private void sendPersonalEmoteStats(TwitchChatMessage chatMessage) {
+    private void personalEmoteStats(TwitchChatMessage chatMessage) {
         String outputString = chatMessage.displayName + " emotes";
         int days = 50000;
         try {
@@ -129,15 +127,12 @@ public class TwitchChatStats extends ListenerAdapter {
             outputString += " for the past " + days + " days";
         } catch (NumberFormatException nfe) { /*empty on purpose*/ }
         outputString += "! ";
-        String emoteString = EmoteDatabase.getEmoteUsageFromUserID(chatMessage.userID, Duration.ofDays(days))
-                .sorted(Comparator.comparingInt(Map.Entry<String, Integer>::getValue).reversed())
-                .limit(10)
-                .map(entry -> entry.getKey() + " " + intFormat.format(entry.getValue()))
-                .collect(Collectors.joining(" ▪️ "));
+        String emoteString = stringFromMapEntryStream(EmoteDatabase.getEmoteUsageFromUserID(chatMessage.userID, Duration.ofDays(days)), 10, " ");
         if (emoteString.isEmpty()) TwitchChat.sendMessage("No Emotes For You!");
         else TwitchChat.sendMessage(outputString + emoteString);
     }
-    private void sendEmoteStats(TwitchChatMessage chatMessage, boolean allEmotes, boolean everyone) {
+
+    private void emoteStats(TwitchChatMessage chatMessage, boolean allEmotes, boolean everyone) {
         synchronized (this) {
             if (nextStatTime.isAfter(Instant.now())) return;
             nextStatTime = Instant.now().plusSeconds(8);
@@ -147,17 +142,43 @@ public class TwitchChatStats extends ListenerAdapter {
 
         String printString = "Emote usage" +((everyone)?"":", by people in chat,") + " in the past " + days + " days: ";
 
-        printString += EmoteDatabase.getEmoteUsageByEmoteName(Duration.ofDays(days), (everyone) ? Set.of() : TwitchChat.getUserIDsInChannel())
-                .filter(entry -> (allEmotes || entry.getKey().startsWith("bob")))
-                .sorted(Comparator.comparingInt(Map.Entry<String, Integer>::getValue).reversed())
-                .limit(20)
-                .map(entry -> entry.getKey() + " " + intFormat.format(entry.getValue()))
-                .collect(Collectors.joining(" \uD83D\uDD38 "));
+        Stream<Map.Entry<String,Integer>> stream = EmoteDatabase.getEmoteUsageByEmoteName(Duration.ofDays(days), (everyone) ? Set.of() : TwitchChat.getUserIDsInChannel())
+                .filter(entry -> (allEmotes || entry.getKey().startsWith("bob")));
+
+        printString += stringFromMapEntryStream(stream, 20, " ");
         TwitchChat.sendMessage(printString);
     }
 
-    private void sendDonationAmount(TwitchChatMessage chatMessage) {
+    //TODO add in chat to this
+    private void commandStats(boolean everyone) {
+        synchronized (this) {
+            if (nextStatTime.isAfter(Instant.now())) return;
+            nextStatTime = Instant.now().plusSeconds(8);
+        }
+        int days = 50000;
+        String outputString = "Command usage: ";
+
+        outputString += stringFromMapEntryStreamLong(ChatLines.commandUsageStats(everyone).entrySet().stream(), 16, " ");
+        TwitchChat.sendMessage(outputString);
+    }
+
+    private void donationAmount(TwitchChatMessage chatMessage) {
         int donationCents = BobsDatabaseHelper.getCentsDonated(chatMessage.userID);
         TwitchChat.sendMessage(chatMessage.displayName + " -> Amount Donated: " + donationCents / 100 + "$");
+    }
+
+    //TODO convert everything to use long
+    private String stringFromMapEntryStreamLong(Stream<Map.Entry<String, Long>> stream, int limit, String delim) {
+        return stream.sorted(Comparator.comparingLong(Map.Entry<String, Long>::getValue).reversed())
+                .limit(limit)
+                .map(entry -> entry.getKey() + delim + intFormat.format(entry.getValue()))
+                .collect(Collectors.joining(" \uD83D\uDD38 "));
+    }
+
+    private String stringFromMapEntryStream(Stream<Map.Entry<String, Integer>> stream, int limit, String delim) {
+        return stream.sorted(Comparator.comparingInt(Map.Entry<String, Integer>::getValue).reversed())
+                .limit(limit)
+                .map(entry -> entry.getKey() + delim + intFormat.format(entry.getValue()))
+                .collect(Collectors.joining(" \uD83D\uDD38 "));
     }
 }

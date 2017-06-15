@@ -121,9 +121,10 @@ public class SpaceLaunch {
                 .GET().build();
 
         JsonNode rootNode = WebClient.getJSonNodeFromRequest(request);
-        if (agency.equalsIgnoreCase("any") && rootNode.has("launches")) {
+
+        if (rootNode != null && agency.equalsIgnoreCase("any") && rootNode.has("launches")) {
             return rootNode.get("launches").get(nodeNumber - 1);
-        } else if (agency.equalsIgnoreCase("spacex") && rootNode.has("launches")) {
+        } else if (rootNode != null && agency.equalsIgnoreCase("spacex") && rootNode.has("launches")) {
             Optional<JsonNode> matchedLaunchNode = StreamSupport.stream(rootNode.get("launches").spliterator(), false)
                     .filter(launchNode -> StreamSupport.stream(launchNode.get("rocket").get("agencies").spliterator(), false)
                             .anyMatch(agencyNode -> agencyNode.get("name").asText().equalsIgnoreCase(agency)))

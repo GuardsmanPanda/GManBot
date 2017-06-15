@@ -9,9 +9,7 @@ import utility.FinalTriple;
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -37,7 +35,7 @@ public class BobsDatabase {
             connection.createStatement().execute("CREATE TABLE EmoteUsage (twitchUserID VARCHAR(50) NOT NULL, emoteName VARCHAR(30) NOT NULL, timeStamp TIMESTAMP NOT NULL PRIMARY KEY)");
             connection.createStatement().execute("CREATE TABLE GameRatings (twitchUserID VARCHAR(50) NOT NULL, gameName VARCHAR(255) NOT NULL, gameRating INTEGER NOT NULL, gameQuote VARCHAR (255) NOT NULL DEFAULT 'none', ratingDateTime DATE NOT NULL DEFAULT CURRENT DATE, PRIMARY KEY (twitchUserID, gameName))");
             connection.createStatement().execute("CREATE TABLE SongRatings (twitchUserID VARCHAR(255) NOT NULL, songName VARCHAR(255) NOT NULL, songRating INTEGER NOT NULL, songQuote VARCHAR(255) NOT NULL DEFAULT 'none', ratingTimestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (twitchUserID, songName))");
-            connection.createStatement().execute("CREATE TABLE TwitchChatUsers (twitchUserID VARCHAR(50) NOT NULL PRIMARY KEY, twitchDisplayName VARCHAR(50) UNIQUE NOT NULL, twitchLowerCaseName GENERATED ALWAYS AS (LOWER(twitchDisplayName)), hasSubscribed BOOLEAN NOT NULL DEFAULT false, welcomeMessage VARCHAR(255) NOT NULL DEFAULT 'none')");
+            connection.createStatement().execute("CREATE TABLE TwitchChatUsers (twitchUserID VARCHAR(50) NOT NULL PRIMARY KEY, twitchDisplayName VARCHAR(50) UNIQUE NOT NULL, twitchLowerCaseName GENERATED ALWAYS AS (LOWER(twitchDisplayName)), hasSubscribed BOOLEAN NOT NULL DEFAULT false, welcomeMessage VARCHAR(480) NOT NULL DEFAULT 'none')");
             connection.createStatement().execute("CREATE INDEX twitchLowerIndex ON TwitchChatUsers(twitchLowerCaseName)");
             System.out.println("Created Tables");
         } catch (SQLException e) {
@@ -159,6 +157,18 @@ public class BobsDatabase {
             e.printStackTrace();
         }
         return returnList;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> Map<K, V> getMapFromSQL(String sql, String... arguments) {
+        Map returnMap = new HashMap();
+        try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {
+            assert (cachedRowSet.getMetaData().getColumnCount() == 2);
+            while (cachedRowSet.next()) returnMap.put(cachedRowSet.getObject(1), cachedRowSet.getObject(2));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return (HashMap<K, V>) returnMap;
     }
 
     //get stream from database? .. or populate array directly from resultset to avoid data copy

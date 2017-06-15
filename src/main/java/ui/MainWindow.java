@@ -23,6 +23,7 @@ import twitch.NameSelector;
 import twitch.TwitchChat;
 import utility.GBUtility;
 import utility.PrettyPrinter;
+import webapi.Twitchv5;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
@@ -103,7 +104,7 @@ public class MainWindow {
     private static Tab makeUtilityTab() {
         Tab tab = new Tab("Utility");
         Button showGameRatingButton = new Button("Show Game Rating");
-        showGameRatingButton.setOnAction(event -> GameRatings.updateOverlay());
+        showGameRatingButton.setOnAction(event -> GameRatings.updateOverlay(Twitchv5.getGameName()));
 
 
         ToggleButton toggleNameSelectorButton = new ToggleButton("NameSelector Disabled");
