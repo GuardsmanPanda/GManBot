@@ -35,9 +35,9 @@ public class SongAnnouncer extends ListenerAdapter {
         BobsDatabase.getMultiMapFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE songRatingReminder = true", String.class, String.class)
                 .forEach(ratingReminderMap::put);
         BobsDatabase.getMultiMapFromSQL("SELECT twitchUserID, twitchDisplayName FROM TwitchChatUsers WHERE songQuoteReminder = true", String.class, String.class)
-                .forEach(ratingReminderMap::put);
+                .forEach(quoteReminderMap::put);
     }
-    // Song Name 2:14 Rating: 8,21
+
     //TODO: consider implementing a !randomsongsuggestion on a long cooldown to suggest youtube link to a song you have previously rated 11 (or havent rated)
     @Override
     public void onMessage(MessageEvent event) {

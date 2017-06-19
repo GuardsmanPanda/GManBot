@@ -76,7 +76,9 @@ public class SongDatabase {
     }
 
     public static String getIndividualSongQuote(String twitchUserID, String songName) {
-        return BobsDatabase.getStringFromSQL("SELECT songQuote FROM songRatings WHERE twitchUserID = ? AND songName = ?", twitchUserID, songName);
+
+        String returnValue = BobsDatabase.getStringFromSQL("SELECT songQuote FROM songRatings WHERE twitchUserID = ? AND songName = ?", twitchUserID, songName);
+        return (returnValue.isEmpty()) ? "none" : returnValue;
     }
 
 

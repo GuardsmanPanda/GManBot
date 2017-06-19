@@ -52,6 +52,7 @@ public class BobsDatabaseHelper {
         TwitchWebChatOverlay.invalidateIcon(twitchUserID);
     }
     public static void setSongRatingReminder(String twitchUserID, String twitchDisplayName, boolean reminderValue) {
+        System.out.println("rating reminder update: " + reminderValue);
         createUserIfNotExists(twitchUserID, twitchDisplayName);
         BobsDatabase.executePreparedSQL("UPDATE TwitchChatUsers SET songRatingReminder = " + reminderValue + " WHERE twitchUserID = ?", twitchUserID);
     }

@@ -64,7 +64,6 @@ public class TextGeneration extends ListenerAdapter {
                     lastWord = newWords.get(random.nextInt(newWords.size()));
                     output.append(lastWord);
                 }
-                System.out.println("output: " + output.toString());
             }
             return output.toString();
         } catch (Exception e) {
