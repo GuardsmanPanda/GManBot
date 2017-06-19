@@ -38,8 +38,13 @@ public class TwitchChatStats extends ListenerAdapter {
             case "!emotestatsinchat": emoteStats(chatMessage, false, false); break;
             case "!allemotestatsinchat": emoteStats(chatMessage, true, false); break;
 
-            case "!myemotestats": personalEmoteStats(chatMessage); break;
             case "!commandstats": commandStats(true); break;
+            case "!commandstatsinchat": commandStats(false); break;
+
+            case "!myemotestats": personalEmoteStats(chatMessage); break;
+
+            case "!flagstats": flagStats(true); break;
+            case "!flagstatsinchat": flagStats(false); break;
 
             case "!activehours": topListStats(StatType.ACTIVEHOURS, true); break;
             case "!idlehours": topListStats(StatType.IDLEHOURS, true); break;
@@ -93,7 +98,7 @@ public class TwitchChatStats extends ListenerAdapter {
                 .filter(entry -> everyone || peopleInChat.contains(entry.getKey().toLowerCase()))
                 .filter(entry -> !statHidingUsers.contains(entry.getKey().toLowerCase()));
 
-        String statString = stringFromMapEntryStream(stream,16, ": ");
+        String statString = stringFromMapEntryStream(stream,17);
 
         TwitchChat.sendMessage(statType.statMessage + ((everyone) ? "! -> " : " Currently in Chat! -> ") + statString);
     }
@@ -127,7 +132,7 @@ public class TwitchChatStats extends ListenerAdapter {
             outputString += " for the past " + days + " days";
         } catch (NumberFormatException nfe) { /*empty on purpose*/ }
         outputString += "! ";
-        String emoteString = stringFromMapEntryStream(EmoteDatabase.getEmoteUsageFromUserID(chatMessage.userID, Duration.ofDays(days)), 10, " ");
+        String emoteString = stringFromMapEntryStream(EmoteDatabase.getEmoteUsageFromUserID(chatMessage.userID, Duration.ofDays(days)), 15);
         if (emoteString.isEmpty()) TwitchChat.sendMessage("No Emotes For You!");
         else TwitchChat.sendMessage(outputString + emoteString);
     }
@@ -142,10 +147,10 @@ public class TwitchChatStats extends ListenerAdapter {
 
         String printString = "Emote usage" +((everyone)?"":", by people in chat,") + " in the past " + days + " days: ";
 
-        Stream<Map.Entry<String,Integer>> stream = EmoteDatabase.getEmoteUsageByEmoteName(Duration.ofDays(days), (everyone) ? Set.of() : TwitchChat.getUserIDsInChannel())
+        Stream<Map.Entry<String,Integer>> stream = EmoteDatabase.getEmoteUsageByEmoteName(Duration.ofDays(days), everyone)
                 .filter(entry -> (allEmotes || entry.getKey().startsWith("bob")));
 
-        printString += stringFromMapEntryStream(stream, 20, " ");
+        printString += stringFromMapEntryStream(stream, 20);
         TwitchChat.sendMessage(printString);
     }
 
@@ -156,9 +161,24 @@ public class TwitchChatStats extends ListenerAdapter {
             nextStatTime = Instant.now().plusSeconds(8);
         }
         int days = 50000;
-        String outputString = "Command usage: ";
+        String outputString = "Command usage";
+        if (!everyone) outputString += ", by people in chat";
+        outputString +=": ";
 
-        outputString += stringFromMapEntryStreamLong(ChatLines.commandUsageStats(everyone).entrySet().stream(), 16, " ");
+        outputString += stringFromMapEntryStreamLong(ChatLines.commandUsageStats(everyone).entrySet().stream(), 16);
+        TwitchChat.sendMessage(outputString);
+    }
+
+    private void flagStats(boolean everyone) {
+        System.out.println("Flag stats: " + everyone);
+        synchronized (this) {
+            if (nextStatTime.isAfter(Instant.now())) return;
+            nextStatTime = Instant.now().plusSeconds(8);
+        }
+        String outputString = "Most Used Flags";
+        if (!everyone) outputString += " by people in chat";
+        outputString += ": ";
+        outputString += stringFromMapEntryStream(BobsDatabaseHelper.getFlagStats(everyone).entrySet().stream(), 16);
         TwitchChat.sendMessage(outputString);
     }
 
@@ -168,17 +188,17 @@ public class TwitchChatStats extends ListenerAdapter {
     }
 
     //TODO convert everything to use long
-    private String stringFromMapEntryStreamLong(Stream<Map.Entry<String, Long>> stream, int limit, String delim) {
+    private String stringFromMapEntryStreamLong(Stream<Map.Entry<String, Long>> stream, int limit) {
         return stream.sorted(Comparator.comparingLong(Map.Entry<String, Long>::getValue).reversed())
                 .limit(limit)
-                .map(entry -> entry.getKey() + delim + intFormat.format(entry.getValue()))
+                .map(entry -> entry.getKey() + " " + intFormat.format(entry.getValue()))
                 .collect(Collectors.joining(" \uD83D\uDD38 "));
     }
 
-    private String stringFromMapEntryStream(Stream<Map.Entry<String, Integer>> stream, int limit, String delim) {
+    private String stringFromMapEntryStream(Stream<Map.Entry<String, Integer>> stream, int limit) {
         return stream.sorted(Comparator.comparingInt(Map.Entry<String, Integer>::getValue).reversed())
                 .limit(limit)
-                .map(entry -> entry.getKey() + delim + intFormat.format(entry.getValue()))
+                .map(entry -> entry.getKey() + " " + intFormat.format(entry.getValue()))
                 .collect(Collectors.joining(" \uD83D\uDD38 "));
     }
 }

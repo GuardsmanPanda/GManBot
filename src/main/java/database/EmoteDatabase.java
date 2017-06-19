@@ -1,6 +1,7 @@
 package database;
 
 import com.google.common.base.Strings;
+import twitch.TwitchChat;
 
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -18,10 +19,11 @@ public class EmoteDatabase {
         return BobsDatabase.getMultiMapFromSQL("SELECT emoteName, Count(*) FROM EmoteUsage WHERE twitchUserID = ? AND timestamp > '" + Timestamp.from(Instant.now().minus(timeSpan)) + "' GROUP BY emoteName", String.class, Integer.class, twitchUserID).entries().stream();
     }
 
-    public static Stream<Map.Entry<String, Integer>> getEmoteUsageByEmoteName(Duration timeSpan, Set<String> includeOnly) {
-        if (includeOnly.isEmpty()) {
+    public static Stream<Map.Entry<String, Integer>> getEmoteUsageByEmoteName(Duration timeSpan, boolean everyone) {
+        if (everyone) {
             return BobsDatabase.getMultiMapFromSQL("SELECT emoteName, Count(*) FROM EmoteUsage WHERE timestamp > '" + Timestamp.from(Instant.now().minus(timeSpan)) + "'GROUP BY emoteName", String.class, Integer.class).entries().stream();
         } else {
+            Set<String> includeOnly = TwitchChat.getUserIDsInChannel();
             return BobsDatabase.getMultiMapFromSQL("SELECT emoteName, Count(*) FROM EmoteUsage WHERE twitchUserID IN ("+ Strings.repeat("?, ", includeOnly.size()-1)+" ?) AND timestamp > '" + Timestamp.from(Instant.now().minus(timeSpan)) + "'GROUP BY emoteName", String.class, Integer.class, includeOnly.toArray(new String[0])).entries().stream();
         }
     }

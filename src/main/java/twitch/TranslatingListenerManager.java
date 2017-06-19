@@ -60,6 +60,11 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!help", "!commands");
 
         commandTranslationMap.put("!commandstats", "!commandstats");
+        commandTranslationMap.put("!commandstatsinchat", "!commandstatsinchat");
+
+        commandTranslationMap.put("!flagstats", "!flagstats");
+        commandTranslationMap.put("!flagstatsinchat", "!flagstatsinchat");
+
 
         commandTranslationMap.put("!github", "!github");
         commandTranslationMap.put("!githb", "!github");
@@ -69,6 +74,11 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!text", "!text");
         commandTranslationMap.put("!texts", "!text");
+        commandTranslationMap.put("!textt", "!text");
+        commandTranslationMap.put("!texxt", "!text");
+        commandTranslationMap.put("!texty", "!text");
+        commandTranslationMap.put("!texter", "!text");
+        commandTranslationMap.put("!text1", "!text");
 
         commandTranslationMap.put("!ratereminder", "!ratereminder");
         commandTranslationMap.put("!songreminder", "!ratereminder");

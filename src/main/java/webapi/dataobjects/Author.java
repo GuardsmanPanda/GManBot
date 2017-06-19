@@ -26,7 +26,7 @@ public enum Author {
     ROBIN_HOBB("Robin Hobb", 6, "25307.Robin_Hobb"),
     SCOTT_LYNCH("Scott Lynch", 5,"73149.Scott_Lynch"),
     STEPHEN_KING("Stephen King", 6, "3389.Stephen_King"),
-    TERRY_PRATCHETT("Terry Pratchett", 12, "1654.Terry_Pratchett"),
+    TERRY_PRATCHETT("Terry Pratchett", 15, "1654.Terry_Pratchett"),
     TOLKIEN("J.R.R. Tolkien", 6,"656983.J_R_R_Tolkien"),
     WINSTON_CHURCHILL("Winston S. Churchill", 4, "14033.Winston_S_Churchill");
 
@@ -55,6 +55,7 @@ public enum Author {
                 .map(quote -> quote.replaceAll("&rdquo;", "”"))
                 .map(quote -> quote.replaceAll("<br />", " "))
                 .map(quote -> quote.replaceAll("</?[^>]>", ""))
+                .map(quote -> quote.replaceAll("\\s+", " "))
                 .filter(quote -> quote.length() < maxLength) // make sure a quote message fits in 1 line on twitch
                 .collect(Collectors.toList());
     }

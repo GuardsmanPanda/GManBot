@@ -1,7 +1,7 @@
 package ui;
 
-import core.StreamWebOverlay;
 import database.BobsDatabase;
+import database.BobsDatabaseHelper;
 import database.SongDatabase;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -103,9 +103,9 @@ public class MainWindow {
 
     private static Tab makeUtilityTab() {
         Tab tab = new Tab("Utility");
+
         Button showGameRatingButton = new Button("Show Game Rating");
         showGameRatingButton.setOnAction(event -> GameRatings.updateOverlay(Twitchv5.getGameName()));
-
 
         ToggleButton toggleNameSelectorButton = new ToggleButton("NameSelector Disabled");
         toggleNameSelectorButton.setOnAction(event -> {
@@ -118,31 +118,42 @@ public class MainWindow {
             }
         });
 
+        HBox hBox1 = new HBox();
+        hBox1.getChildren().addAll(showGameRatingButton, toggleNameSelectorButton);
+
+
         TextField sqlInput = new TextField(); sqlInput.setPromptText("sql..");
+        sqlInput.setMaxWidth(Double.MAX_VALUE);
         Button printSQLButton = new Button("Print SQL");
         printSQLButton.setOnAction(event -> new Thread(() -> PrettyPrinter.prettyPrintCachedRowSet(BobsDatabase.getCachedRowSetFromSQL(sqlInput.getText()), 200)).start());
         sqlInput.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) printSQLButton.fire();
         });
 
+        HBox hBox2 = new HBox();
+        hBox2.getChildren().addAll(sqlInput, printSQLButton);
 
-        Button showImage = new Button("Show Image");
-        showImage.setOnAction(action -> StreamWebOverlay.showEmoteImage());
 
-        Button hideImage = new Button("Hide Image");
-        hideImage.setOnAction(action -> StreamWebOverlay.hideEmoteImage());
+        TextField donateNameField = new TextField(); donateNameField.setPromptText("twitchName..");
+        TextField donateAmountField = new TextField(); donateAmountField.setPromptText("Cents..");
+        Button addDonationButton = new Button("Add Donation!");
+        addDonationButton.setOnAction(event -> {
+            String userID = BobsDatabaseHelper.getTwitchUserID(donateNameField.getText());
+            int cents = Integer.parseInt(donateAmountField.getText());
+            //TODO: Make a fancy announcement in the overlay before adding donation
+            if (!userID.isEmpty()) {
+                System.out.println("Donation From " + userID + ", cents: " + cents);
+                BobsDatabaseHelper.addCentsDonated(userID, cents);
+            }
+        });
 
-        GridPane gridPane = new GridPane();
-        gridPane.setAlignment(Pos.CENTER_LEFT);
+        HBox hBox3 = new HBox();
+        hBox3.getChildren().addAll(donateNameField, donateAmountField, addDonationButton);
 
-        gridPane.add(showGameRatingButton, 0, 0);
-        gridPane.add(toggleNameSelectorButton, 1, 0);
-        gridPane.add(sqlInput, 0, 1);
-        gridPane.add(printSQLButton, 1, 1);
-        gridPane.add(showImage, 0, 2);
-        gridPane.add(hideImage, 1, 2);
 
-        tab.setContent(gridPane);
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(hBox1, hBox2, hBox3);
+        tab.setContent(vbox);
         return tab;
     }
 

@@ -1,5 +1,7 @@
 package database;
 
+import com.google.common.base.Strings;
+import twitch.TwitchChat;
 import twitch.TwitchWebChatOverlay;
 import utility.FinalPair;
 import utility.FinalTriple;
@@ -8,6 +10,8 @@ import webapi.Twitchv5;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class BobsDatabaseHelper {
     private static final HashMap<String, String> cachedUserIDs = new HashMap<>();
@@ -99,6 +103,15 @@ public class BobsDatabaseHelper {
     public static boolean getHasSubscribed(String twitchUserID) {
         return BobsDatabase.getBooleanFromSQL("SELECT hasSubscribed FROM TwitchChatUsers WHERE twitchUserID = ?", twitchUserID);
     }
+    public static Map<String, Integer> getFlagStats(boolean everyone) {
+        System.out.println("returning flag stats: " + everyone);
+        if (everyone) return BobsDatabase.getMapFromSQL("SELECT flag, count(flag) FROM TwitchChatUsers WHERE flag <> 'none' GROUP BY flag");
+        else {
+            Set<String> chatUserIDs = TwitchChat.getUserIDsInChannel();
+            return BobsDatabase.getMapFromSQL("SELECT flag, count(flag) FROM TwitchChatUsers WHERE flag <> 'none' AND twitchUserID IN (?" + Strings.repeat(", ?", chatUserIDs.size() - 1) + ") GROUP BY flag", chatUserIDs.toArray(new String[0]));
+        }
+    }
+
 
     public static FinalTriple<String, String, Boolean> getDisplayNameWelcomeMessageAndHasSubbedStatus(String twitchName) {
         FinalTriple<String, String, Boolean> triple = BobsDatabase.getTripleFromSQL("Select twitchDisplayName, welcomeMessage, hasSubscribed FROM TwitchChatUsers WHERE twitchLowerCaseName = ?", twitchName.toLowerCase());

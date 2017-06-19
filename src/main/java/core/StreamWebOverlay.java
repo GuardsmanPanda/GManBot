@@ -63,11 +63,11 @@ public class StreamWebOverlay {
         showEmoteImage();
     }
 
-
     public static void endStreamIntro() {
         stopQuoteOverlayService();
         hideEmoteImage();
     }
+
 
     public static void showEmoteImage() {
         int PADDING = 6;
@@ -108,14 +108,12 @@ public class StreamWebOverlay {
         }
         sendJsonToOverlay(root);
     }
-
     public static void hideEmoteImage() {
         ObjectNode root = JsonNodeFactory.instance.objectNode();
         root.put("type", "bobEmotes");
         root.put("showImage", false);
         sendJsonToOverlay(root);
     }
-
     private static void startQuoteOverlayService() {
         if (displayQuotes) return;
 
@@ -138,7 +136,6 @@ public class StreamWebOverlay {
             }
         }).start();
     }
-
     private static void stopQuoteOverlayService() {
         displayQuotes = false;
         new Thread(() -> {
