@@ -29,14 +29,6 @@ public class Quotes {
 
         if (!quote.isEmpty()) {
             TwitchChat.sendMessage(quote + " -" + author.name);
-            /* Old code for splitting quotes into multiple lines, we shouldnt need this if quotes are under 500 characters and we are mod (otherwise we will)
-            //if it fits in 1 line
-            if (quote.length() < 260) TwitchChat.sendMessage(quote + " -" + author.name);
-            else {
-                int index = quote.indexOf(" ", 240);
-                TwitchChat.sendMessage(quote.substring(0, index));
-                TwitchChat.sendMessage(quote.substring(index + 1, quote.length()) + " -" + author.name);
-            } */
         } else {
             TwitchChat.sendMessage("Could not find any quotes from " + author.name + " ¯\\_(ツ)_/¯");
         }
@@ -80,7 +72,6 @@ public class Quotes {
      * Returns a list of quotes from the author, the amount is define in the pages in the Author enum.
      * @param author
      * @return a SHUFFLED list of quotes.
-     * //TODO contemplate saving the rawQuote for display in overlay
      */
     private static List<String> getQuoteList(Author author) {
         List<String> returnList =  author.getQuotes(470);
