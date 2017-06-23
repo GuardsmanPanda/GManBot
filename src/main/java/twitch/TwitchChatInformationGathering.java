@@ -10,7 +10,6 @@ import webapi.Twitchv5;
 
 import java.time.Duration;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 
 public class TwitchChatInformationGathering extends ListenerAdapter {
     private static final Set<String> emoteSet = new HashSet<>();
-    private static final Random random = new Random();
     private static int chatLinesLastHour = 0;
 
     static {

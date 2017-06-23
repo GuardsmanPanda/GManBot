@@ -21,12 +21,13 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 public class StreamWebOverlay {
-    private static final Path OVERLAYFILEPATH = new File("Data/OBS/HTMLStreamOverlay.html").toPath();
+    private static final String OVERLAYFOLDER = "Data/OBS/";
     private static final BobsWebSocketServer socketServer = new BobsWebSocketServer(new InetSocketAddress(9102));
     private static boolean displayQuotes = false;
 
@@ -156,7 +157,10 @@ public class StreamWebOverlay {
     private static class OverlayContext implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            byte[] overlayFileBytes = Files.readAllBytes(OVERLAYFILEPATH);
+            String req = exchange.getRequestURI().toString();
+            System.out.println("request>>> " + req);
+            Path pathToResponseFile = Paths.get(OVERLAYFOLDER + req.substring(req.lastIndexOf("/")));
+            byte[] overlayFileBytes = Files.readAllBytes(pathToResponseFile);
             exchange.sendResponseHeaders(200, overlayFileBytes.length);
             exchange.getResponseBody().write(overlayFileBytes);
             exchange.close();

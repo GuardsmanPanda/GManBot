@@ -3,6 +3,7 @@ package database;
 import com.google.common.collect.*;
 import javafx.util.Pair;
 import twitch.TwitchChat;
+import utility.Extra;
 import utility.FinalPair;
 
 import javax.sql.rowset.CachedRowSet;
@@ -12,7 +13,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SongDatabase {
@@ -21,7 +25,6 @@ public class SongDatabase {
     private static final Multiset<String> songsRated = HashMultiset.create();
     private static final List<String> songsQuotedRank = new ArrayList<>();
     private static final List<String> songsRatedRank = new ArrayList<>();
-    private static final Random random = new Random();
 
     public static void addSongPlay(String songName) {
         int rowsUpdated = BobsDatabase.executePreparedSQL("UPDATE Songs SET lastDatePlayed = CURRENT_DATE, timesPlayed = timesPlayed + 1 WHERE songName = ?", songName);
@@ -95,8 +98,8 @@ public class SongDatabase {
                 .collect(Collectors.toList());
         List<String> quotesFromChat = quotesFromEveryone.stream().filter(userIDsInChat::contains).collect(Collectors.toList());
 
-        if (quotesFromChat.size() > 0 && random.nextBoolean()) return quotesFromChat.get(random.nextInt(quotesFromChat.size()));
-        else if (quotesFromEveryone.size() > 0) return quotesFromEveryone.get(random.nextInt(quotesFromEveryone.size()));
+        if (quotesFromChat.size() > 0 && Extra.percentChance(50)) return Extra.getRandomElement(quotesFromChat);
+        else if (quotesFromEveryone.size() > 0) return Extra.getRandomElement(quotesFromEveryone);
         else return "";
     }
 

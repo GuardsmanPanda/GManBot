@@ -31,8 +31,6 @@ import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Random;
-import java.util.stream.Collectors;
 
 public class MainWindow {
     private static TextField messageInput = new TextField();
@@ -152,12 +150,12 @@ public class MainWindow {
         HBox hBox3 = new HBox();
         hBox3.getChildren().addAll(donateNameField, donateAmountField, addDonationButton);
 
-        Random random = new Random();
+
         Button testButton = new Button("Test Button");
-        testButton.setOnAction(event -> System.out.println(Twitchv5.getBobsEmoticonSet().stream().sorted(Comparator.comparingDouble(emote -> random.nextDouble())).limit(4).collect(Collectors.joining(" "))));
 
         HBox hBox4 = new HBox();
         hBox4.getChildren().addAll(testButton);
+
 
         VBox vbox = new VBox();
         vbox.getChildren().addAll(hBox1, hBox2, hBox3, hBox4);

@@ -3,15 +3,14 @@ package webapi;
 import com.fasterxml.jackson.databind.JsonNode;
 import jdk.incubator.http.HttpRequest;
 import twitch.TwitchChat;
+import utility.Extra;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class XKCD {
-    private static Random random = new Random();
     private static int latestComicNumber = 1835;
     private static String latestComicTitle = "";
     private static Instant nextRequestTime = Instant.now();
@@ -34,7 +33,7 @@ public class XKCD {
             if (nextRequestTime.isAfter(Instant.now())) return;
             nextRequestTime = Instant.now().plusSeconds(8);
         }
-        int comicNumber = (randomComic) ? random.nextInt(latestComicNumber) + 1 : latestComicNumber;
+        int comicNumber = (randomComic) ? Extra.randomInt(latestComicNumber + 1) : latestComicNumber;
         String response = (randomComic) ? "Random xkcd: " + getComicTitle(comicNumber) : "Latest xkcd: " +latestComicTitle;
         TwitchChat.sendMessage(response + " -> https://m.xkcd.com/" + comicNumber + "/");
     }

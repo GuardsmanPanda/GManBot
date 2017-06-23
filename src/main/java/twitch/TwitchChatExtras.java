@@ -8,6 +8,7 @@ import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.MessageEvent;
 import twitch.dataobjects.TwitchChatMessage;
+import utility.Extra;
 import utility.FinalTriple;
 import utility.GBUtility;
 import utility.PrettyPrinter;
@@ -35,7 +36,7 @@ public class TwitchChatExtras extends ListenerAdapter {
     private static final HashMap<String, String> flagTranslationMap = new HashMap<>();
     private static final List<String> flagNames = new ArrayList<>();
     private static final LocalDateTime startTime = LocalDateTime.now();
-    private static final Random random = new Random();
+    private static final int WELCOMEDELAYMILIS = 4000;
 
     static {
         fillFlagTranslationMap(flagTranslationMap);
@@ -66,43 +67,12 @@ public class TwitchChatExtras extends ListenerAdapter {
         if (hasSubscribed && !welcomeMessage.equalsIgnoreCase("none")) {
             if (welcomeMessage.startsWith("/") && !welcomeMessage.toLowerCase().startsWith("/me ")) return;
 
-            if (lastWelcomeMessageTime.containsKey(displayName) && lastWelcomeMessageTime.get(displayName).isAfter(LocalDateTime.now().minus(4, ChronoUnit.HOURS))) {
-                //we have recently sent a welcome message to the user
-            } else {
-                new Thread(() -> {
-                    try { Thread.sleep(4000); } catch (InterruptedException e) { e.printStackTrace(); }
-                    if (welcomeMessage.toLowerCase().startsWith("/me ")) {
-                        TwitchChat.sendAction(welcomeMessage.substring(4));
-                    }
-                    else {
-                        switch (welcomeMessage.toLowerCase().replaceAll("!", "")) {
-                            case "text": TextGeneration.generateText(); break;
-                            case "quote": Quotes.sendRandomQuote(); break;
-                            case "abercrombie": Quotes.sendQuote(Author.JOE_ABERCROMBIE); break;
-                            case "brentweeks": Quotes.sendQuote(Author.BRENT_WEEKS); break;
-                            case "carlin": Quotes.sendQuote(Author.GEORGE_CARLIN); break;
-                            case "churchill": Quotes.sendQuote(Author.WINSTON_CHURCHILL); break;
-                            case "douglasadams": Quotes.sendQuote(Author.DOUGLAS_ADAMS); break;
-                            case "einstein": Quotes.sendQuote(Author.ALBERT_EINSTEIN); break;
-                            case "gaiman": Quotes.sendQuote(Author.NEIL_GAIMAN); break;
-                            case "herbert": Quotes.sendQuote(Author.FRANK_HERBERT); break;
-                            case "scottlynch": Quotes.sendQuote(Author.SCOTT_LYNCH); break;
-                            case "sanderson": Quotes.sendQuote(Author.BRANDON_SANDERSON); break;
-                            case "feynman": Quotes.sendQuote(Author.RICHARD_FEYNMAN); break;
-                            case "doyle": Quotes.sendQuote(Author.ARTHUR_CONAN_DOYLE); break;
-                            case "rothfuss": Quotes.sendQuote(Author.PATRICK_ROTHFUSS); break;
-                            case "tolkien": Quotes.sendQuote(Author.TOLKIEN); break;
-                            case "stephenking": Quotes.sendQuote(Author.STEPHEN_KING); break;
-                            case "rrmartin": Quotes.sendQuote(Author.GEORGE_RR_MARTIN); break;
-                            case "pratchett": Quotes.sendQuote(Author.TERRY_PRATCHETT); break;
-                            case "robinhobb": Quotes.sendQuote(Author.ROBIN_HOBB); break;
-                            case "spacexlaunch": SpaceLaunch.spaceLaunchRequest("spacex"); break;
-                            default: TwitchChat.sendMessage(welcomeMessage);
-                        }
-                    }
-                    lastWelcomeMessageTime.put(displayName, LocalDateTime.now());
-                }).start();
+            if (!lastWelcomeMessageTime.containsKey(displayName) || !lastWelcomeMessageTime.get(displayName).isAfter(LocalDateTime.now().minus(4, ChronoUnit.HOURS))) {
+                sendWelcomeMessage(welcomeMessage);
+                lastWelcomeMessageTime.put(displayName, LocalDateTime.now());
             }
+        } else if (hasSubscribed) {
+            if (Extra.percentChance(15)) sendWelcomeMessage(displayName + ", you can set a personal welcome message (Sub features), use !setwelcomemessage messageHere");
         }
     }
 
@@ -159,6 +129,41 @@ public class TwitchChatExtras extends ListenerAdapter {
         BobsDatabaseHelper.setWelcomeMessage(chatMessage.userID, chatMessage.displayName, chatMessage.getMessageContent());
     }
 
+    private static void sendWelcomeMessage(String welcomeMessage) {
+        new Thread(() -> {
+            try { Thread.sleep(WELCOMEDELAYMILIS); } catch (InterruptedException e) { e.printStackTrace(); }
+            if (welcomeMessage.toLowerCase().startsWith("/me ")) {
+                TwitchChat.sendAction(welcomeMessage.substring(4));
+            }
+            else {
+                switch (welcomeMessage.toLowerCase().replaceAll("!", "")) {
+                    case "text": TextGeneration.generateText(); break;
+                    case "quote": Quotes.sendRandomQuote(); break;
+                    case "abercrombie": Quotes.sendQuote(Author.JOE_ABERCROMBIE); break;
+                    case "brentweeks": Quotes.sendQuote(Author.BRENT_WEEKS); break;
+                    case "carlin": Quotes.sendQuote(Author.GEORGE_CARLIN); break;
+                    case "churchill": Quotes.sendQuote(Author.WINSTON_CHURCHILL); break;
+                    case "douglasadams": Quotes.sendQuote(Author.DOUGLAS_ADAMS); break;
+                    case "einstein": Quotes.sendQuote(Author.ALBERT_EINSTEIN); break;
+                    case "gaiman": Quotes.sendQuote(Author.NEIL_GAIMAN); break;
+                    case "herbert": Quotes.sendQuote(Author.FRANK_HERBERT); break;
+                    case "scottlynch": Quotes.sendQuote(Author.SCOTT_LYNCH); break;
+                    case "sanderson": Quotes.sendQuote(Author.BRANDON_SANDERSON); break;
+                    case "feynman": Quotes.sendQuote(Author.RICHARD_FEYNMAN); break;
+                    case "doyle": Quotes.sendQuote(Author.ARTHUR_CONAN_DOYLE); break;
+                    case "rothfuss": Quotes.sendQuote(Author.PATRICK_ROTHFUSS); break;
+                    case "tolkien": Quotes.sendQuote(Author.TOLKIEN); break;
+                    case "stephenking": Quotes.sendQuote(Author.STEPHEN_KING); break;
+                    case "rrmartin": Quotes.sendQuote(Author.GEORGE_RR_MARTIN); break;
+                    case "pratchett": Quotes.sendQuote(Author.TERRY_PRATCHETT); break;
+                    case "robinhobb": Quotes.sendQuote(Author.ROBIN_HOBB); break;
+                    case "spacexlaunch": SpaceLaunch.spaceLaunchRequest("spacex"); break;
+                    default: TwitchChat.sendMessage(welcomeMessage);
+                }
+            }
+        }).start();
+    }
+
     private static void heartsBob(TwitchChatMessage chatMessage) { BobsDatabaseHelper.setHeartsBob(chatMessage.userID, chatMessage.displayName); }
 
     private static void setFlag(TwitchChatMessage chatMessage) {
@@ -168,7 +173,7 @@ public class TwitchChatExtras extends ListenerAdapter {
             System.out.println("Found flag for " + chatMessage.displayName + " flag name: " + flagTranslationMap.get(flagRequest) + " flagRequest: " + flagRequest + " Message: " + chatMessage.message);
             BobsDatabaseHelper.setFlag(chatMessage.userID, chatMessage.displayName, flagTranslationMap.get(flagRequest));
         } else if (flagRequest.equals("random")) {
-            String randomFlag = flagNames.get(random.nextInt(flagNames.size()));
+            String randomFlag = Extra.getRandomElement(flagNames);
             System.out.println("Giving random flag to " + chatMessage.displayName + " flagname: " + randomFlag + " Message: " + chatMessage.message);
             BobsDatabaseHelper.setFlag(chatMessage.userID, chatMessage.displayName, randomFlag);
         } else {

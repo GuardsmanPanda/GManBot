@@ -8,6 +8,7 @@ import jdk.incubator.http.HttpRequest;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import twitch.TwitchChat;
+import utility.Extra;
 import utility.GBUtility;
 import webapi.WebClient;
 
@@ -15,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -23,7 +23,6 @@ import java.util.stream.StreamSupport;
 
 public class TextGeneration extends ListenerAdapter {
     private static final ArrayListMultimap<String, String> textModel = ArrayListMultimap.create();
-    private static final Random random = new Random();
 
     static {
         loadTextModel();
@@ -34,7 +33,7 @@ public class TextGeneration extends ListenerAdapter {
     public static String generateText() {
         try {
             StringBuilder output = new StringBuilder();
-            String lastWord = textModel.get("START").get(random.nextInt(textModel.get("START").size()));
+            String lastWord = Extra.getRandomElement(textModel.get("START"));
             output.append(lastWord);
 
             while (output.length() < 250) {
@@ -45,7 +44,7 @@ public class TextGeneration extends ListenerAdapter {
                 output.append(" ");
                 String[] lastWords = lastWord.split(" ");
 
-                boolean oneWord = random.nextInt(6) != 0;
+                boolean oneWord = Extra.percentChance(15);
                 if (oneWord) {
                     List<String> newWords = textModel.get(lastWords[0]).stream()
                             .filter(word -> word.split(" ")[0].equals(lastWords[1]))
@@ -53,7 +52,7 @@ public class TextGeneration extends ListenerAdapter {
                     if (newWords.isEmpty()) {
                         System.out.println("empty newwords");
                     }
-                    lastWord = newWords.get(random.nextInt(newWords.size()));
+                    lastWord = Extra.getRandomElement(newWords);
                     output.append(lastWord.split(" ")[1]);
                 } else {
                     List<String> newWords = textModel.get(lastWords[1]);
@@ -61,7 +60,7 @@ public class TextGeneration extends ListenerAdapter {
                         System.out.println("Empty word list, found end of string");
                         break;
                     }
-                    lastWord = newWords.get(random.nextInt(newWords.size()));
+                    lastWord = Extra.getRandomElement(newWords);
                     output.append(lastWord);
                 }
             }
