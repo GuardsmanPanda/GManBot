@@ -74,7 +74,7 @@ public class SpaceLaunch {
         if (launchNode.get("netstamp").asLong() == 0) {
             chatString += "TBD: " + launchNode.get("net").asText().split(",")[0] + ".";
         } else {
-            chatString += PrettyPrinter.timeStringFromDuration(durationToLaunch) + "!";
+            chatString += "T- " + PrettyPrinter.timeStringFromDuration(durationToLaunch) + "!";
         }
         chatString += " \uD83D\uDE80\uD83D\uDE80 " + launchNode.get("name").asText();
 

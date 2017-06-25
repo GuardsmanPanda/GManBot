@@ -72,7 +72,7 @@ public class TwitchChatExtras extends ListenerAdapter {
                 lastWelcomeMessageTime.put(displayName, LocalDateTime.now());
             }
         } else if (hasSubscribed) {
-            if (Extra.percentChance(15)) sendWelcomeMessage(displayName + ", you can set a personal welcome message (Sub features), use !setwelcomemessage messageHere");
+            if (Extra.percentChance(1)) sendWelcomeMessage(displayName + ", you can set a personal welcome message, use !setwelcomemessage messageHere");
         }
     }
 

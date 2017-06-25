@@ -10,8 +10,8 @@ public class Extra {
      * Takes a percent value betwwen 0 and 100 and returns true with a probability of that value
      */
     public static boolean percentChance(double percent) {
-        assert(percent > 0);
-        return random.nextDouble() > percent/100;
+        assert(percent >= 0);
+        return random.nextDouble() < percent/100;
     }
 
     public static <T> T getRandomElement(List<T> list) {

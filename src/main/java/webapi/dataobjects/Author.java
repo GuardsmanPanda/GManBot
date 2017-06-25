@@ -1,11 +1,11 @@
 package webapi.dataobjects;
 
 import jdk.incubator.http.HttpRequest;
+import utility.Extra;
 import webapi.WebClient;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -31,7 +31,6 @@ public enum Author {
     WINSTON_CHURCHILL("Winston S. Churchill", 4, "14033.Winston_S_Churchill");
 
     private static final Author[] values = Author.values();
-    private static final Random random = new Random();
 
     public final String name;
     private final int pages;
@@ -59,5 +58,5 @@ public enum Author {
                 .filter(quote -> quote.length() < maxLength) // make sure a quote message fits in 1 line on twitch
                 .collect(Collectors.toList());
     }
-    public static Author randomAuthor() { return values[random.nextInt(values.length)]; }
+    public static Author randomAuthor() { return values[Extra.randomInt(values().length)]; }
 }

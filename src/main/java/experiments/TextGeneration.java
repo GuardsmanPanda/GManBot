@@ -44,7 +44,7 @@ public class TextGeneration extends ListenerAdapter {
                 output.append(" ");
                 String[] lastWords = lastWord.split(" ");
 
-                boolean oneWord = Extra.percentChance(15);
+                boolean oneWord = Extra.percentChance(85);
                 if (oneWord) {
                     List<String> newWords = textModel.get(lastWords[0]).stream()
                             .filter(word -> word.split(" ")[0].equals(lastWords[1]))
