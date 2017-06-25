@@ -20,15 +20,16 @@ public enum Author {
     GEORGE_CARLIN("George Carlin", 6,"22782.George_Carlin"),
     GEORGE_RR_MARTIN("George R.R. Martin", 6, "346732.George_R_R_Martin"),
     JOE_ABERCROMBIE("Joe Abercrombie", 6, "276660.Joe_Abercrombie"),
+    MARK_LAWRENCE("Mark Lawrence", 6, "4721536.Mark_Lawrence"),
     NEIL_GAIMAN("Neil Gaiman", 6, "1221698.Neil_Gaiman"),
     PATRICK_ROTHFUSS("Patrick Rothfuss", 6,"108424.Patrick_Rothfuss"),
     RICHARD_FEYNMAN("Richard Feynman", 6, "1429989.Richard_Feynman"),
     ROBIN_HOBB("Robin Hobb", 6, "25307.Robin_Hobb"),
     SCOTT_LYNCH("Scott Lynch", 5,"73149.Scott_Lynch"),
     STEPHEN_KING("Stephen King", 6, "3389.Stephen_King"),
+    STEVEN_ERIKSON("Steven Erikson", 6, "31232.Steven_Erikson"),
     TERRY_PRATCHETT("Terry Pratchett", 15, "1654.Terry_Pratchett"),
-    TOLKIEN("J.R.R. Tolkien", 6,"656983.J_R_R_Tolkien"),
-    WINSTON_CHURCHILL("Winston S. Churchill", 4, "14033.Winston_S_Churchill");
+    TOLKIEN("J.R.R. Tolkien", 6,"656983.J_R_R_Tolkien");
 
     private static final Author[] values = Author.values();
 

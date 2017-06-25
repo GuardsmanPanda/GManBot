@@ -139,25 +139,26 @@ public class TwitchChatExtras extends ListenerAdapter {
                 switch (welcomeMessage.toLowerCase().replaceAll("!", "")) {
                     case "text": TextGeneration.generateText(); break;
                     case "quote": Quotes.sendRandomQuote(); break;
+                    case "spacexlaunch": SpaceLaunch.spaceLaunchRequest("spacex"); break;
                     case "abercrombie": Quotes.sendQuote(Author.JOE_ABERCROMBIE); break;
                     case "brentweeks": Quotes.sendQuote(Author.BRENT_WEEKS); break;
                     case "carlin": Quotes.sendQuote(Author.GEORGE_CARLIN); break;
-                    case "churchill": Quotes.sendQuote(Author.WINSTON_CHURCHILL); break;
                     case "douglasadams": Quotes.sendQuote(Author.DOUGLAS_ADAMS); break;
+                    case "doyle": Quotes.sendQuote(Author.ARTHUR_CONAN_DOYLE); break;
                     case "einstein": Quotes.sendQuote(Author.ALBERT_EINSTEIN); break;
                     case "gaiman": Quotes.sendQuote(Author.NEIL_GAIMAN); break;
+                    case "erikson": Quotes.sendQuote(Author.STEVEN_ERIKSON); break;
                     case "herbert": Quotes.sendQuote(Author.FRANK_HERBERT); break;
+                    case "lawrence": Quotes.sendQuote(Author.MARK_LAWRENCE); break;
                     case "scottlynch": Quotes.sendQuote(Author.SCOTT_LYNCH); break;
                     case "sanderson": Quotes.sendQuote(Author.BRANDON_SANDERSON); break;
                     case "feynman": Quotes.sendQuote(Author.RICHARD_FEYNMAN); break;
-                    case "doyle": Quotes.sendQuote(Author.ARTHUR_CONAN_DOYLE); break;
                     case "rothfuss": Quotes.sendQuote(Author.PATRICK_ROTHFUSS); break;
                     case "tolkien": Quotes.sendQuote(Author.TOLKIEN); break;
                     case "stephenking": Quotes.sendQuote(Author.STEPHEN_KING); break;
                     case "rrmartin": Quotes.sendQuote(Author.GEORGE_RR_MARTIN); break;
                     case "pratchett": Quotes.sendQuote(Author.TERRY_PRATCHETT); break;
                     case "robinhobb": Quotes.sendQuote(Author.ROBIN_HOBB); break;
-                    case "spacexlaunch": SpaceLaunch.spaceLaunchRequest("spacex"); break;
                     default: TwitchChat.sendMessage(welcomeMessage);
                 }
             }

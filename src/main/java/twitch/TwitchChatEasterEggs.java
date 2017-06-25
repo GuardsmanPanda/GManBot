@@ -43,7 +43,8 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
             case "!carlin": Quotes.sendQuote(Author.GEORGE_CARLIN); break;
             case "!doyle": Quotes.sendQuote(Author.ARTHUR_CONAN_DOYLE); break;
             case "!einstein": Quotes.sendQuote(Author.ALBERT_EINSTEIN); break;
-            case "!churchill": Quotes.sendQuote(Author.WINSTON_CHURCHILL); break;
+            case "!erikson": Quotes.sendQuote(Author.STEVEN_ERIKSON); break;
+            case "!lawrence": Quotes.sendQuote(Author.MARK_LAWRENCE); break;
             case "!stephenking": Quotes.sendQuote(Author.STEPHEN_KING); break;
             case "!scottlynch": Quotes.sendQuote(Author.SCOTT_LYNCH); break;
             case "!rrmartin": Quotes.sendQuote(Author.GEORGE_RR_MARTIN); break;
