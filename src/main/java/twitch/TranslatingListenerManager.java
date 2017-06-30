@@ -30,7 +30,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
                 String newMessage = fullTranslationMap.getOrDefault(message.toLowerCase(), message);
                 String command = newMessage.split(" ")[0].toLowerCase();
                 if (commandTranslationMap.containsKey(command)) {
-                    newMessage = newMessage.replace(command, commandTranslationMap.get(command));
+                    newMessage = commandTranslationMap.get(command) + newMessage.substring(command.length());
                     super.onEvent(new MessageEvent(event.getBot(), ((MessageEvent) event).getChannel(), ((MessageEvent) event).getChannelSource(), ((MessageEvent) event).getUserHostmask(), ((MessageEvent) event).getUser(), newMessage, ((MessageEvent) event).getTags()));
                     return;
                 } else {
@@ -77,8 +77,13 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!textt", "!text");
         commandTranslationMap.put("!texxt", "!text");
         commandTranslationMap.put("!texty", "!text");
-        commandTranslationMap.put("!texter", "!text");
+        commandTranslationMap.put("!textr", "!text");
         commandTranslationMap.put("!text1", "!text");
+        commandTranslationMap.put("!textx", "!text");
+        commandTranslationMap.put("!textr", "!text");
+        commandTranslationMap.put("!texter", "!text");
+        commandTranslationMap.put("!texterino", "!text");
+        commandTranslationMap.put("!texterinos", "!text");
 
         commandTranslationMap.put("!ratereminder", "!ratereminder");
         commandTranslationMap.put("!songreminder", "!ratereminder");
@@ -215,6 +220,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!bobcoins", "!bobcoins");
         commandTranslationMap.put("!topbobcoins", "!bobcoins");
+        commandTranslationMap.put("!topcoins", "!bobcoins");
         commandTranslationMap.put("!bobcoinsinchat", "!bobcoinsinchat");
         commandTranslationMap.put("!topbobcoinsinchat", "!bobcoinsinchat");
 
@@ -302,6 +308,12 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!lawrence", "!lawrence");
         commandTranslationMap.put("!marklawrence", "!lawrence");
+
+        commandTranslationMap.put("!rowling", "!rowling");
+        commandTranslationMap.put("!jkrowling", "!rowling");
+
+        commandTranslationMap.put("!orwell", "!orwell");
+        commandTranslationMap.put("!georgeorwell", "!orwell");
 
         commandTranslationMap.put("!heartsbob", "!heartsbob");
         commandTranslationMap.put("!heartbob", "!heartsbob");

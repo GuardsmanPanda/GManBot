@@ -171,7 +171,7 @@ public class BobsDatabase {
         return (HashMap<K, V>) returnMap;
     }
 
-    //get stream from database? .. or populate array directly from resultset to avoid data copy
+    //get stream from database? .. or populate map directly from resultset to avoid data copy
     public static <K, V> ListMultimap<K, V> getMultiMapFromSQL(String sql, Class<K> keyType, Class<V> valueType, String... arguments) {
         ListMultimap<K, V> returnMap = ArrayListMultimap.create();
         try (CachedRowSet cachedRowSet = getCachedRowSetFromSQL(sql, arguments)) {

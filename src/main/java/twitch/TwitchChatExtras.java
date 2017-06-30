@@ -155,6 +155,8 @@ public class TwitchChatExtras extends ListenerAdapter {
                     case "feynman": Quotes.sendQuote(Author.RICHARD_FEYNMAN); break;
                     case "rothfuss": Quotes.sendQuote(Author.PATRICK_ROTHFUSS); break;
                     case "tolkien": Quotes.sendQuote(Author.TOLKIEN); break;
+                    case "rowling": Quotes.sendQuote(Author.J_K_ROWLING); break;
+                    case "orwell": Quotes.sendQuote(Author.GEORGE_ORWELL); break;
                     case "stephenking": Quotes.sendQuote(Author.STEPHEN_KING); break;
                     case "rrmartin": Quotes.sendQuote(Author.GEORGE_RR_MARTIN); break;
                     case "pratchett": Quotes.sendQuote(Author.TERRY_PRATCHETT); break;
