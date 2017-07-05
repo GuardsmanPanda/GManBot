@@ -1,5 +1,8 @@
 package ui;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import core.StreamWebOverlay;
 import database.BobsDatabase;
 import database.BobsDatabaseHelper;
 import database.SongDatabase;
@@ -150,11 +153,26 @@ public class MainWindow {
         HBox hBox3 = new HBox();
         hBox3.getChildren().addAll(donateNameField, donateAmountField, addDonationButton);
 
-
-        Button testButton = new Button("Test Button");
+        TextField countdownText = new TextField(); countdownText.setPromptText("Countdown Text..");
+        TextField countdownSeconds = new TextField(); countdownSeconds.setPromptText("Seconds..");
+        Button countdownButton = new Button("Start Countdown");
+        countdownButton.setOnAction(event -> {
+            int seconds = Integer.parseInt(countdownSeconds.getText());
+            ObjectNode root = JsonNodeFactory.instance.objectNode();
+            root.put("type", "countdownStart");
+            root.put("text", countdownText.getText());
+            root.put("seconds", seconds);
+            StreamWebOverlay.sendJsonToOverlay(root);
+        });
+        Button stopCountdownButton = new Button("Stop Countdown");
+        stopCountdownButton.setOnAction(event -> {
+            ObjectNode root = JsonNodeFactory.instance.objectNode();
+            root.put("type", "countdownStop");
+            StreamWebOverlay.sendJsonToOverlay(root);
+        });
 
         HBox hBox4 = new HBox();
-        hBox4.getChildren().addAll(testButton);
+        hBox4.getChildren().addAll(countdownText, countdownSeconds, countdownButton, stopCountdownButton);
 
 
         VBox vbox = new VBox();

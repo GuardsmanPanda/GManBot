@@ -24,6 +24,7 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
         switch (chatMessage.getMessageCommand()) {
             case "!commands": TwitchChat.sendMessage("List of Commands -> https://pastebin.com/fam4TAMg"); break;
             case "!github": TwitchChat.sendMessage("My GitHub -> https://github.com/GuardsmanPanda/GManBot"); break;
+            case "!playlist": TwitchChat.sendMessage("Spotify Playlist -> https://open.spotify.com/user/1158619976/playlist/4gYCOPNjjBz9lYneVGE9dK"); break;
             case "!seen": seen(chatMessage); break;
             case "!uptime": uptime(); break;
             case "!randomxkcd": XKCD.xkcdRequest(true); break;

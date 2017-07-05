@@ -58,6 +58,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!commandlist", "!commands");
         commandTranslationMap.put("!commandslist", "!commands");
         commandTranslationMap.put("!help", "!commands");
+        commandTranslationMap.put("!playlist", "!playlist");
 
         commandTranslationMap.put("!commandstats", "!commandstats");
         commandTranslationMap.put("!commandstatsinchat", "!commandstatsinchat");
@@ -124,6 +125,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!setwelcomemessage","!setwelcomemessage");
         commandTranslationMap.put("!welcomemessage","!setwelcomemessage");
+        commandTranslationMap.put("!setwelcomeomessage","!setwelcomemessage");
 
         commandTranslationMap.put("!followage","!followage");
         commandTranslationMap.put("!followtime","!followage");
@@ -293,6 +295,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!carlin", "!carlin");
         commandTranslationMap.put("!gaiman", "!gaiman");
         commandTranslationMap.put("!abercrombie", "!abercrombie");
+        commandTranslationMap.put("!joeabercrombie", "!abercrombie");
         commandTranslationMap.put("!scottlynch", "!scottlynch");
         commandTranslationMap.put("!doyle","!doyle");
         commandTranslationMap.put("!arthurconandoyle","!doyle");

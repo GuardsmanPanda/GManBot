@@ -10,6 +10,15 @@
             text-shadow: 0px 0px 20px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000, 0px 0px 15px #000000;
         }
 
+        .cdText {
+            color: black;
+            position: absolute;
+            font-family: "Cartoon Marker";
+            font-size: 14pt;
+            text-shadow: 0px 0px 0px;
+            text-align: center;
+        }
+
         .voteOption {
             font-weight: bold;
             width: 40px;
@@ -27,10 +36,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="http://jschr.github.io/textillate/jquery.textillate.js"></script>
-    <script src="/OBSOverlay/subscriberscript.js"></script>
+
     <script>(function($){function injector(t,splitter,klass,after){var a=t.text().split(splitter),inject='';if(a.length){$(a).each(function(i,item){inject+='<span class="'+klass+(i+1)+'">'+item+'</span>'+after});t.empty().append(inject)}}var methods={init:function(){return this.each(function(){injector($(this),'','char','')})},words:function(){return this.each(function(){injector($(this),' ','word',' ')})},lines:function(){return this.each(function(){var r="eefec303079ad17405c889e092e105b0";injector($(this).children("br").replaceWith(r).end(),r,'line','')})}};$.fn.lettering=function(method){if(method&&methods[method]){return methods[method].apply(this,[].slice.call(arguments,1))}else if(method==='letters'||!method){return methods.init.apply(this,[].slice.call(arguments,0))}$.error('Method '+method+' does not exist on jQuery.lettering');return this}})(jQuery);</script>
 </head>
 <body>
+<script src="/OBSOverlay/subscriberscript.js"></script>
+
 <div class="gameRatingPosition" style="position: absolute; top: 75px; left: 1220px; width: 700px; line-height: 80%">
     <div class="gameName" style="text-align:center; font-weight: bold; visibility: hidden;">Super Very Long Game Name That is long</div>
     <div class="gameRating" style="display: inline-block; text-align:right; font-size: 20px; width: 50%; visibility: hidden;">Test37773!</div>
@@ -69,8 +80,15 @@
 
 <div id="bobEmotes" style="position: absolute; top: 890px; left: 0px; width: 100%;"></div>
 
+<div id="countdownPosition" style="position: absolute; top: 150px; left: 1620px; width: 300px;">
+    <img src="/OBSOverlay/sign1.png" style="width: 100%;">
+    <div id="countdownText" class="cdText" style="top: 13px; left: 30px; width: 250px;">Space Launch</div>
+    <div id="countdown" class="cdText" style="top: 48px; left: 30px; width: 250px; font-family: 'Consolas'; font-size: 21pt; font-weight: 700;">11:23</div>
+</div>
+
 <script>
     $('#bobEmotes').fadeOut(10);
+    $('#countdownPosition').fadeOut(0);
     var songName = "Guardsman Bob";
     var songRating = "0,00";
     var songNumRatings = 0;
@@ -79,6 +97,9 @@
 
     var quoteText = "";
     var quoteAuthor = "";
+
+    var countdownSeconds = 0;
+    var countdownInterval = 0;
 
     startWebSocket();
     setInterval(songDurationUpdate, 1000);
@@ -100,6 +121,8 @@
             else if (messageJSON.type === "voteUpdate") voteUpdate(messageJSON);
             else if (messageJSON.type === "quote") quoteUpdate(messageJSON);
             else if (messageJSON.type === "bobEmotes") bobEmotesUpdate(messageJSON);
+            else if (messageJSON.type === "countdownStart") countdownStart(messageJSON);
+            else if (messageJSON.type === "countdownStop") countdownStop();
         }
         connection.onclose = function(event) {
             setTimeout(startWebSocket, 5000);
@@ -222,6 +245,40 @@
             $('#bobEmotes').fadeOut(2000);
         }
     }
+
+
+    function countdownStart(data) {
+        clearInterval(countdownInterval);
+        countdownSeconds = data.seconds;
+        $('#countdownText').html(data.text);
+        $('#countdownPosition').fadeIn(3000);
+        countdownInterval = setInterval(countdownUpdate, 1000);
+    }
+
+    function countdownUpdate() {
+        if (countdownSeconds > 0) {
+            countdownSeconds--;
+            var countText = '';
+            var hours = Math.floor(countdownSeconds / 3600);
+            var minutes = Math.floor((countdownSeconds % 3600)/60);
+            var seconds = countdownSeconds % 60;
+            if (hours > 0) countText += hours + ':';
+            countText += minutes + ':';
+            if (seconds < 10) countText += '0';
+            countText += seconds;
+
+            $('#countdown').html(countText);
+        } else {
+            clearInterval(countdownInterval);
+        }
+    }
+
+    function countdownStop() {
+        clearInterval(countdownInterval);
+        $('#countdownPosition').fadeOut(3000);
+    }
+
+
 
 
     function voteStart(data) {
