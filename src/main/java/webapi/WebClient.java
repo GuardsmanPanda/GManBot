@@ -31,6 +31,7 @@ public class WebClient {
         }
     }
 
+    //Workaround for bug in the http2 SSL implementation, can likely be removed in the future.
     public static JsonNode retryGetJSonNodeFromRequest(HttpRequest request) {
         System.out.println("***Retrying request for " + request.uri());
         try {

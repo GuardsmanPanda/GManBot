@@ -154,25 +154,45 @@ public class MainWindow {
         hBox3.getChildren().addAll(donateNameField, donateAmountField, addDonationButton);
 
         TextField countdownText = new TextField(); countdownText.setPromptText("Countdown Text..");
-        TextField countdownSeconds = new TextField(); countdownSeconds.setPromptText("Seconds..");
+        TextField countdownSeconds = new TextField("0"); countdownSeconds.setPrefColumnCount(2);
+        TextField countdownMinutes = new TextField("0"); countdownMinutes.setPrefColumnCount(2);
+        TextField countdownHours = new TextField("0"); countdownHours.setPrefColumnCount(2);
+        TextField countdownX = new TextField("1630"); countdownX.setPrefColumnCount(3);
+        TextField countdownY = new TextField("150"); countdownY.setPrefColumnCount(2);
         Button countdownButton = new Button("Start Countdown");
         countdownButton.setOnAction(event -> {
-            int seconds = Integer.parseInt(countdownSeconds.getText());
+            int seconds = Integer.parseInt(countdownSeconds.getText()) + Integer.parseInt(countdownMinutes.getText()) * 60 + Integer.parseInt(countdownHours.getText()) * 3600;
             ObjectNode root = JsonNodeFactory.instance.objectNode();
             root.put("type", "countdownStart");
             root.put("text", countdownText.getText());
             root.put("seconds", seconds);
+            root.put("x", Integer.parseInt(countdownX.getText()));
+            root.put("y", Integer.parseInt(countdownY.getText()));
+            root.put("image", "/OBSOverlay/sign1.png");
             StreamWebOverlay.sendJsonToOverlay(root);
         });
-        Button stopCountdownButton = new Button("Stop Countdown");
+        Button introButton = new Button("Intro");
+        introButton.setOnAction(event -> { //2:07 + 3:45 + 3:12 = 9:04 -> 544sec
+            int seconds = 544 + Integer.parseInt(countdownSeconds.getText()) + Integer.parseInt(countdownMinutes.getText()) * 60 + Integer.parseInt(countdownHours.getText()) * 3600;
+            ObjectNode root = JsonNodeFactory.instance.objectNode();
+            root.put("type", "countdownStart");
+            root.put("text", "Stream Starting");
+            root.put("seconds", seconds);
+            root.put("x", 20);
+            root.put("y", 150);
+            root.put("image", "/OBSOverlay/sign2.png");
+            StreamWebOverlay.sendJsonToOverlay(root);
+        });
+        Button stopCountdownButton = new Button("Stop");
         stopCountdownButton.setOnAction(event -> {
             ObjectNode root = JsonNodeFactory.instance.objectNode();
             root.put("type", "countdownStop");
             StreamWebOverlay.sendJsonToOverlay(root);
         });
 
+
         HBox hBox4 = new HBox();
-        hBox4.getChildren().addAll(countdownText, countdownSeconds, countdownButton, stopCountdownButton);
+        hBox4.getChildren().addAll(countdownText, countdownHours, countdownMinutes, countdownSeconds, countdownButton, introButton, stopCountdownButton, countdownX, countdownY);
 
 
         VBox vbox = new VBox();

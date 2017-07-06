@@ -81,9 +81,9 @@
 <div id="bobEmotes" style="position: absolute; top: 890px; left: 0px; width: 100%;"></div>
 
 <div id="countdownPosition" style="position: absolute; top: 150px; left: 1620px; width: 300px;">
-    <img src="/OBSOverlay/sign1.png" style="width: 100%;">
+    <img id="countdownImage" src="/OBSOverlay/sign1.png" style="width: 100%;">
     <div id="countdownText" class="cdText" style="top: 13px; left: 30px; width: 250px;">Space Launch</div>
-    <div id="countdown" class="cdText" style="top: 48px; left: 30px; width: 250px; font-family: 'Consolas'; font-size: 21pt; font-weight: 700;">11:23</div>
+    <div id="countdown" class="cdText" style="top: 48px; left: 30px; width: 250px; font-family: 'Fantasque Sans Mono'; font-size: 21pt; font-weight: 700;">11:23</div>
 </div>
 
 <script>
@@ -251,6 +251,9 @@
         clearInterval(countdownInterval);
         countdownSeconds = data.seconds;
         $('#countdownText').html(data.text);
+        $('#countdownPosition').css('left', data.x);
+        $('#countdownPosition').css('top', data.y);
+        $('#countdownImage').attr('src', data.image);
         $('#countdownPosition').fadeIn(3000);
         countdownInterval = setInterval(countdownUpdate, 1000);
     }
@@ -263,13 +266,14 @@
             var minutes = Math.floor((countdownSeconds % 3600)/60);
             var seconds = countdownSeconds % 60;
             if (hours > 0) countText += hours + ':';
-            countText += minutes + ':';
-            if (seconds < 10) countText += '0';
+            if (hours > 0 && minutes < 10) countText += '0';
+            if (minutes > 0 || hours > 0) countText += minutes + ':';
+            if (minutes > 0 && seconds < 10) countText += '0';
             countText += seconds;
 
             $('#countdown').html(countText);
         } else {
-            clearInterval(countdownInterval);
+            countdownStop();
         }
     }
 
