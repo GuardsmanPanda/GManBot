@@ -173,7 +173,7 @@ public class MainWindow {
         });
         Button introButton = new Button("Intro");
         introButton.setOnAction(event -> { //2:07 + 3:45 + 3:12 = 9:04 -> 544sec
-            int seconds = 544 + Integer.parseInt(countdownSeconds.getText()) + Integer.parseInt(countdownMinutes.getText()) * 60 + Integer.parseInt(countdownHours.getText()) * 3600;
+            int seconds = 4 + 544 + Integer.parseInt(countdownSeconds.getText()) + Integer.parseInt(countdownMinutes.getText()) * 60 + Integer.parseInt(countdownHours.getText()) * 3600;
             ObjectNode root = JsonNodeFactory.instance.objectNode();
             root.put("type", "countdownStart");
             root.put("text", "Stream Starting");

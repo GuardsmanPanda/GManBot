@@ -27,18 +27,6 @@ public class WebClient {
             return new ObjectMapper().readTree(response.body());
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-            return retryGetJSonNodeFromRequest(request);
-        }
-    }
-
-    //Workaround for bug in the http2 SSL implementation, can likely be removed in the future.
-    public static JsonNode retryGetJSonNodeFromRequest(HttpRequest request) {
-        System.out.println("***Retrying request for " + request.uri());
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandler.asString());
-            return new ObjectMapper().readTree(response.body());
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
             return JsonNodeFactory.instance.objectNode().put("bobError", "error");
         }
     }
@@ -50,5 +38,21 @@ public class WebClient {
             e.printStackTrace();
             return "";
         }
+    }
+
+    /**
+     * Executes an http request and returns the status code.
+     * @param request The request to execute
+     */
+    public static int executeHttpRequest(HttpRequest request) {
+        try {
+            HttpResponse response = client.send(request, HttpResponse.BodyHandler.asString());
+            System.out.println("Status code: " + response.statusCode());
+            System.out.println(response.body());
+            return response.statusCode();
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }

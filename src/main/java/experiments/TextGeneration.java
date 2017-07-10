@@ -36,7 +36,7 @@ public class TextGeneration extends ListenerAdapter {
             String lastWord = Extra.getRandomElement(textModel.get("START"));
             output.append(lastWord);
 
-            while (output.length() < 250) {
+            while (output.length() < 290) {
                 if (lastWord.endsWith("END")) {
                     output.setLength(output.indexOf("END"));
                     break;

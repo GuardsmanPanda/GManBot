@@ -2,9 +2,12 @@ package webapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jdk.incubator.http.HttpClient;
 import jdk.incubator.http.HttpRequest;
 import jdk.incubator.http.HttpResponse;
+import twitch.TwitchChat;
 import utility.PrettyPrinter;
 
 import java.io.IOException;
@@ -135,8 +138,42 @@ public class Twitchv5 {
         }
     }
 
+    public static void setChannelTitle(String newTitle) {
+        ObjectNode root = JsonNodeFactory.instance.objectNode();
+        ObjectNode channelNode = JsonNodeFactory.instance.objectNode();
+        channelNode.put("status", newTitle);
+
+        root.set("channel", channelNode);
+        int statusCode = executeHttpPut("https://api.twitch.tv/kraken/channels/"+BOBSCHANNELID, root.toString());
+        if (statusCode == 200) TwitchChat.sendMessage("Stream Title Changed!");
+        else System.out.println("Error trying to change stream title, code: " + statusCode);
+    }
+    public static void setChannelGame(String newGame) {
+        ObjectNode root = JsonNodeFactory.instance.objectNode();
+        ObjectNode channelNode = JsonNodeFactory.instance.objectNode();
+        channelNode.put("game", newGame);
+
+        root.set("channel", channelNode);
+        int statusCode = executeHttpPut("https://api.twitch.tv/kraken/channels/"+BOBSCHANNELID, root.toString());
+        if (statusCode == 200) TwitchChat.sendMessage("Game Changed!");
+    }
 
     public static String getAuthTokenForBobsChannel() { return AuthTokenForBobsChannel; }
+
+    /**
+     * Requturns the requests status code.
+     * @param requestURIString
+     * @param body
+     * @return
+     */
+    private static int executeHttpPut(String requestURIString, String body) {
+        HttpRequest request = HttpRequest.newBuilder(URI.create(requestURIString))
+                .header("Accept", "application/vnd.twitchtv.v5+json")
+                .header("Client-ID", twitchApiKey)
+                .header("Authorization", "OAuth " + AuthTokenForBobsChannel)
+                .PUT(HttpRequest.BodyProcessor.fromString(body)).build();
+        return WebClient.executeHttpRequest(request);
+    }
 
     public synchronized static JsonNode executeHttpGet(String requestURIString) {
         try {
