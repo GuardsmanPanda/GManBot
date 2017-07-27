@@ -46,7 +46,7 @@ public class WebClient {
      */
     public static int executeHttpRequest(HttpRequest request) {
         try {
-            HttpResponse response = client.send(request, HttpResponse.BodyHandler.asString());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandler.asString());
             System.out.println("Status code: " + response.statusCode());
             System.out.println(response.body());
             return response.statusCode();

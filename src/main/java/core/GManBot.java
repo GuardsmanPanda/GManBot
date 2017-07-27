@@ -48,6 +48,7 @@ public class GManBot extends Application {
         Reddit.watchSubReddit("machinelearning", 100, Reddit.TimeSpan.YEAR, 100);
 
         //Send startup information to chat
+        System.out.println(startInstant + " -> " + Instant.now());
         String startUpTime = PrettyPrinter.timeStringFromDuration(Duration.between(startInstant, Instant.now()), true);
         TwitchChat.sendMessage("bobHype I Am Alive Again! -> Startup Time: " + startUpTime + ".");
 

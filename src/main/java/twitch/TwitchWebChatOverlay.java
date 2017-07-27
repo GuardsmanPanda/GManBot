@@ -12,6 +12,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,6 +69,7 @@ public class TwitchWebChatOverlay {
         public void handle(HttpExchange httpExchange) throws IOException {
             String requestURI = httpExchange.getRequestURI().toString();
             String twitchUserName = requestURI.substring(requestURI.lastIndexOf("/") + 1, requestURI.indexOf("?")).toLowerCase();
+            twitchUserName = URLDecoder.decode(twitchUserName, "UTF-8");
             String twitchUserID = BobsDatabaseHelper.getTwitchUserID(twitchUserName);
 
             httpExchange.getRequestBody().close();
@@ -157,7 +159,7 @@ public class TwitchWebChatOverlay {
                     "var id = 0;" +
                     "document.getElementById('log').appendChild = function(node) {" +
                     "   this.insertAdjacentElement('beforeend', node);" +
-                    "   var name = node.getAttribute('data-from');" +
+                    "   var name = node.querySelector('.name').textContent;" +
                     "   var chatMessage = node.children[1].textContent;" +
                     "   if (chatMessage.toLowerCase().includes('bob')) {" +
                     "       node.children[1].className += ' bobHighlight';" +

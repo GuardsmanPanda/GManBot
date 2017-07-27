@@ -8,8 +8,7 @@ import webapi.Twitchv5;
 public class TwitchChatModCommands extends ListenerAdapter {
 
 
-    //TODO: add command to allow moderators to change the stream title.
-    //TODO Add command that allows mods to change streamGame
+    //TODO: consider only doing game change if the game has >0 current viewers. or 'if exists'
     @Override
     public void onMessage(MessageEvent event) {
         if (!event.getTags().get("user-type").equalsIgnoreCase("mod") || !event.getMessage().startsWith("!")) return;

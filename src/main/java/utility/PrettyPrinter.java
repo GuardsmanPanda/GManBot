@@ -45,15 +45,17 @@ public class PrettyPrinter {
     }
 
     public static String timeStringFromDuration(Duration duration, boolean milliSeconds) {
-        List<String> timeStrings = new ArrayList<>(3);
+        List<String> timeStrings = new ArrayList<>(4);
         long days = duration.toDays();
         int hours = duration.toHoursPart();
         int minutes = duration.toMinutesPart();
+        int seconds = duration.toSecondsPart();
         int ms = duration.toMillisPart();
 
         if (days > 0) timeStrings.add(days + ((days > 1) ? " Days": " Day"));
         if (hours > 0) timeStrings.add(hours + ((hours > 1) ? " Hours": " Hour"));
         if (minutes > 0) timeStrings.add(minutes + ((minutes > 1) ? " Minutes": " Minute"));
+        if (milliSeconds && seconds > 0) timeStrings.add(seconds + ((seconds > 1) ? " Seconds" : " Second"));
         if (milliSeconds && ms > 0) timeStrings.add(ms + ((ms > 1) ? "ms" : "ms"));
 
         return String.join(", ", timeStrings);

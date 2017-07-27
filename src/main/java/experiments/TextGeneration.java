@@ -1,24 +1,14 @@
 package experiments;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ArrayListMultimap;
 import database.BobsDatabase;
-import jdk.incubator.http.HttpRequest;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import twitch.TwitchChat;
 import utility.Extra;
-import utility.GBUtility;
-import webapi.WebClient;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 
 public class TextGeneration extends ListenerAdapter {
@@ -26,7 +16,6 @@ public class TextGeneration extends ListenerAdapter {
 
     static {
         loadTextModel();
-        addHearthstoneCardTextToModel();
     }
 
 
@@ -93,41 +82,5 @@ public class TextGeneration extends ListenerAdapter {
                     }
                     textModel.put(lastWord, wordArray[wordArray.length - 1] + " END");
                 });
-    }
-
-    private static void addHearthstoneCardTextToModel() {
-        File cardData = new File("Data/Hearthstone/CardData.txt");
-        if (!cardData.exists()) {
-            System.out.println("loading HS data");
-            HttpRequest request = HttpRequest.newBuilder(URI.create("https://api.hearthstonejson.com/v1/19632/enUS/cards.collectible.json"))
-                    .setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0")
-                    .GET().build();
-            GBUtility.writeTextToFile(WebClient.getJSonNodeFromRequest(request).toString(), cardData.getPath(), false);
-        }
-
-        try {
-            JsonNode root = new ObjectMapper().readTree(cardData);
-            List<String> cardText = StreamSupport.stream(root.spliterator(), false)
-                    .filter(node -> node.has("text"))
-                    .filter(node -> node.has("flavor"))
-                    .flatMap(node -> Stream.of(node.get("text").asText(), node.get("flavor").asText()))
-                    .map(text -> text.replaceAll("</?b>", "").replaceAll("\\s+", " ").trim())
-                    .filter(text -> text.length() > 15)
-                    .collect(Collectors.toList());
-
-            cardText.forEach(text -> {
-                String[] wordArray = text.split(" ");
-                 if (wordArray.length > 2) {
-                    for (int i = 2; i < wordArray.length; i++) {
-                            textModel.put(wordArray[i-2], wordArray[i - 1] + " " + wordArray[i]);
-                    }
-                        textModel.put(wordArray[wordArray.length - 2], wordArray[wordArray.length - 1] + " END");
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Could nto read card data");
-        }
-        System.out.println("loaded HS data");
     }
 }

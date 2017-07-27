@@ -54,6 +54,12 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
     }
 
     private static void fillCommandTranslationMap() {
+        //mod commands
+        commandTranslationMap.put("!settitle", "!settitle");
+        commandTranslationMap.put("!setgame", "!setgame");
+
+
+        //other commands
         commandTranslationMap.put("!commands", "!commands");
         commandTranslationMap.put("!commandlist", "!commands");
         commandTranslationMap.put("!commandslist", "!commands");

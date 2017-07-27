@@ -171,6 +171,7 @@ public class Twitchv5 {
                 .header("Accept", "application/vnd.twitchtv.v5+json")
                 .header("Client-ID", twitchApiKey)
                 .header("Authorization", "OAuth " + AuthTokenForBobsChannel)
+                .header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyProcessor.fromString(body)).build();
         return WebClient.executeHttpRequest(request);
     }
