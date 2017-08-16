@@ -233,6 +233,11 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!bobcoinsinchat", "!bobcoinsinchat");
         commandTranslationMap.put("!topbobcoinsinchat", "!bobcoinsinchat");
 
+        commandTranslationMap.put("!songratings", "!songratings");
+        commandTranslationMap.put("!songsrated", "!songratings");
+        commandTranslationMap.put("!songratingsinchat", "!songratingsinchat");
+        commandTranslationMap.put("!songsratedinchat", "!songratingsinchat");
+
         commandTranslationMap.put("!emoteusage", "!emoteusage");
         commandTranslationMap.put("!emoteuseage", "!emoteusage");
         commandTranslationMap.put("!topemoteusage", "!emoteusage");

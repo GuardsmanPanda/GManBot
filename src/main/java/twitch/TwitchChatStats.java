@@ -17,7 +17,8 @@ import java.util.stream.Stream;
 
 public class TwitchChatStats extends ListenerAdapter {
     public enum StatType {
-        IDLEHOURS("The Sneakiest Lurkers"), ACTIVEHOURS("Biggest Hour Farmers"), TOTALEMOTES("Top Emote Users"), CHATLINES("Top Chatters"), BOBCOINS("One Percenters");
+        IDLEHOURS("The Sneakiest Lurkers"), ACTIVEHOURS("Biggest Hour Farmers"), TOTALEMOTES("Top Emote Users"),
+        CHATLINES("Top Chatters"), BOBCOINS("One Percenters"), SONGSRATED("Top Song Raters");
         public final String statMessage;
         StatType(String message) { statMessage = message; }
     }
@@ -51,12 +52,14 @@ public class TwitchChatStats extends ListenerAdapter {
             case "!chatlines": topListStats(StatType.CHATLINES, true); break;
             case "!bobcoins": topListStats(StatType.BOBCOINS, true); break;
             case "!emoteusage": topListStats(StatType.TOTALEMOTES, true); break;
+            case "!songratings": topListStats(StatType.SONGSRATED, true); break;
 
             case "!activehoursinchat": topListStats(StatType.ACTIVEHOURS, false); break;
             case "!idlehoursinchat": topListStats(StatType.IDLEHOURS, false); break;
             case "!chatlinesinchat": topListStats(StatType.CHATLINES, false); break;
             case "!bobcoinsinchat": topListStats(StatType.BOBCOINS, false); break;
             case "!emoteusageinchat": topListStats(StatType.TOTALEMOTES, false); break;
+            case "!songratingsinchat": topListStats(StatType.SONGSRATED, false); break;
 
             case "!stathide": statHide(chatMessage, true); break;
             case "!statunhide": statHide(chatMessage, false); break;
@@ -88,6 +91,7 @@ public class TwitchChatStats extends ListenerAdapter {
             case CHATLINES: names = BobsDatabase.getMultiMapFromSQL("SELECT twitchDisplayName, chatLines FROM twitchChatUsers", String.class, Integer.class); break;
             case BOBCOINS: names = BobsDatabase.getMultiMapFromSQL("SELECT twitchDisplayName, bobCoins FROM twitchChatUsers", String.class, Integer.class); break;
             case TOTALEMOTES: names = BobsDatabase.getMultiMapFromSQL("SELECT TwitchChatUsers.twitchDisplayName, COUNT(emoteName) AS emoteCount FROM EmoteUsage INNER JOIN TwitchChatUsers ON twitchChatUsers.TwitchUserID = EmoteUsage.TwitchUserID GROUP BY twitchChatUsers.twitchDisplayName", String.class, Integer.class); break;
+            case SONGSRATED: names = BobsDatabase.getMultiMapFromSQL( "SELECT TwitchChatUsers.twitchDisplayName, COUNT(songName) AS songCount FROM SongRatings INNER JOIN TwitchChatUsers ON twitchChatUsers.TwitchUserID = SongRatings.twitchUserID GROUP BY twitchChatUsers.twitchDisplayName HAVING songCount > 20", String.class, Integer.class); break;
         }
         if (names == null) {
             TwitchChat.sendMessage("Names Is Null");
