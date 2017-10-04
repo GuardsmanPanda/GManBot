@@ -115,7 +115,7 @@ public class SpaceLaunch {
      */
     private static JsonNode getNextLaunchNode(String agency, int nodeNumber) {
         assert (nodeNumber < 2);
-        HttpRequest request = HttpRequest.newBuilder(URI.create("https://launchlibrary.net/1.2/launch/next/10"))
+        HttpRequest request = HttpRequest.newBuilder(URI.create("https://launchlibrary.net/1.2/launch/next/20"))
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0")
                 .header("Keep-Alive", "timeout=60")
                 .GET().build();

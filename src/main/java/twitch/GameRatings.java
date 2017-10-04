@@ -17,7 +17,6 @@ public class GameRatings extends ListenerAdapter {
     private static Instant nextOverlayUpdate = Instant.now();
     //TODO cache the current game playing in case twitch api derps
 
-
     @Override
     public void onMessage(MessageEvent event) {
         if (event.getMessage().startsWith("!rategame ")) {

@@ -19,7 +19,6 @@ public class Extra {
         return list.get(random.nextInt(list.size()));
     }
 
-    public static int randomInt() { return random.nextInt(); }
     public static int randomInt(int bound) { return random.nextInt(bound); }
 
     public static <T> Comparator<T> randomOrder() {

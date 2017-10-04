@@ -29,7 +29,7 @@ public class Earthquakes {
                     String twitchMessage = "Large EarthQuake ("+mag+") In ";
                     if (mag > 7.0) twitchMessage = "HUGE EarthQuake ⏩️"+mag+"⏪️ In ";
                     if (mag > 8.0) twitchMessage = "HOLY SHIT ITS A BIIG ONE! ⚠️" + mag + "⚠️ Earth Quake in ";
-                    TwitchChat.sendMessage(twitchMessage + place + " -> " + prop.get("url").asText());
+                    TwitchChat.sendMessage(twitchMessage + place + " \uD83D\uDD38 " + prop.get("url").asText() +" \uD83D\uDD38 Type: " + prop.get("type").asText());
                     quakesPrinted.add(node.get("id").asText());
                 });
     }

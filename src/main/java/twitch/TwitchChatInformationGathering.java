@@ -35,7 +35,10 @@ public class TwitchChatInformationGathering extends ListenerAdapter {
 
         emoteSet.stream()
                 .filter(chatMessage.message::contains)
-                .forEach(emote -> EmoteDatabase.addEmoteUsage(chatMessage.userID, emote));
+                .forEach(emote -> {
+                    try { Thread.sleep(1); } catch (InterruptedException e) { e.printStackTrace(); }
+                    EmoteDatabase.addEmoteUsage(chatMessage.userID, emote);
+                });
     }
 
     private static void hourlyUpdate() {

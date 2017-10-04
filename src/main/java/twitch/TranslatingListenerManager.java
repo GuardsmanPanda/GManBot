@@ -18,10 +18,6 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         fillCommandTranslationMap();
     }
 
-    public TranslatingListenerManager() {
-
-    }
-
     @Override
     public void onEvent(Event event) {
         if (event instanceof MessageEvent) {
@@ -56,7 +52,11 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
     private static void fillCommandTranslationMap() {
         //mod commands
         commandTranslationMap.put("!settitle", "!settitle");
+        commandTranslationMap.put("!settittle", "!settitle");
+        commandTranslationMap.put("!changetittle", "!settitle");
+        commandTranslationMap.put("!setstreamtitle", "!settitle");
         commandTranslationMap.put("!setgame", "!setgame");
+        commandTranslationMap.put("!setstreamgame", "!setgame");
 
 
         //other commands
@@ -65,6 +65,8 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!commandslist", "!commands");
         commandTranslationMap.put("!help", "!commands");
         commandTranslationMap.put("!playlist", "!playlist");
+        commandTranslationMap.put("!music", "!playlist");
+        commandTranslationMap.put("!spotify", "!playlist");
 
         commandTranslationMap.put("!commandstats", "!commandstats");
         commandTranslationMap.put("!commandstatsinchat", "!commandstatsinchat");

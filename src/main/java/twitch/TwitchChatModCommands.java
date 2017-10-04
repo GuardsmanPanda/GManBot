@@ -9,6 +9,7 @@ public class TwitchChatModCommands extends ListenerAdapter {
 
 
     //TODO: consider only doing game change if the game has >0 current viewers. or 'if exists'
+    //TODO: use twitch search feature to match game on partially correct text
     @Override
     public void onMessage(MessageEvent event) {
         if (!event.getTags().get("user-type").equalsIgnoreCase("mod") || !event.getMessage().startsWith("!")) return;

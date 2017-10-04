@@ -88,7 +88,8 @@ public class Twitchv5 {
                         .filter(emoteString -> !emoteString.contains("\\")) //Remove all emotes that are regex
                         .collect(Collectors.toSet());
             } else {
-                throw new RuntimeException("Could not rating emote set " + emoteSet);
+                System.out.println("Could not rating emote set!!! " + emoteSet);
+                return Set.of();
             }
         });
     }

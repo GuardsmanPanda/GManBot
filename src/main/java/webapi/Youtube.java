@@ -48,7 +48,7 @@ public class Youtube {
             if (video != null) {
                 String ageString = "Uploaded ";
                 Period periodSinceUpload = Period.between(video.uploadTime.toLocalDate(), LocalDate.now());
-                if (periodSinceUpload.getDays() == 0) ageString += "Today!";
+                if (periodSinceUpload.getYears() + periodSinceUpload.getMonths() + periodSinceUpload.getDays() == 0) ageString += "Today!";
                 else ageString += PrettyPrinter.timeStringFromPeriod(periodSinceUpload) + " Ago";
 
                 TwitchChat.sendMessage("YouTube ⏩ " + video.title + " - " + video.getLength() + " \uD83D\uDD38 " + video.viewsAndLikes() + " \uD83D\uDD38 " + ageString + " (" + videoID + ")");
