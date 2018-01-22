@@ -107,7 +107,7 @@ public class TwitchChatExtras extends ListenerAdapter {
                 int bobCoins = cachedRowSet.getInt("bobCoins");
 
                 statStringBuilder.append("ChatLines: " + intFormat.format(chatLines));
-                statStringBuilder.append(" [Rank: " + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE chatLines > "+chatLines) + 1) + "]");
+                statStringBuilder.append(" [Rank: " + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE chatLines > "+(chatLines+1)) + 1) + "]");
                 statStringBuilder.append(" \uD83D\uDD38 BobCoins: " + intFormat.format(bobCoins));
                 statStringBuilder.append(" [" + (BobsDatabase.getIntFromSQL("SELECT COUNT(*) AS numberOfEntries FROM twitchChatUsers WHERE bobCoins > "+bobCoins) + 1) + "]");
                 statStringBuilder.append(" \uD83D\uDD38 ActiveHours: " + intFormat.format(activeHours));

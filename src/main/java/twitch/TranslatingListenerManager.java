@@ -67,6 +67,8 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!playlist", "!playlist");
         commandTranslationMap.put("!music", "!playlist");
         commandTranslationMap.put("!spotify", "!playlist");
+        commandTranslationMap.put("!codefight", "!codefights");
+        commandTranslationMap.put("!codefights", "!codefights");
 
         commandTranslationMap.put("!commandstats", "!commandstats");
         commandTranslationMap.put("!commandstatsinchat", "!commandstatsinchat");
@@ -89,7 +91,6 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!textr", "!text");
         commandTranslationMap.put("!text1", "!text");
         commandTranslationMap.put("!textx", "!text");
-        commandTranslationMap.put("!textr", "!text");
         commandTranslationMap.put("!texter", "!text");
         commandTranslationMap.put("!texterino", "!text");
         commandTranslationMap.put("!texterinos", "!text");
@@ -314,7 +315,6 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!doyle","!doyle");
         commandTranslationMap.put("!arthurconandoyle","!doyle");
         commandTranslationMap.put("!einstein","!einstein");
-        commandTranslationMap.put("!herbert","!herbert");
         commandTranslationMap.put("!feynman","!feynman");
 
         commandTranslationMap.put("!herbert","!herbert");

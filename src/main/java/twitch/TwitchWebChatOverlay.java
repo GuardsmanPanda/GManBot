@@ -9,9 +9,9 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -135,14 +135,18 @@ public class TwitchWebChatOverlay {
 
             System.out.println("Request URI: " + requestURI);
 
-            URLConnection connection = new URL("https://streamlabs.com" + requestURI).openConnection();
+            HttpURLConnection connection = (HttpURLConnection)new URL("https://streamlabs.com" + requestURI).openConnection();
+            connection.setRequestMethod(httpExchange.getRequestMethod());
             connection.setRequestProperty("User-agent", "");
+            String referer = httpExchange.getRequestHeaders().getFirst("Referer");
+            if (referer != null) {
+                connection.setRequestProperty("Referer", referer.replace("http://127.0.0.1:8000", "https://streamlabs.com"));
+            }
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             reader.lines().forEachOrdered(responseBuilder::append);
             reader.close();
 
             String response = responseBuilder.toString().replaceAll("https://streamlabs.com", "http://127.0.0.1:8000");
-            //response = response.replaceAll("\"Chrome\"", "\"bobHype\"");
 
             if (requestURI.contains("/widgets/chat-box/v1/")) {
                 response = response.replace("</body>", iconScript() + "</body>");

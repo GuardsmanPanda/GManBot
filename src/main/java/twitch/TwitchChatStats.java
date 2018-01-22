@@ -91,7 +91,7 @@ public class TwitchChatStats extends ListenerAdapter {
             case CHATLINES: names = BobsDatabase.getMultiMapFromSQL("SELECT twitchDisplayName, chatLines FROM twitchChatUsers", String.class, Integer.class); break;
             case BOBCOINS: names = BobsDatabase.getMultiMapFromSQL("SELECT twitchDisplayName, bobCoins FROM twitchChatUsers", String.class, Integer.class); break;
             case TOTALEMOTES: names = BobsDatabase.getMultiMapFromSQL("SELECT TwitchChatUsers.twitchDisplayName, COUNT(emoteName) AS emoteCount FROM EmoteUsage INNER JOIN TwitchChatUsers ON twitchChatUsers.TwitchUserID = EmoteUsage.TwitchUserID GROUP BY twitchChatUsers.twitchDisplayName", String.class, Integer.class); break;
-            case SONGSRATED: names = BobsDatabase.getMultiMapFromSQL( "SELECT TwitchChatUsers.twitchDisplayName, COUNT(songName) AS songCount FROM SongRatings INNER JOIN TwitchChatUsers ON twitchChatUsers.TwitchUserID = SongRatings.twitchUserID GROUP BY twitchChatUsers.twitchDisplayName HAVING songCount > 20", String.class, Integer.class); break;
+            case SONGSRATED: names = BobsDatabase.getMultiMapFromSQL( "SELECT TwitchChatUsers.twitchDisplayName, COUNT(songName) AS songCount FROM SongRatings INNER JOIN TwitchChatUsers ON twitchChatUsers.TwitchUserID = SongRatings.twitchUserID GROUP BY twitchChatUsers.twitchDisplayName", String.class, Integer.class); break;
         }
         if (names == null) {
             TwitchChat.sendMessage("Names Is Null");
