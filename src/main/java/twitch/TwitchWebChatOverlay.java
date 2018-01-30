@@ -162,19 +162,16 @@ public class TwitchWebChatOverlay {
             return  "<script>" +
                     "var id = 0;" +
                     "document.getElementById('log').appendChild = function(node) {" +
-                    "   this.insertAdjacentElement('beforeend', node);" +
+                    "   this.append(node);" +
                     "   var name = node.querySelector('.name').textContent;" +
-                    "   var chatMessage = node.children[1].textContent;" +
+                    "   var chatMessage = node.querySelector('.message').textContent;" +
                     "   if (chatMessage.toLowerCase().includes('bob')) {" +
-                    "       node.children[1].className += ' bobHighlight';" +
+                    "       node.querySelector('.message').className += ' bobHighlight';" +
                     "   }" +
                     "   if (name.toLowerCase() === 'gmanbot') {" +
-                    "       node.children[1].className += ' botHighlight';" +
+                    "       node.querySelector('.message').className += ' botHighlight';" +
                     "   }" +
-                    "   if (name.toLowerCase() === 'gmanbot4') {" +
-                    "       node.children[1].style.color='#37e1f5';" +
-                    "   }" +
-                    "   var metaNode = node.firstElementChild;" +
+                    "   var metaNode = node.querySelector('.meta');" +
                     "   var flagNode = document.createElement(\"img\");" +
                     "   flagNode.src = 'http://127.0.0.1:8000/flags/' + name + '?id=' + id;" +
                     "   flagNode.className = 'badge flag-icon';" +
