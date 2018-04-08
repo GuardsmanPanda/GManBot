@@ -6,8 +6,6 @@ import twitch.dataobjects.TwitchChatMessage;
 import webapi.Twitchv5;
 
 public class TwitchChatModCommands extends ListenerAdapter {
-
-
     //TODO: consider only doing game change if the game has >0 current viewers. or 'if exists'
     //TODO: use twitch search feature to match game on partially correct text
     @Override

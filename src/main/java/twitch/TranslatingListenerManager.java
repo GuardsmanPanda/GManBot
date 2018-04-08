@@ -76,6 +76,31 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!flagstats", "!flagstats");
         commandTranslationMap.put("!flagstatsinchat", "!flagstatsinchat");
 
+        commandTranslationMap.put("!roll", "!roll");
+        commandTranslationMap.put("!dice", "!roll");
+        commandTranslationMap.put("!die", "!roll");
+        commandTranslationMap.put("!d", "!roll");
+        commandTranslationMap.put("!d1", "!roll 1");
+        commandTranslationMap.put("!d2", "!roll 2");
+        commandTranslationMap.put("!d3", "!roll 3");
+        commandTranslationMap.put("!d4", "!roll 4");
+        commandTranslationMap.put("!d5", "!roll 5");
+        commandTranslationMap.put("!d6", "!roll 6");
+        commandTranslationMap.put("!d7", "!roll 7");
+        commandTranslationMap.put("!d8", "!roll 8");
+        commandTranslationMap.put("!d9", "!roll 9");
+        commandTranslationMap.put("!d10", "!roll 10");
+        commandTranslationMap.put("!d11", "!roll 11");
+        commandTranslationMap.put("!d12", "!roll 12");
+        commandTranslationMap.put("!d13", "!roll 13");
+        commandTranslationMap.put("!d14", "!roll 14");
+        commandTranslationMap.put("!d15", "!roll 15");
+        commandTranslationMap.put("!d16", "!roll 16");
+        commandTranslationMap.put("!d17", "!roll 17");
+        commandTranslationMap.put("!d18", "!roll 18");
+        commandTranslationMap.put("!d19", "!roll 19");
+        commandTranslationMap.put("!d20", "!roll 20");
+
 
         commandTranslationMap.put("!github", "!github");
         commandTranslationMap.put("!githb", "!github");
@@ -137,6 +162,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!setwelcomeomessage","!setwelcomemessage");
 
         commandTranslationMap.put("!followage","!followage");
+        commandTranslationMap.put("!folowage","!followage");
         commandTranslationMap.put("!followtime","!followage");
         commandTranslationMap.put("!folloage","!followage");
         commandTranslationMap.put("!followed","!followage");
@@ -334,6 +360,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!heartsbob", "!heartsbob");
         commandTranslationMap.put("!heartbob", "!heartsbob");
+        commandTranslationMap.put("!iheartbob", "!heartsbob");
 
         commandTranslationMap.put("!donationcheck", "!donationcheck");
     }

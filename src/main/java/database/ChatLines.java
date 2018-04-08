@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 public class ChatLines {
 
-
     public static Map<String, Long> commandUsageStats(boolean everyone) {
         Set<String> commands = TranslatingListenerManager.getTranslatedCommands();
         List<String> chatLines;

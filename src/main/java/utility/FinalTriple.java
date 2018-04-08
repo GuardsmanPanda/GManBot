@@ -1,8 +1,5 @@
 package utility;
 
-/**
- * Created by Dons on 27-04-2017.
- */
 public class FinalTriple<E, F, G> {
     public final E first;
     public final F second;

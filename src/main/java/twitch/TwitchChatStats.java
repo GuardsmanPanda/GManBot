@@ -25,7 +25,6 @@ public class TwitchChatStats extends ListenerAdapter {
     private static final NumberFormat intFormat = NumberFormat.getIntegerInstance(Locale.getDefault());
     private static final Set<String> statHidingUsers = new HashSet<>();
     private Instant nextStatTime = Instant.now();
-
     static {
        statHidingUsers.addAll(BobsDatabase.getListFromSQL("SELECT twitchLowerCaseName FROM TwitchChatUsers WHERE statHide = TRUE", String.class));
     }

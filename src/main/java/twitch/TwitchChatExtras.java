@@ -67,7 +67,7 @@ public class TwitchChatExtras extends ListenerAdapter {
         if (hasSubscribed && !welcomeMessage.equalsIgnoreCase("none")) {
             if (welcomeMessage.startsWith("/") && !welcomeMessage.toLowerCase().startsWith("/me ")) return;
 
-            if (!lastWelcomeMessageTime.containsKey(displayName) || !lastWelcomeMessageTime.get(displayName).isAfter(LocalDateTime.now().minus(4, ChronoUnit.HOURS))) {
+            if (!lastWelcomeMessageTime.containsKey(displayName) || !lastWelcomeMessageTime.get(displayName).isAfter(LocalDateTime.now().minus(5, ChronoUnit.HOURS))) {
                 sendWelcomeMessage(welcomeMessage);
                 lastWelcomeMessageTime.put(displayName, LocalDateTime.now());
             }

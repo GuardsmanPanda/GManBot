@@ -59,7 +59,6 @@ public class GBUtility {
                 e.printStackTrace(); return false;
             }
         }
-
         //now try writing the output string
         try(FileWriter writer = new FileWriter(filePath, append)) {
             if (fileCreated) writer.write(text);

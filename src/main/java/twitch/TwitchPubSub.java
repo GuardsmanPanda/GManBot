@@ -50,6 +50,7 @@ public class TwitchPubSub {
             websocket.sendText(rootNode.toString());
         }
 
+        //TODO Detect sub tiers and gifted subs! .. sub tier: "sub_plan": (String) number/Prime
         @Override
         public void onTextMessage(WebSocket websocket, String text) {
             try {

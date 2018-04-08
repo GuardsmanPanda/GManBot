@@ -161,8 +161,9 @@ public class TwitchWebChatOverlay {
         private String iconScript() {
             return  "<script>" +
                     "var id = 0;" +
-                    "document.getElementById('log').appendChild = function(node) {" +
+                    " document.getElementById('log').appendChild = function(node) {" +
                     "   this.append(node);" +
+                    "   node = document.getElementById('log').lastElementChild;" +
                     "   var name = node.querySelector('.name').textContent;" +
                     "   var chatMessage = node.querySelector('.message').textContent;" +
                     "   if (chatMessage.toLowerCase().includes('bob')) {" +

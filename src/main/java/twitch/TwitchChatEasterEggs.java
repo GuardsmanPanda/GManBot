@@ -4,6 +4,7 @@ import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import twitch.dataobjects.SeenEvent;
 import twitch.dataobjects.TwitchChatMessage;
+import utility.Extra;
 import utility.PrettyPrinter;
 import webapi.*;
 import webapi.dataobjects.Author;
@@ -26,6 +27,7 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
             case "!codefights": TwitchChat.sendMessage("https://codefights.com/signup/S2BuQaGDDcxbKMJC4/main"); break;
             case "!github": TwitchChat.sendMessage("My GitHub -> https://github.com/GuardsmanPanda/GManBot"); break;
             case "!playlist": TwitchChat.sendMessage("Spotify Playlist -> https://open.spotify.com/user/1158619976/playlist/4gYCOPNjjBz9lYneVGE9dK"); break;
+            case "!roll": rollDice(chatMessage); break;
             case "!seen": seen(chatMessage); break;
             case "!uptime": uptime(); break;
             case "!randomxkcd": XKCD.xkcdRequest(true); break;
@@ -115,5 +117,15 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
             responseString += " Until Follow Birthday! bobHype";
         }
         TwitchChat.sendMessage(responseString);
+    }
+
+    private void rollDice(TwitchChatMessage message) {
+        try {
+            int size = Integer.parseInt(message.getMessageContent());
+            int roll = Extra.randomInt(size)+1;
+            TwitchChat.sendMessage("Rolling a d" + size + ": " + roll +"");
+        } catch (NumberFormatException ignored) {
+
+        }
     }
 }

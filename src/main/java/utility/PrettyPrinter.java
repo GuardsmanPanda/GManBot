@@ -19,7 +19,7 @@ public class PrettyPrinter {
 
     public static String shortTimeFromDuration(Duration duration) {
         String returnString = (duration.toHours() > 0) ? duration.toHours() + ":" : "";
-        if (duration.toHours() > 0 || duration.toMinutesPart() > 10) returnString += duration.toMinutesPart() / 10;
+        if (duration.toHours() > 0 || duration.toMinutesPart() >= 10) returnString += duration.toMinutesPart() / 10;
         returnString += duration.toMinutesPart() % 10 + ":";
         returnString += duration.toSecondsPart() / 10;
         returnString += duration.toSecondsPart() % 10;
@@ -38,7 +38,6 @@ public class PrettyPrinter {
 
         return String.join(", ", timeStrings);
     }
-
 
     public static String timeStringFromDuration(Duration duration) {
         return timeStringFromDuration(duration, false);

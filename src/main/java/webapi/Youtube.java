@@ -42,7 +42,6 @@ public class Youtube {
                 videoID = matcher.group(5);
             }
         }
-
         if (!videoID.isEmpty()) {
             YoutubeVideo video = getVideoFromID(videoID);
             if (video != null) {
