@@ -5,10 +5,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import twitch.*;
 import utility.PrettyPrinter;
-import webapi.Earthquakes;
-import webapi.Reddit;
-import webapi.SpaceLaunch;
-import webapi.XKCD;
+import webapi.*;
 
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -30,6 +27,7 @@ public class GManBot extends Application {
         TwitchChat.addListener(new TwitchChatExtras());
         TwitchChat.addListener(new TwitchChatStats());
         TwitchChat.addListener(new GameRatings());
+        TwitchChat.addListener(new MagicTCG());
 
         //Experimental features
         TwitchChat.addListener(new TextGeneration());

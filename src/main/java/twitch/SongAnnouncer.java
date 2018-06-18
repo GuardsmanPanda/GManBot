@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class SongAnnouncer extends ListenerAdapter {
     private static final Map<String, String> ratingReminderMap = new HashMap<>();
     private static final Map<String, String> quoteReminderMap = new HashMap<>();
-    private static final int STREAMDELAYINSECONDS = 10;
+    private static final int STREAMDELAYINSECONDS = 6;
     private static String currentSong = "Guardsman Bob";
     private static String displayOnStreamSong = "Guardsman Bob";
 

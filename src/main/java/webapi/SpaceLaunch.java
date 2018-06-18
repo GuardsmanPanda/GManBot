@@ -25,8 +25,8 @@ public class SpaceLaunch {
     }
 
     public static void main(String[] args) {
-        printLaunchSuccess(getPreviousLaunch());
-        //PrettyPrinter.prettyPrintJSonNode(getNextLaunchNode("any", 2));
+        //printLaunchSuccess(getPreviousLaunch());
+        PrettyPrinter.prettyPrintJSonNode(getNextLaunchNode("any", 2));
     }
 
     public static void startLaunchChecker() {

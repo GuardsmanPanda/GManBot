@@ -67,7 +67,7 @@ public class TextGeneration extends ListenerAdapter {
     }
 
     private static void loadTextModel() {
-        List<String> textList = BobsDatabase.getListFromSQL("SELECT chatLine FROM ChatLines WHERE LENGTH(chatLine) > 20 ORDER BY timeStamp DESC FETCH FIRST 200000 ROWS ONLY", String.class);
+        List<String> textList = BobsDatabase.getListFromSQL("SELECT chatLine FROM ChatLines WHERE LENGTH(chatLine) > 20 ORDER BY timeStamp DESC FETCH FIRST 600000 ROWS ONLY", String.class);
         System.out.println("TEXT LIST SIZE: " + textList.size());
         textList.stream()
                 .filter(text -> !text.contains("http://") && !text.contains(".com") && !text.contains("https://"))

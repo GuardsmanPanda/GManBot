@@ -166,6 +166,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!followtime","!followage");
         commandTranslationMap.put("!folloage","!followage");
         commandTranslationMap.put("!followed","!followage");
+        commandTranslationMap.put("!follow","!followage");
 
         commandTranslationMap.put("!setflag","!setflag");
         commandTranslationMap.put("!flag", "!setflag");
@@ -176,6 +177,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!removeflag","!setflag none");
 
         commandTranslationMap.put("!chatstats", "!chatstats");
+        commandTranslationMap.put("!stats", "!chatstats");
         commandTranslationMap.put("!chatsta", "!chatstats");
         commandTranslationMap.put("!chatsts", "!chatstats");
         commandTranslationMap.put("!chatstat", "!chatstats");
@@ -237,6 +239,8 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!latestxkdc", "!latestxkcd");
         commandTranslationMap.put("!latestkxcd", "!latestxkcd");
         commandTranslationMap.put("!latestmxkcd", "!latestxkcd");
+
+        commandTranslationMap.put("!card", "!card");
         
         commandTranslationMap.put("!activehours", "!activehours");
         commandTranslationMap.put("!tophours", "!activehours");

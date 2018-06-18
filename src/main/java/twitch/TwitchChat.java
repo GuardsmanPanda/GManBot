@@ -104,6 +104,7 @@ public class TwitchChat {
     }
 
     public static Set<String> getActiveUserIDsInChannel(Duration timeSpan) {
+
         return lastUserActivityTime.entrySet().stream()
                 .filter(entry -> Instant.now().minus(timeSpan).isBefore(entry.getValue()))
                 .map(Map.Entry::getKey)
