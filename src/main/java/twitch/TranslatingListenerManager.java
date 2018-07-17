@@ -67,8 +67,11 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!playlist", "!playlist");
         commandTranslationMap.put("!music", "!playlist");
         commandTranslationMap.put("!spotify", "!playlist");
+
         commandTranslationMap.put("!codefight", "!codefights");
         commandTranslationMap.put("!codefights", "!codefights");
+        commandTranslationMap.put("!codewars", "!codewars");
+        commandTranslationMap.put("!codewar", "!codewars");
 
         commandTranslationMap.put("!commandstats", "!commandstats");
         commandTranslationMap.put("!commandstatsinchat", "!commandstatsinchat");
@@ -223,6 +226,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!myemotesstats", "!myemotestats");
         commandTranslationMap.put("!selfemotestats", "!myemotestats");
         commandTranslationMap.put("!myemoteusage", "!myemotestats");
+        commandTranslationMap.put("!mytopemotes", "!myemotestats");
         commandTranslationMap.put("!personalemotestats", "!myemotestats");
 
         commandTranslationMap.put("!randomxkcd", "!randomxkcd");
