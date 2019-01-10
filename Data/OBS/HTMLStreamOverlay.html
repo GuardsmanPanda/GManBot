@@ -129,7 +129,6 @@
         }
     }
 
-
     function gameRatingUpdate(data) {
         $('.gameName').find('li').html(data.gameName);
         $('.gameRating').find('li').html('Rating: ' + data.gameRating);
@@ -147,7 +146,6 @@
         $('.gameVotes').textillate('out');
     }
 
-
     function headlineUpdate(data) {
         $('.headline').find('li').html(data.headline);
         $('.headline').textillate('start');
@@ -156,7 +154,6 @@
     function headlineOut() {
         $('.headline').textillate('out');
     }
-
 
     function songUpdate(data) {
         $('.songName').textillate('out');
@@ -211,7 +208,6 @@
             $('.songDuration').html(songDurationString);
         }
     }
-
 
     function quoteUpdate(data) {
         quoteText = data.quoteText;

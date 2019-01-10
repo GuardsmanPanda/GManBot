@@ -36,7 +36,7 @@ public class PrettyPrinter {
         if (months > 0) timeStrings.add(months + ((months > 1) ? " Months": " Month"));
         if (days > 0) timeStrings.add(days + ((days > 1) ? " Days": " Day"));
 
-        return String.join(", ", timeStrings);
+        return String.join(", ", timeStrings).replaceAll(", (?!.*,)"," and ");
     }
 
     public static String timeStringFromDuration(Duration duration) {
@@ -57,7 +57,7 @@ public class PrettyPrinter {
         if (milliSeconds && seconds > 0) timeStrings.add(seconds + ((seconds > 1) ? " Seconds" : " Second"));
         if (milliSeconds && ms > 0) timeStrings.add(ms + ((ms > 1) ? "ms" : "ms"));
 
-        return String.join(", ", timeStrings);
+        return String.join(", ", timeStrings).replaceAll(", (?!.*,)"," and ");
     }
 
      public static void prettyPrintJSonNode(JsonNode node) {

@@ -70,14 +70,21 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!codefight", "!codefights");
         commandTranslationMap.put("!codefights", "!codefights");
+        commandTranslationMap.put("!codesignal", "!codefights");
         commandTranslationMap.put("!codewars", "!codewars");
         commandTranslationMap.put("!codewar", "!codewars");
+
+        commandTranslationMap.put("!hackerearth", "!hackerearth");
+        commandTranslationMap.put("!hackearth", "!hackerearth");
 
         commandTranslationMap.put("!commandstats", "!commandstats");
         commandTranslationMap.put("!commandstatsinchat", "!commandstatsinchat");
 
         commandTranslationMap.put("!flagstats", "!flagstats");
         commandTranslationMap.put("!flagstatsinchat", "!flagstatsinchat");
+
+        commandTranslationMap.put("!dicegolf", "!dicegolf");
+        commandTranslationMap.put("!dg", "!dicegolf");
 
         commandTranslationMap.put("!roll", "!roll");
         commandTranslationMap.put("!dice", "!roll");
@@ -103,6 +110,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!d18", "!roll 18");
         commandTranslationMap.put("!d19", "!roll 19");
         commandTranslationMap.put("!d20", "!roll 20");
+        commandTranslationMap.put("!d100", "!roll 100");
 
 
         commandTranslationMap.put("!github", "!github");
@@ -112,15 +120,20 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!uptime", "!uptime");
 
         commandTranslationMap.put("!text", "!text");
+        commandTranslationMap.put("!t", "!text");
         commandTranslationMap.put("!texts", "!text");
         commandTranslationMap.put("!textt", "!text");
         commandTranslationMap.put("!texxt", "!text");
+        commandTranslationMap.put("!textk", "!text");
         commandTranslationMap.put("!texty", "!text");
         commandTranslationMap.put("!textr", "!text");
         commandTranslationMap.put("!text1", "!text");
+        commandTranslationMap.put("!textacy", "!text");
         commandTranslationMap.put("!textx", "!text");
+        commandTranslationMap.put("!texto", "!text");
         commandTranslationMap.put("!texter", "!text");
         commandTranslationMap.put("!texterino", "!text");
+        commandTranslationMap.put("!textpacito", "!text");
         commandTranslationMap.put("!texterinos", "!text");
 
         commandTranslationMap.put("!ratereminder", "!ratereminder");
@@ -194,6 +207,8 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!chatstatszino", "!chatstats");
 
         commandTranslationMap.put("!spacelaunch", "!spacelaunch");
+        commandTranslationMap.put("!spacelauch", "!spacelaunch");
+        commandTranslationMap.put("!spacelunch", "!spacelaunch");
 
         commandTranslationMap.put("!spacexlaunch", "!spacexlaunch");
         commandTranslationMap.put("!spacex", "!spacexlaunch");
@@ -271,6 +286,7 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!topbobcoinsinchat", "!bobcoinsinchat");
 
         commandTranslationMap.put("!songratings", "!songratings");
+        commandTranslationMap.put("!topsongsrated", "!songratings");
         commandTranslationMap.put("!songsrated", "!songratings");
         commandTranslationMap.put("!songratingsinchat", "!songratingsinchat");
         commandTranslationMap.put("!songsratedinchat", "!songratingsinchat");

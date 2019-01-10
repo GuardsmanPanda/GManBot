@@ -16,7 +16,7 @@ public class Quotes {
     public static void sendQuote(Author author) {
         synchronized (Quotes.class) {
             if (nextQuoteTime.isAfter(Instant.now())) return;
-            nextQuoteTime = Instant.now().plusSeconds(8);
+            nextQuoteTime = Instant.now().plusSeconds(2);
         }
 
         String quote = getQuote(author);

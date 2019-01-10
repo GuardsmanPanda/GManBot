@@ -34,6 +34,7 @@ public class Earthquakes {
                 });
     }
 
+
     private static Stream<JsonNode> getLatestEarthquakes(double magnitude) {
         HttpRequest request = HttpRequest.newBuilder(URI.create("https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=10")).GET().build();
         JsonNode root = WebClient.getJSonNodeFromRequest(request);

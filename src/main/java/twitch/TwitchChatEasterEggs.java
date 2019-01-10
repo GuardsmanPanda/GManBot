@@ -13,6 +13,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.Year;
+import java.util.ArrayDeque;
+import java.util.stream.Collectors;
 
 public class TwitchChatEasterEggs extends ListenerAdapter {
 
@@ -24,10 +26,12 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
 
         switch (chatMessage.getMessageCommand()) {
             case "!commands": TwitchChat.sendMessage("List of Commands -> https://pastebin.com/fam4TAMg"); break;
-            case "!codefights": TwitchChat.sendMessage("https://codefights.com/signup/S2BuQaGDDcxbKMJC4/main"); break;
+            case "!codefights": TwitchChat.sendMessage("https://app.codesignal.com/signup/S2BuQaGDDcxbKMJC4/main"); break;
             case "!codewars": TwitchChat.sendMessage("https://www.codewars.com/r/n8qKWw"); break;
+            case "!hackerearth": TwitchChat.sendMessage("http://hck.re/v9t6fx"); break;
             case "!github": TwitchChat.sendMessage("My GitHub -> https://github.com/GuardsmanPanda/GManBot"); break;
             case "!playlist": TwitchChat.sendMessage("Spotify Playlist -> https://open.spotify.com/user/1158619976/playlist/4gYCOPNjjBz9lYneVGE9dK"); break;
+            case "!dicegolf": diceGolf(chatMessage); break;
             case "!roll": rollDice(chatMessage); break;
             case "!seen": seen(chatMessage); break;
             case "!uptime": uptime(); break;
@@ -128,5 +132,20 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
         } catch (NumberFormatException ignored) {
 
         }
+    }
+
+    private void diceGolf(TwitchChatMessage message) {
+        ArrayDeque<Integer> stack = new ArrayDeque<>();
+        try {
+            stack.add(Integer.parseInt(message.getMessageContent()));
+        } catch (NumberFormatException e) {
+            //ignore
+        }
+        if (stack.size() == 0) stack.addLast(100);
+        while (stack.peekLast() > 1) {
+            stack.addLast(Extra.randomInt(stack.peekLast())+1);
+        }
+        String m = stack.stream().map(Object::toString).collect(Collectors.joining(", "));
+        TwitchChat.sendMessage("DiceGolf ⛳ " + m + " == " + (stack.size()-1) + " ⛳");
     }
 }
