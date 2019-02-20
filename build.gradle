@@ -3,11 +3,23 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
-sourceCompatibility = 1.9
+sourceCompatibility = 10
+compileJava.options.encoding = 'UTF-8'
 
 repositories {
     mavenCentral()
     maven { url "http://clojars.org/repo" }
+}
+
+ext.moduleName = 'gmanbot.main'
+compileJava {
+    inputs.property('moduleName', moduleName)
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath
+        ]
+        classpath = files()
+    }
 }
 
 dependencies {

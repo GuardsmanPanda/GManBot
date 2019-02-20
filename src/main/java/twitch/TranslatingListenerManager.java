@@ -77,6 +77,8 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
         commandTranslationMap.put("!hackerearth", "!hackerearth");
         commandTranslationMap.put("!hackearth", "!hackerearth");
 
+        commandTranslationMap.put("!profile", "!profile");
+
         commandTranslationMap.put("!commandstats", "!commandstats");
         commandTranslationMap.put("!commandstatsinchat", "!commandstatsinchat");
 

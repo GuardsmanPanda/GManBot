@@ -10,9 +10,9 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -29,8 +29,12 @@ import utility.PrettyPrinter;
 import webapi.Twitchv5;
 
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Map;
@@ -337,7 +341,46 @@ public class MainWindow {
         messageInput.clear();
     }
 
+    private static void discountPrice(boolean bigItems) {
+        final int gridSpace = 50, startTop = 100, startLeft = 100, hg = gridSpace/2;
 
+        int rows = bigItems ? 3 : 12, cols = bigItems ? 6 : 12;
+        int deltaX = bigItems ? 2*gridSpace : gridSpace, deltaY = bigItems ? gridSpace*4 : gridSpace;
+        StringSelection text = new StringSelection("");
+
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                int x = startLeft + deltaX*j, y = startTop + i*deltaY;
+                int bx = bigItems ? x+hg : x, by = y+gridSpace+hg;
+                robot.mouseMove(x, y);
+                try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+                robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
+                robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
+                try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+                robot.mouseMove(bx, by);
+                try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+                robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
+                try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+                robot.mouseMove(bx-gridSpace, by);
+                robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
+                try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(text, text);
+                robot.keyPress(KeyEvent.VK_CONTROL);
+                robot.keyPress(KeyEvent.VK_C);
+                robot.keyRelease(KeyEvent.VK_CONTROL);
+                robot.keyRelease(KeyEvent.VK_C);
+                try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+                String res = null;
+                try {
+                    res = (String)Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+                } catch (UnsupportedFlavorException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
 
     private static void openUrl() {
         Browser.open(urlInput.getText());

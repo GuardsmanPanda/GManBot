@@ -37,10 +37,6 @@ public class Reddit {
     private static Map<String, SubRedditWatcher> watchers = new HashMap<>();
     private static final Random random = new Random();
 
-    public static void main(String[] args) {
-        System.out.println(getJsonFromURL("https://www.googleapis.com/youtube/v3/videos?prettyPrint=false&part=snippet%2CcontentDetails%2Cstatistics&id=1N9KveJ-FU8&key=AIzaSyClFDVbyiqhHUdYi6o8w-Wv_dqLKP06vNQ"));
-    }
-
     /**
      * Watches a subreddit and prints to the twitch channel when a new post breaks into the current top posts
      * //TODO: train a model to predict thread rating early, so we can post threads when they are 1-2hours old or even sooner.

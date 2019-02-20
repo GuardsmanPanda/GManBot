@@ -1,7 +1,6 @@
 package database;
 
 import com.google.common.collect.*;
-import javafx.util.Pair;
 import twitch.TwitchChat;
 import utility.Extra;
 import utility.FinalPair;
@@ -68,10 +67,10 @@ public class SongDatabase {
     }
 
 
-    public static Pair<Float, Integer> getSongRating(String songName) {
+    public static FinalPair<Float, Integer> getSongRating(String songName) {
         List<Integer> songRatings = BobsDatabase.getListFromSQL("SELECT songRating FROM SongRatings WHERE songName = ?", Integer.class, songName);
         float rating = (float) songRatings.stream().mapToInt(Integer::intValue).sum() / songRatings.size();
-        return new Pair<>(rating, songRatings.size());
+        return new FinalPair<>(rating, songRatings.size());
     }
 
     public static int getIndividualSongRating(String twitchUserID, String songName) {

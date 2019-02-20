@@ -173,7 +173,7 @@ public class Twitchv5 {
                 .header("Client-ID", twitchApiKey)
                 .header("Authorization", "OAuth " + AuthTokenForBobsChannel)
                 .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyProcessor.fromString(body)).build();
+                .PUT(HttpRequest.BodyPublisher.fromString(body)).build();
         return WebClient.executeHttpRequest(request);
     }
 

@@ -6,10 +6,10 @@ import core.StreamWebOverlay;
 import database.BobsDatabase;
 import database.BobsDatabaseHelper;
 import database.SongDatabase;
-import javafx.util.Pair;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import twitch.dataobjects.TwitchChatMessage;
+import utility.FinalPair;
 import utility.GBUtility;
 import webapi.Twitchv5;
 
@@ -53,9 +53,9 @@ public class SongAnnouncer extends ListenerAdapter {
                 SongDatabase.addSongRating(tcm.userID, currentSong, rating, songQuote);
 
                 //send new rating to overlay
-                Pair<Float, Integer> songRatingPair = SongDatabase.getSongRating(displayOnStreamSong);
+                FinalPair<Float, Integer> songRatingPair = SongDatabase.getSongRating(displayOnStreamSong);
                 ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
-                rootNode.put("type", "songRatingUpdate"); rootNode.put("songRating", String.format("%.2f", songRatingPair.getKey()));
+                rootNode.put("type", "songRatingUpdate"); rootNode.put("songRating", String.format("%.2f", songRatingPair.first));
                 StreamWebOverlay.sendJsonToOverlay(rootNode);
 
                 //displayOnStreamSongRating = songRatingPair.getKey();
@@ -81,12 +81,11 @@ public class SongAnnouncer extends ListenerAdapter {
         }
         //Stop quote overlay service if last song was the Megas
         if (displayOnStreamSong.equalsIgnoreCase("The Megas - History Repeating Pt. 2 (One Last Time)")) StreamWebOverlay.endStreamIntro();
+        FinalPair<Float, Integer> lastSongPair = SongDatabase.getSongRating(displayOnStreamSong);
+        String lastSongString = displayOnStreamSong + " ⏩ Rating: " + String.format("%.2f", lastSongPair.first) + " [" + lastSongPair.second + "]";
 
-        Pair<Float, Integer> lastSongPair = SongDatabase.getSongRating(displayOnStreamSong);
-        String lastSongString = displayOnStreamSong + " ⏩ Rating: " + String.format("%.2f", lastSongPair.getKey()) + " [" + lastSongPair.getValue() + "]";
-
-        Pair<Float, Integer> songRatingPair = SongDatabase.getSongRating(newSongName);
-        float newSongRating = songRatingPair.getKey();
+        FinalPair<Float, Integer> songRatingPair = SongDatabase.getSongRating(newSongName);
+        float newSongRating = songRatingPair.first;
         displayOnStreamSong = newSongName;
 
         if (newSongRating < 7.7f) GBUtility.textToBob("Do you want to remove the song: " + newSongName + " ⏩ rating: " +newSongRating);
@@ -95,8 +94,8 @@ public class SongAnnouncer extends ListenerAdapter {
         ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
         rootNode.put("type", "songUpdate");
         rootNode.put("songName", newSongName);
-        rootNode.put("songRating", String.format("%.2f", songRatingPair.getKey()));
-        rootNode.put("songNumRatings", songRatingPair.getValue());
+        rootNode.put("songRating", String.format("%.2f", songRatingPair.first));
+        rootNode.put("songNumRatings", songRatingPair.second);
         rootNode.put("songQuote", SongDatabase.getSongQuote(newSongName, true));
         rootNode.put("songDuration", durationInSeconds);
         StreamWebOverlay.sendJsonToOverlay(rootNode);
@@ -165,7 +164,7 @@ public class SongAnnouncer extends ListenerAdapter {
                             }
                         }
                     }
-                    if (key.reset() == false) {
+                    if (!key.reset()) {
                         System.out.println("Song file Watching went horrible wrong!");
                         break;
                     }

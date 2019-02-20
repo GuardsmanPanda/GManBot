@@ -31,6 +31,7 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
             case "!hackerearth": TwitchChat.sendMessage("http://hck.re/v9t6fx"); break;
             case "!github": TwitchChat.sendMessage("My GitHub -> https://github.com/GuardsmanPanda/GManBot"); break;
             case "!playlist": TwitchChat.sendMessage("Spotify Playlist -> https://open.spotify.com/user/1158619976/playlist/4gYCOPNjjBz9lYneVGE9dK"); break;
+            case "!profile": TwitchChat.sendMessage("Poe Profile -> https://www.pathofexile.com/account/view-profile/ChampionBob/characters"); break;
             case "!dicegolf": diceGolf(chatMessage); break;
             case "!roll": rollDice(chatMessage); break;
             case "!seen": seen(chatMessage); break;
