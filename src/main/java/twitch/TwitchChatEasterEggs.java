@@ -33,6 +33,7 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
             case "!playlist": TwitchChat.sendMessage("Spotify Playlist -> https://open.spotify.com/user/1158619976/playlist/4gYCOPNjjBz9lYneVGE9dK"); break;
             case "!profile": TwitchChat.sendMessage("Poe Profile -> https://www.pathofexile.com/account/view-profile/ChampionBob/characters"); break;
             case "!dicegolf": diceGolf(chatMessage); break;
+            case "!vanish": vanish(chatMessage); break;
             case "!roll": rollDice(chatMessage); break;
             case "!seen": seen(chatMessage); break;
             case "!uptime": uptime(); break;
@@ -123,6 +124,18 @@ public class TwitchChatEasterEggs extends ListenerAdapter {
             responseString += " Until Follow Birthday! bobHype";
         }
         TwitchChat.sendMessage(responseString);
+    }
+
+    private void vanish(TwitchChatMessage message) {
+        int seconds = 1;
+        if (Extra.percentChance(5.0)) {
+            TwitchChat.sendMessage("Boom Headshot.. Eat it!");
+            seconds = 400;
+        } else if (Extra.percentChance(1.0)) {
+            TwitchChat.sendMessage("Critical strike! -- " + message.displayName + " is GONE!");
+            seconds = 1500;
+        }
+        TwitchChat.sendMessage("/timeout " + message.displayName + " " + seconds);
     }
 
     private void rollDice(TwitchChatMessage message) {

@@ -79,6 +79,8 @@ public class TranslatingListenerManager extends ThreadedListenerManager {
 
         commandTranslationMap.put("!profile", "!profile");
 
+        commandTranslationMap.put("!vanish", "!vanish");
+
         commandTranslationMap.put("!commandstats", "!commandstats");
         commandTranslationMap.put("!commandstatsinchat", "!commandstatsinchat");
 
