@@ -26,7 +26,7 @@ public class SongAnnouncer extends ListenerAdapter {
     private static final Map<String, String> ratingReminderMap = new HashMap<>();
     private static final Map<String, String> quoteReminderMap = new HashMap<>();
     private static final int STREAMDELAYINSECONDS = 6;
-    private static String currentSong = "Guardsman Bob";
+    private static String currentSong = "Guardsman Bob", lastSong = "--";
     private static String displayOnStreamSong = "Guardsman Bob";
 
     public SongAnnouncer(Path songFilePath) {
@@ -42,7 +42,8 @@ public class SongAnnouncer extends ListenerAdapter {
     @Override
     public void onMessage(MessageEvent event) {
         TwitchChatMessage tcm = new TwitchChatMessage(event);
-        if (tcm.message.toLowerCase().startsWith("!rate ")) {
+        String lower = tcm.message.toLowerCase();
+        if (lower.startsWith("!rate ") || lower.startsWith("!ratelast ")) {
             String songQuote = "none";
             try {
                 int rating = Integer.parseInt(tcm.getMessageContent().split(" ")[0]);
@@ -50,14 +51,15 @@ public class SongAnnouncer extends ListenerAdapter {
                 if (rating > 11) rating = 11;
                 if (tcm.getMessageContent().contains(" ")) songQuote = tcm.getMessageContent().substring(tcm.getMessageContent().indexOf(" ")).trim();
 
-                SongDatabase.addSongRating(tcm.userID, currentSong, rating, songQuote);
-
-                //send new rating to overlay
-                FinalPair<Float, Integer> songRatingPair = SongDatabase.getSongRating(displayOnStreamSong);
-                ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
-                rootNode.put("type", "songRatingUpdate"); rootNode.put("songRating", String.format("%.2f", songRatingPair.first));
-                StreamWebOverlay.sendJsonToOverlay(rootNode);
-
+                if (lower.startsWith("!ratelast")) SongDatabase.addSongRating(tcm.userID, lastSong, rating, songQuote);
+                else {
+                    SongDatabase.addSongRating(tcm.userID, currentSong, rating, songQuote);
+                    //send new rating to overlay
+                    FinalPair<Float, Integer> songRatingPair = SongDatabase.getSongRating(displayOnStreamSong);
+                    ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
+                    rootNode.put("type", "songRatingUpdate"); rootNode.put("songRating", String.format("%.2f", songRatingPair.first));
+                    StreamWebOverlay.sendJsonToOverlay(rootNode);
+                }
                 //displayOnStreamSongRating = songRatingPair.getKey();
             } catch (NumberFormatException nfe) {
                 // Silently kill number format exceptions
@@ -74,6 +76,8 @@ public class SongAnnouncer extends ListenerAdapter {
 
     private static void songFileChange(String newSongName, int durationInSeconds) {
         if (newSongName.equalsIgnoreCase("Guardsman Bob")) return;
+
+        lastSong = currentSong; //move current song to last song
 
         //Start quote announcer if intro song
         if (newSongName.equalsIgnoreCase("The xx - Intro") && Twitchv5.getStreamUpTime().toMinutes() < 15) {

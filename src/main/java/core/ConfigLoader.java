@@ -2,6 +2,7 @@ package core;
 
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,7 +20,6 @@ public class ConfigLoader {
      * @param module refers to the Module which calls this Method
      * @return returns a Hashmap with <Key,Value>
      */
-
     public static HashMap loadConfig(String module){
         HashMap settings = new HashMap<>();
         try {
